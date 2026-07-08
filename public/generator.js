@@ -1278,6 +1278,10 @@ async function copyTransitionReport() {
 }
 function renderOperatorMetrics() {
   const summary = summarizeGeneratorLiveMetrics(liveMetrics);
+  renderOperatorMetricsState(summary);
+}
+
+function renderOperatorMetricsState(summary) {
   if (operatorBadgeNode) {
     operatorBadgeNode.textContent = mode === 'live' ? summary.status : (mode === 'preview' ? 'PREVIEW' : 'SAFE');
     operatorBadgeNode.className = summary.status === 'HOT' ? 'hot' : (summary.status === 'WATCH' ? 'watch' : 'ok');
@@ -1288,16 +1292,20 @@ function renderOperatorMetrics() {
   if (metricDropsNode) metricDropsNode.textContent = `${summary.drops}${Number(summary.errors || 0) ? ` / err ${summary.errors}` : ''}`;
 }
 
-function renderLiveFpsUi() {
+function renderLiveFpsState() {
   if (liveFpsSelectNode) {
     liveFpsSelectNode.value = String(liveFps);
     liveFpsSelectNode.setAttribute('readonly', 'readonly');
-    liveFpsSelectNode.setAttribute('title', `Generator LIVE FPS se bere ze Settings â†’ FPS (${liveFps})`);
+    liveFpsSelectNode.setAttribute('title', `Generator LIVE FPS se bere ze Settings → FPS (${liveFps})`);
   }
   if (liveFpsSourceNode) {
-    const capped = liveFpsInfo?.capped ? ' Â· cap 60 pro browser render loop' : '';
-    liveFpsSourceNode.textContent = `${liveFps} FPS Â· ${liveFpsInfo?.source || 'settings'}${capped}`;
+    const capped = liveFpsInfo?.capped ? ' · cap 60 pro browser render loop' : '';
+    liveFpsSourceNode.textContent = `${liveFps} FPS · ${liveFpsInfo?.source || 'settings'}${capped}`;
   }
+}
+
+function renderLiveFpsUi() {
+  renderLiveFpsState();
 }
 
 function applyLiveFpsInfo(nextInfo, reason = 'settings') {
