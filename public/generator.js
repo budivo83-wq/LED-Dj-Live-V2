@@ -1433,15 +1433,19 @@ function renderFieldTestSummaryState(summary, live) {
     fieldTestBadgeNode.className = activeFieldTest ? (live ? 'hot' : 'watch') : 'ok';
   }
   if (fieldTestSummaryNode) {
-    fieldTestSummaryNode.textContent = summary
-      ? `${summary.detail} · ${Math.max(0, ((activeFieldTest.until || 0) - performance.now()) / 1000).toFixed(1)}s left`
-      : 'Žádný field test neběží.';
+    fieldTestSummaryNode.textContent = formatFieldTestSummaryText(summary);
   }
   if (fieldTestHintNode) {
     fieldTestHintNode.textContent = live
       ? 'LIVE MASTER je aktivní: testovací frame jde přes stejný MASTER bridge do ArtNet řetězce.'
       : 'Bez LIVE MASTER je test bezpečně jen v preview. Pro fyzický výstup nejdřív zapni LIVE MASTER.';
   }
+}
+
+function formatFieldTestSummaryText(summary) {
+  return summary
+    ? `${summary.detail} · ${Math.max(0, ((activeFieldTest.until || 0) - performance.now()) / 1000).toFixed(1)}s left`
+    : 'Žádný field test neběží.';
 }
 
 function renderFieldTestStatus() {
