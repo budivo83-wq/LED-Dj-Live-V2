@@ -1,7 +1,7 @@
 import dgram from "node:dgram";
 import { buildBlxV2FrameFullPacket, splitRgbToArtDmxPackets, summarizePacket } from "./live_output_packet_builder.js";
 import { buildRawSerialAaLen16RgbPacket, RAW_SERIAL_PACKET_LABEL } from "../output/raw_serial_contract_22cb.js";
-import { clampInt, clampNumber, normalizeTransport } from "./live_output_common.js";
+import { normalizeLiveOutputRequest } from "./live_output_common.js";
 
 export const LIVE_OUTPUT_DRIVER_BRIDGE_VERSION = "12Q-serial-artnet-output-driver-bridge";
 
@@ -11,32 +11,15 @@ const MAX_BRIGHTNESS = 0.1;
 const MAX_FRAMES = 8;
 
 function normalizeRequest(request = {}) {
-  const transportKind = normalizeTransport(request.transportKind || request.transport || request.outputMode, {
-    aliases: ["udp"]
-  });
-  return Object.freeze({
-    requested: Boolean(request.requested || request.start || request.commit),
-    commit: Boolean(request.commit || request.writeNow),
-    dryRun: request.dryRun !== false,
-    transportKind,
-    pattern: String(request.pattern || request.testPattern || "single-pixel-chase").trim().toLowerCase(),
-    pixels: clampInt(request.pixels ?? request.pixelCount, 1, MAX_PIXELS, 30),
-    brightness: clampNumber(request.brightness, 0, MAX_BRIGHTNESS, 0.03),
-    frames: clampInt(request.frames ?? request.frameCount, 1, MAX_FRAMES, 1),
-    frameId: clampInt(request.frameId, 1, 0xffffffff, 1),
-    seq: clampInt(request.seq ?? request.sequence, 0, 65535, 1),
-    universe: clampInt(request.universe, 0, 32767, 0),
-    host: String(request.host || request.ip || request.target?.host || request.target?.ip || "127.0.0.1"),
-    artnetPort: clampInt(request.artnetPort || request.target?.port || request.port, 1, 65535, 6454),
-    serialPath: String(request.serialPath || request.path || request.portName || ""),
-    baudRate: clampInt(request.baudRate, 9600, 3000000, 115200),
-    serialProtocol: String(request.serialProtocol || request.protocol || process.env.LED_SERIAL_PROTOCOL || "aa_len_rgb").trim().toLowerCase(),
-    operatorConfirmed: Boolean(request.operatorConfirmed),
-    confirmation: String(request.confirmation || ""),
-    armToken: request.armToken ? String(request.armToken) : null,
-    fullLiveToken: request.fullLiveToken || request.token ? String(request.fullLiveToken || request.token) : null,
-    mappingDigest: String(request.mappingDigest || "output-driver-bridge-12Q"),
-    transportPlanDigest: String(request.transportPlanDigest || request.routeDigest || "output-driver-bridge-12Q")
+  return normalizeLiveOutputRequest(request, {
+    defaultTransportKind: "serial",
+    transportAliases: ["udp"],
+    defaultPattern: "single-pixel-chase",
+    defaultFrames: 1,
+    defaultBaudRate: 115200,
+    defaultSerialProtocol: "aa_len_rgb",
+    defaultMappingDigest: "output-driver-bridge-12Q",
+    defaultTransportPlanDigest: "output-driver-bridge-12Q"
   });
 }
 

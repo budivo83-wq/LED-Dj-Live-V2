@@ -1,4 +1,4 @@
-import { clampInt, clampNumber, normalizePattern, normalizeTransport } from "./live_output_common.js";
+import { normalizeLiveOutputRequest } from "./live_output_common.js";
 
 export const LIVE_OUTPUT_SMOKE_TEST_VERSION = "12R-serial-artnet-output-smoke-test-layer";
 
@@ -8,30 +8,13 @@ const MAX_FRAMES = 8;
 const MAX_BRIGHTNESS = 0.08;
 
 function normalizeRequest(request = {}) {
-  const transportKind = normalizeTransport(request.transportKind || request.transport || request.outputMode);
-  return Object.freeze({
-    requested: Boolean(request.requested || request.start || request.commit),
-    commit: Boolean(request.commit || request.writeNow),
-    dryRun: request.dryRun !== false,
-    transportKind,
-    pattern: normalizePattern(request.pattern || request.testPattern, { defaultValue: "single-pixel-chase" }),
-    pixels: clampInt(request.pixels ?? request.pixelCount, 1, MAX_PIXELS, 30),
-    frames: clampInt(request.frames ?? request.frameCount, 1, MAX_FRAMES, 4),
-    brightness: clampNumber(request.brightness, 0, MAX_BRIGHTNESS, 0.03),
-    serialPath: String(request.serialPath || request.path || request.portName || ""),
-    baudRate: clampInt(request.baudRate, 9600, 3000000, 115200),
-    serialProtocol: String(request.serialProtocol || request.protocol || process.env.LED_SERIAL_PROTOCOL || "blx-v2").trim().toLowerCase(),
-    host: String(request.host || request.ip || request.target?.host || request.target?.ip || "127.0.0.1"),
-    artnetPort: clampInt(request.artnetPort || request.target?.port || request.port, 1, 65535, 6454),
-    universe: clampInt(request.universe, 0, 32767, 0),
-    seq: clampInt(request.seq ?? request.sequence, 0, 255, 1),
-    frameId: clampInt(request.frameId, 1, 0xffffffff, 1),
-    armToken: request.armToken ? String(request.armToken) : null,
-    fullLiveToken: request.fullLiveToken || request.token ? String(request.fullLiveToken || request.token) : null,
-    operatorConfirmed: Boolean(request.operatorConfirmed),
-    confirmation: String(request.confirmation || ""),
-    mappingDigest: String(request.mappingDigest || "output-smoke-test-12R"),
-    transportPlanDigest: String(request.transportPlanDigest || request.routeDigest || "output-smoke-test-12R")
+  return normalizeLiveOutputRequest(request, {
+    defaultPattern: "single-pixel-chase",
+    defaultBaudRate: 115200,
+    defaultFrameId: 1,
+    defaultSeq: 1,
+    defaultMappingDigest: "output-smoke-test-12R",
+    defaultTransportPlanDigest: "output-smoke-test-12R"
   });
 }
 
