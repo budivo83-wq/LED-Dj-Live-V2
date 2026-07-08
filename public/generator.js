@@ -1016,19 +1016,12 @@ function bindNodeFlowControls(nodes) {
   }));
 }
 
-function renderNodeFlow() {
-  if (!nodeFlowNode) return;
-  graph = normalizeGeneratorGraph(graph);
-  const nodes = (graph.nodes || [])
-    .filter((node) => node.deleted !== true)
-    .slice()
-    .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
-  const summary = summarizeGeneratorGraph(graph);
-  nodeFlowNode.innerHTML = `
+function buildNodeFlowMarkup(nodes, summary) {
+  return `
     <div class="generator-node-summary generator-node-summary-v2">
       <strong>${summary.active}/${summary.total} active</strong>
       <span>${summary.label || 'empty graph'}</span>
-      <small>${summary.hidden ? `${summary.hidden} hidden/deleted Â· ` : ''}Graph ${GENERATOR_GRAPH_VERSION}</small>
+      <small>${summary.hidden ? `${summary.hidden} hidden/deleted · ` : ''}Graph ${GENERATOR_GRAPH_VERSION}</small>
     </div>
     <div class="generator-node-stage-strip">
       ${Object.entries(summary.stages || {}).map(([stage, count]) => `<span>${stage}<b>${count}</b></span>`).join('')}
@@ -1038,9 +1031,9 @@ function renderNodeFlow() {
         <header>
           <label class="generator-node-enable">
             <input type="checkbox" data-node-enable="${node.id}" ${node.enabled !== false ? 'checked' : ''} ${node.locked ? 'disabled' : ''} />
-            <strong>${node.enabled !== false ? 'â—Ź' : 'â—‹'} ${node.name || node.id}</strong>
+            <strong>${node.enabled !== false ? '●' : '○'} ${node.name || node.id}</strong>
           </label>
-          <em>${node.type}${node.moduleId && node.moduleId !== node.id ? ` Â· ${node.moduleId}` : ''}</em>
+          <em>${node.type}${node.moduleId && node.moduleId !== node.id ? ` · ${node.moduleId}` : ''}</em>
         </header>
         <small>${node.description || ''}</small>
         <label>Mix <b id="generatorNodeMixValue_${node.id}">${Math.round(Number(node.mix || 0) * 100)}%</b>
@@ -1050,8 +1043,8 @@ function renderNodeFlow() {
           <input type="range" min="0" max="1" step="0.01" value="${Number(node.intensity || 0)}" data-node-intensity="${node.id}" />
         </label>
         <div class="generator-node-actions generator-node-actions-v2">
-          <button type="button" data-node-up="${node.id}" ${index === 0 ? 'disabled' : ''}>â†‘</button>
-          <button type="button" data-node-down="${node.id}" ${index === nodes.length - 1 ? 'disabled' : ''}>â†“</button>
+          <button type="button" data-node-up="${node.id}" ${index === 0 ? 'disabled' : ''}>↑</button>
+          <button type="button" data-node-down="${node.id}" ${index === nodes.length - 1 ? 'disabled' : ''}>↓</button>
           <button type="button" data-node-duplicate="${node.id}" ${node.id === 'output' ? 'disabled' : ''}>DUP</button>
           <button type="button" data-node-solo="${node.id}" ${node.id === 'output' ? 'disabled' : ''}>SOLO</button>
           <button type="button" data-node-bypass="${node.id}" ${node.locked ? 'disabled' : ''}>${node.enabled !== false ? 'BYPASS' : 'ON'}</button>
@@ -1060,6 +1053,17 @@ function renderNodeFlow() {
       </article>
     `).join('')}
   `;
+}
+
+function renderNodeFlow() {
+  if (!nodeFlowNode) return;
+  graph = normalizeGeneratorGraph(graph);
+  const nodes = (graph.nodes || [])
+    .filter((node) => node.deleted !== true)
+    .slice()
+    .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+  const summary = summarizeGeneratorGraph(graph);
+  nodeFlowNode.innerHTML = buildNodeFlowMarkup(nodes, summary);
   bindNodeFlowControls(nodes);
 }
 
@@ -1161,10 +1165,8 @@ function updateCurveLane(id, patcher) {
   saveAll();
 }
 
-function renderControls() {
+function bindCurveControls() {
   if (!controlsNode) return;
-  curves = normalizeGeneratorCurves(curves);
-  controlsNode.innerHTML = curves.lanes.map(curveTemplate).join('');
   controlsNode.querySelectorAll('[data-curve-value]').forEach((input) => {
     input.addEventListener('input', () => {
       const id = input.dataset.curveValue;
@@ -1190,6 +1192,13 @@ function renderControls() {
   controlsNode.querySelectorAll('[data-curve-division]').forEach((select) => {
     select.addEventListener('change', () => updateCurveLane(select.dataset.curveDivision, (lane) => ({ ...lane, division: Number(select.value || lane.division || 4) })));
   });
+}
+
+function renderControls() {
+  if (!controlsNode) return;
+  curves = normalizeGeneratorCurves(curves);
+  controlsNode.innerHTML = curves.lanes.map(curveTemplate).join('');
+  bindCurveControls();
 }
 
 function renderSafeSceneBank() {
