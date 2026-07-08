@@ -1398,11 +1398,15 @@ function renderFieldTestControls() {
     fieldTestColorNode.innerHTML = listGeneratorFieldTestColors().map((color) => `<option value="${color.id}">${color.name}</option>`).join('');
   }
   if (fieldTestUniverseNode && fieldTestUniverseNode.options.length <= 1) {
-    const universeCount = Math.max(1, Math.ceil(Number(patch.width || 300) / 170) * Number(patch.height || 8));
-    fieldTestUniverseNode.innerHTML = '<option value="auto">AUTO</option>' + Array.from({ length: universeCount }, (_, index) => `<option value="${index}">U${index}</option>`).join('');
+    fieldTestUniverseNode.innerHTML = buildFieldTestUniverseOptionsHtml();
   }
   updateFieldTestIntensityLabel();
   renderFieldTestStatus();
+}
+
+function buildFieldTestUniverseOptionsHtml() {
+  const universeCount = Math.max(1, Math.ceil(Number(patch.width || 300) / 170) * Number(patch.height || 8));
+  return '<option value="auto">AUTO</option>' + Array.from({ length: universeCount }, (_, index) => `<option value="${index}">U${index}</option>`).join('');
 }
 
 function updateFieldTestIntensityLabel() {
