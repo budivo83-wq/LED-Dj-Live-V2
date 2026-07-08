@@ -1815,11 +1815,15 @@ async function runMasterSelfTest() {
 function renderBridgeStatus() {
   const snap = latestBridgeSnapshot || liveBridge.snapshot();
   latestBridgeSnapshot = snap;
+  renderBridgeSnapshotState(snap);
+  renderLiveStabilityPanel(lastLiveTestSnapshot, 'bridge');
+}
+
+function renderBridgeSnapshotState(snap) {
   if (bridgeStatusNode) bridgeStatusNode.textContent = snap.active ? 'LIVE MASTER' : (mode === 'preview' ? 'PREVIEW' : 'RELEASED');
   if (serverStatusNode) serverStatusNode.textContent = snap.active ? `${snap.serverSent || 0} sent / ${snap.serverErrors || 0} err` : 'idle';
   if (frameBusStatusNode) frameBusStatusNode.textContent = snap.lastFrameBusId ? `#${snap.lastFrameBusId}` : '--';
   if (sentStatusNode) sentStatusNode.textContent = snap.active ? `${snap.publishedLocal || 0} local` : '--';
-  renderLiveStabilityPanel(lastLiveTestSnapshot, 'bridge');
 }
 
 function renderStabilityAnalysis(analysis) {
@@ -1844,10 +1848,18 @@ function renderStabilityAnalysis(analysis) {
 }
 
 function renderStaticUiState() {
+  renderStaticUiHeader();
+  renderStaticUiModeButtons();
+}
+
+function renderStaticUiHeader() {
   modeBadge && (modeBadge.textContent = mode.toUpperCase());
   writer && (writer.textContent = mode === 'live' ? 'generator master' : (mode === 'preview' ? 'preview only' : 'released'));
   patchName && (patchName.textContent = patch.name || 'Generator Patch');
   setValueIfIdle(presetNameNode, patch.name || 'Generator Patch');
+}
+
+function renderStaticUiModeButtons() {
   $('generatorOff')?.classList.toggle('active', mode === 'off');
   $('generatorPreview')?.classList.toggle('active', mode === 'preview');
   $('generatorLive')?.classList.toggle('active', mode === 'live');
