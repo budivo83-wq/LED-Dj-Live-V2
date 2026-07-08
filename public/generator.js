@@ -455,17 +455,21 @@ function renderMusicModePanel(reason = 'render') {
   }
   setValueIfIdle(musicModeSelectNode, activeMusicModeId);
   lastMusicModeSummary = buildGeneratorMusicModeSummary(activeMusicModeId, patch, graph, curves);
+  renderMusicModeState();
+  if (reason === 'apply') renderStaticUi();
+}
+
+function renderMusicModeState() {
   if (musicModeBadgeNode) {
     musicModeBadgeNode.textContent = activeMusicModeId === 'manual' ? 'MANUAL' : (musicModeRuntimeEnabled ? 'MUSIC ON' : 'MUSIC PATCH');
     musicModeBadgeNode.className = activeMusicModeId === 'manual' ? 'ok' : (musicModeRuntimeEnabled ? 'hot' : 'watch');
   }
   if (musicModeStatusNode) musicModeStatusNode.textContent = formatGeneratorMusicModeStatus(activeMusicModeId, lastMusicModeMeta, musicModeRuntimeEnabled);
-  if (musicModeIntentNode) musicModeIntentNode.textContent = lastMusicModeSummary.intent || 'RuÄŤnĂ­ patch bez hudebnĂ­ho runtime.';
+  if (musicModeIntentNode) musicModeIntentNode.textContent = lastMusicModeSummary.intent || 'Ruční patch bez hudebního runtime.';
   if (musicModeRuntimeNode) {
     musicModeRuntimeNode.classList.toggle('active', musicModeRuntimeEnabled);
     musicModeRuntimeNode.textContent = musicModeRuntimeEnabled ? 'RUNTIME ON' : 'RUNTIME OFF';
   }
-  if (reason === 'apply') renderStaticUi();
 }
 
 function applySelectedMusicMode(modeId = musicModeSelectNode?.value || activeMusicModeId || 'manual', options = {}) {
