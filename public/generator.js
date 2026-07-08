@@ -1491,10 +1491,7 @@ function availableMidiInputs() {
   }));
 }
 
-function renderMidiPanel(reason = 'render') {
-  const inputs = availableMidiInputs();
-  midiRuntime = { ...midiRuntime, supported: typeof navigator !== 'undefined' && typeof navigator.requestMIDIAccess === 'function', access: Boolean(midiAccess), enabled: midiConfig.enabled === true, connected: Boolean(midiInput), inputId: midiConfig.inputId, inputName: midiInput?.name || midiConfig.lastInputName || '', inputs };
-  midiSnapshot = buildGeneratorMidiSnapshot(midiRuntime, midiConfig);
+function renderMidiIdentityState() {
   if (midiBadgeNode) {
     const label = !midiRuntime.supported ? 'NO WEB MIDI' : (!midiAccess ? 'DISCONNECTED' : (midiConfig.enabled ? (midiInput ? 'MIDI ON' : 'NO INPUT') : 'MIDI OFF'));
     midiBadgeNode.textContent = label;
@@ -1503,15 +1500,18 @@ function renderMidiPanel(reason = 'render') {
   if (midiStatusNode) {
     midiStatusNode.textContent = midiRuntime.error
       ? midiRuntime.error
-      : `${midiSnapshot.inputName || midiSnapshot.inputId || '--'} Â· msg ${midiSnapshot.messageCount} Â· mapped ${midiSnapshot.mappedCount} Â· ignored ${midiSnapshot.ignoredCount}`;
+      : `${midiSnapshot.inputName || midiSnapshot.inputId || '--'} · msg ${midiSnapshot.messageCount} · mapped ${midiSnapshot.mappedCount} · ignored ${midiSnapshot.ignoredCount}`;
   }
   if (midiEnableNode) {
     midiEnableNode.classList.toggle('active', midiConfig.enabled === true);
     midiEnableNode.textContent = midiConfig.enabled ? 'MIDI ON' : 'MIDI OFF';
   }
+}
+
+function renderMidiSelectorState(inputs) {
   if (midiInputSelectNode) {
     const current = midiInputSelectNode.value || midiConfig.inputId;
-    const html = ['<option value="auto">AUTO / prvnĂ­ dostupnĂ˝</option>'].concat(inputs.map((input) => `<option value="${input.id}">${input.name}</option>`)).join('');
+    const html = ['<option value="auto">AUTO / první dostupný</option>'].concat(inputs.map((input) => `<option value="${input.id}">${input.name}</option>`)).join('');
     if (midiInputSelectNode.innerHTML !== html) midiInputSelectNode.innerHTML = html;
     midiInputSelectNode.value = inputs.some((item) => item.id === (current || midiConfig.inputId)) ? (current || midiConfig.inputId) : 'auto';
   }
@@ -1520,13 +1520,25 @@ function renderMidiPanel(reason = 'render') {
   }
   if (midiLearnNode) {
     midiLearnNode.classList.toggle('active', Boolean(midiConfig.learnAction));
-    midiLearnNode.textContent = midiConfig.learnAction ? 'LEARNINGâ€¦' : 'LEARN NEXT';
+    midiLearnNode.textContent = midiConfig.learnAction ? 'LEARNING…' : 'LEARN NEXT';
   }
+}
+
+function renderMidiActivityState() {
   if (midiLastNode) midiLastNode.textContent = midiSnapshot.lastMessage ? formatGeneratorMidiMessage(midiSnapshot.lastMessage) : '--';
   if (midiActionNode) midiActionNode.textContent = midiSnapshot.lastAction || midiConfig.learnAction || '--';
   if (midiMappingListNode) {
-    midiMappingListNode.innerHTML = midiSnapshot.mappingSummary.map((line) => `<li>${line}</li>`).join('') || '<li>Ĺ˝ĂˇdnĂ© mapovĂˇnĂ­.</li>';
+    midiMappingListNode.innerHTML = midiSnapshot.mappingSummary.map((line) => `<li>${line}</li>`).join('') || '<li>Žádné mapování.</li>';
   }
+}
+
+function renderMidiPanel(reason = 'render') {
+  const inputs = availableMidiInputs();
+  midiRuntime = { ...midiRuntime, supported: typeof navigator !== 'undefined' && typeof navigator.requestMIDIAccess === 'function', access: Boolean(midiAccess), enabled: midiConfig.enabled === true, connected: Boolean(midiInput), inputId: midiConfig.inputId, inputName: midiInput?.name || midiConfig.lastInputName || '', inputs };
+  midiSnapshot = buildGeneratorMidiSnapshot(midiRuntime, midiConfig);
+  renderMidiIdentityState();
+  renderMidiSelectorState(inputs);
+  renderMidiActivityState();
   if (reason === 'message' && midiSnapshot.lastAction) log(`MIDI: ${midiSnapshot.lastAction}`);
 }
 
