@@ -1427,19 +1427,27 @@ function readFieldTestOptions(extra = {}) {
   };
 }
 
-function renderFieldTestStatus() {
-  const summary = activeFieldTest ? summarizeGeneratorFieldTest(activeFieldTest.options) : null;
-  const live = mode === 'live';
+function renderFieldTestSummaryState(summary, live) {
   if (fieldTestBadgeNode) {
     fieldTestBadgeNode.textContent = activeFieldTest ? (live ? 'TEST LIVE' : 'TEST PREVIEW') : 'READY';
     fieldTestBadgeNode.className = activeFieldTest ? (live ? 'hot' : 'watch') : 'ok';
   }
-  if (fieldTestSummaryNode) fieldTestSummaryNode.textContent = summary ? `${summary.detail} Â· ${Math.max(0, ((activeFieldTest.until || 0) - performance.now()) / 1000).toFixed(1)}s left` : 'Ĺ˝ĂˇdnĂ˝ field test nebÄ›ĹľĂ­.';
+  if (fieldTestSummaryNode) {
+    fieldTestSummaryNode.textContent = summary
+      ? `${summary.detail} · ${Math.max(0, ((activeFieldTest.until || 0) - performance.now()) / 1000).toFixed(1)}s left`
+      : 'Žádný field test neběží.';
+  }
   if (fieldTestHintNode) {
     fieldTestHintNode.textContent = live
-      ? 'LIVE MASTER je aktivnĂ­: testovacĂ­ frame jde pĹ™es stejnĂ˝ MASTER bridge do ArtNet Ĺ™etÄ›zce.'
-      : 'Bez LIVE MASTER je test bezpeÄŤnÄ› jen v preview. Pro fyzickĂ˝ vĂ˝stup nejdĹ™Ă­v zapni LIVE MASTER.';
+      ? 'LIVE MASTER je aktivní: testovací frame jde přes stejný MASTER bridge do ArtNet řetězce.'
+      : 'Bez LIVE MASTER je test bezpečně jen v preview. Pro fyzický výstup nejdřív zapni LIVE MASTER.';
   }
+}
+
+function renderFieldTestStatus() {
+  const summary = activeFieldTest ? summarizeGeneratorFieldTest(activeFieldTest.options) : null;
+  const live = mode === 'live';
+  renderFieldTestSummaryState(summary, live);
 }
 
 function activateFieldTest({ publish = false } = {}) {
@@ -1691,7 +1699,11 @@ function renderLiveTestPanel(diagnostics = null) {
   }
   if (liveTestVerdictNode) liveTestVerdictNode.textContent = view.verdict || '--';
   if (liveTestNextNode) liveTestNextNode.textContent = view.next || '--';
-  liveTestChainNode.innerHTML = view.rows.map((row) => `
+  liveTestChainNode.innerHTML = renderLiveTestRows(view.rows);
+}
+
+function renderLiveTestRows(rows) {
+  return rows.map((row) => `
     <article class="generator-live-step ${row.ok ? 'ok' : 'warn'}">
       <header><span>${row.label}</span><strong>${row.value}</strong></header>
       <small>${row.detail}</small>
