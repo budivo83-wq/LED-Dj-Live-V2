@@ -1,4 +1,4 @@
-import { clampInt, clampNumber, normalizeTransport } from "./live_output_common.js";
+import { clampInt, clampNumber, normalizePattern, normalizeTransport } from "./live_output_common.js";
 
 export const LIVE_OUTPUT_MULTIFRAME_STREAM_VERSION = "12Y-multiframe-live-output-dry-run-stream";
 
@@ -6,11 +6,6 @@ const MAX_FRAMES = 8;
 const MAX_PIXELS = 150;
 const MAX_BRIGHTNESS = 0.08;
 const MAX_FPS = 20;
-
-function normalizePattern(value = "single-pixel-chase") {
-  const p = String(value || "single-pixel-chase").trim().toLowerCase();
-  return ["blackout", "red", "green", "blue", "white-low", "single-pixel-chase"].includes(p) ? p : "single-pixel-chase";
-}
 
 function normalizeRequest(request = {}) {
   const physical = Boolean(request.physical || request.real || request.dryRun === false);

@@ -1,16 +1,10 @@
-import { clampInt, clampNumber, normalizeTransport } from "./live_output_common.js";
+import { clampInt, clampNumber, normalizePattern, normalizeTransport } from "./live_output_common.js";
 
 export const LIVE_OUTPUT_MINIMAL_FRAME_VERSION = "12X-minimal-live-frame-output-path";
 
 const MAX_PIXELS = 150;
 const MAX_FRAMES = 1;
 const MAX_BRIGHTNESS = 0.08;
-
-function normalizePattern(value = "single-pixel-chase") {
-  const p = String(value || "single-pixel-chase").trim().toLowerCase();
-  if (["blackout", "red", "green", "blue", "white-low", "single-pixel-chase"].includes(p)) return p;
-  return "single-pixel-chase";
-}
 
 function normalizeRequest(request = {}) {
   const physical = Boolean(request.physical || request.real || request.dryRun === false);

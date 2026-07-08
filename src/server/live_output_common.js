@@ -1,4 +1,5 @@
 const DEFAULT_ARTNET_ALIASES = Object.freeze(["udp", "network", "art-net"]);
+const DEFAULT_PATTERN_SET = Object.freeze(["blackout", "red", "green", "blue", "white-low", "single-pixel-chase"]);
 
 export function clampInt(value, min, max, fallback) {
   const n = Number(value);
@@ -23,3 +24,11 @@ export function normalizeTransport(value, {
   return t;
 }
 
+export function normalizePattern(value, {
+  defaultValue = "single-pixel-chase",
+  allowed = DEFAULT_PATTERN_SET,
+  unknownValue = defaultValue
+} = {}) {
+  const pattern = String(value || defaultValue).trim().toLowerCase();
+  return allowed.includes(pattern) ? pattern : unknownValue;
+}

@@ -1,4 +1,4 @@
-import { normalizeTransport } from "../src/server/live_output_common.js";
+import { normalizePattern, normalizeTransport } from "../src/server/live_output_common.js";
 import { createLiveOutputMinimalFrame12X } from "../src/server/live_output_minimal_frame_12x.js";
 import { createLiveOutputMultiFrameStream12Y } from "../src/server/live_output_multiframe_stream_12y.js";
 import { createLiveOutputPhysicalArmGate } from "../src/server/live_output_physical_arm_gate.js";
@@ -15,6 +15,9 @@ assert(normalizeTransport("network") === "artnet", "network must map to artnet")
 assert(normalizeTransport("foo") === "foo", "unknown transport must pass through by default");
 assert(normalizeTransport("foo", { unknownToDefault: true }) === "serial", "unknown transport may fall back to default when requested");
 assert(normalizeTransport("udp", { aliases: ["udp"] }) === "artnet", "custom alias mapping must still resolve to artnet");
+assert(normalizePattern("red") === "red", "known pattern must pass through");
+assert(normalizePattern("rgb", { defaultValue: "rgb", allowed: ["rgb"], unknownValue: "rgb" }) === "rgb", "custom whitelist must preserve allowed patterns");
+assert(normalizePattern("orange", { defaultValue: "rgb", allowed: ["rgb"], unknownValue: "rgb" }) === "rgb", "unknown pattern must fall back to the requested default");
 
 const targetConfig = normalizeOutputTargetConfig({ transportKind: "network" });
 assert(targetConfig.transportKind === "artnet", "target config must resolve network to artnet");

@@ -1,4 +1,4 @@
-import { clampInt, clampNumber, normalizeTransport } from "./live_output_common.js";
+import { clampInt, clampNumber, normalizePattern, normalizeTransport } from "./live_output_common.js";
 
 export const LIVE_OUTPUT_TARGET_CONFIG_VERSION = "12S-output-target-config-verification";
 
@@ -21,12 +21,6 @@ function envValue(env, key, fallback) {
   return v === undefined || v === null || String(v).trim() === "" ? fallback : v;
 }
 
-function normalizePattern(value) {
-  const p = String(value || DEFAULTS.pattern).trim().toLowerCase();
-  if (["blackout", "red", "green", "blue", "white-low", "single-pixel-chase"].includes(p)) return p;
-  return DEFAULTS.pattern;
-}
-
 export function readOutputTargetDefaults(env = process.env) {
   return Object.freeze({
     transportKind: normalizeTransport(envValue(env, "LED_OUTPUT_TRANSPORT", DEFAULTS.transportKind), {
@@ -41,7 +35,7 @@ export function readOutputTargetDefaults(env = process.env) {
     pixels: clampInt(envValue(env, "LED_OUTPUT_TEST_PIXELS", DEFAULTS.pixels), 1, 150, DEFAULTS.pixels),
     frames: clampInt(envValue(env, "LED_OUTPUT_TEST_FRAMES", DEFAULTS.frames), 1, 8, DEFAULTS.frames),
     brightness: clampNumber(envValue(env, "LED_OUTPUT_TEST_BRIGHTNESS", DEFAULTS.brightness), 0, 0.08, DEFAULTS.brightness),
-    pattern: normalizePattern(envValue(env, "LED_OUTPUT_TEST_PATTERN", DEFAULTS.pattern)),
+    pattern: normalizePattern(envValue(env, "LED_OUTPUT_TEST_PATTERN", DEFAULTS.pattern), { defaultValue: DEFAULTS.pattern }),
     physicalWriteEnabled: String(envValue(env, "LED_PHYSICAL_OUTPUT_ENABLE", "0")).trim() === "1",
     serialProtocol: String(envValue(env, "LED_SERIAL_PROTOCOL", DEFAULTS.serialProtocol)).trim().toLowerCase()
   });
@@ -63,7 +57,7 @@ export function normalizeOutputTargetConfig(request = {}, env = process.env) {
     pixels: clampInt(request.pixels ?? request.pixelCount ?? defaults.pixels, 1, 150, defaults.pixels),
     frames: clampInt(request.frames ?? request.frameCount ?? defaults.frames, 1, 8, defaults.frames),
     brightness: clampNumber(request.brightness ?? defaults.brightness, 0, 0.08, defaults.brightness),
-    pattern: normalizePattern(request.pattern || request.testPattern || defaults.pattern),
+    pattern: normalizePattern(request.pattern || request.testPattern || defaults.pattern, { defaultValue: defaults.pattern }),
     dryRun: request.dryRun !== false,
     requested: Boolean(request.requested || request.start || request.commit),
     commit: Boolean(request.commit || request.writeNow),
