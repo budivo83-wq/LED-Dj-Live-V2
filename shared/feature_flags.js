@@ -55,8 +55,12 @@ export const NEXT_RUNTIME_FLAG_KEYS = Object.freeze([
   "useNewTelemetry"
 ]);
 
+export function cloneFeatureFlags(flags = FEATURE_FLAG_DEFAULTS) {
+  return { ...flags };
+}
+
 export function mergeFeatureFlags(partial = {}) {
-  const next = { ...FEATURE_FLAG_DEFAULTS };
+  const next = cloneFeatureFlags();
   for (const key of Object.keys(next)) {
     if (Object.prototype.hasOwnProperty.call(partial, key)) {
       next[key] = Boolean(partial[key]);
@@ -68,12 +72,12 @@ export function mergeFeatureFlags(partial = {}) {
 export function readFeatureFlags(storage = globalThis.localStorage) {
   try {
     const raw = storage?.getItem?.(FEATURE_FLAGS_KEY);
-    if (!raw) return { ...FEATURE_FLAG_DEFAULTS };
+    if (!raw) return cloneFeatureFlags();
     const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== "object") return { ...FEATURE_FLAG_DEFAULTS };
+    if (!parsed || typeof parsed !== "object") return cloneFeatureFlags();
     return mergeFeatureFlags(parsed);
   } catch {
-    return { ...FEATURE_FLAG_DEFAULTS };
+    return cloneFeatureFlags();
   }
 }
 

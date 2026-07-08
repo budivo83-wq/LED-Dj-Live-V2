@@ -79,6 +79,14 @@ if (legacyOnlyRuntime.getActive() !== "legacy") failures.push("next runtime must
 if (nextRuntime.getActive() !== "next") failures.push("next runtime must activate when a migration flag is enabled");
 if (legacyRuntime.getActive() !== "legacy") failures.push("default flags must keep the legacy runtime active");
 
+const copiedFlags = nextRuntime.getFlags();
+copiedFlags.useNewOutput = false;
+if (nextRuntime.getFlags().useNewOutput !== true) failures.push("getFlags must return an isolated copy");
+
+const statusFlags = nextRuntime.getStatus().flags;
+statusFlags.useNewOutput = false;
+if (nextRuntime.getStatus().flags.useNewOutput !== true) failures.push("getStatus must return an isolated flag snapshot");
+
 for (const check of sourceChecks) {
   const full = join(root, check.file);
   if (!existsSync(full)) {

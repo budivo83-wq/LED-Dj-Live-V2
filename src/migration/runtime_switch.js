@@ -1,4 +1,4 @@
-import { readFeatureFlags, shouldPreferNextRuntime } from "./feature_flags.js";
+import { cloneFeatureFlags, readFeatureFlags, shouldPreferNextRuntime } from "./feature_flags.js";
 
 export function createMigrationRuntime(options = {}) {
   const legacy = options.legacy || null;
@@ -26,7 +26,7 @@ export function createMigrationRuntime(options = {}) {
       return resolveActive();
     },
     getFlags() {
-      return { ...flags };
+      return cloneFeatureFlags(flags);
     },
     getActive() {
       return resolveActive();
@@ -47,7 +47,7 @@ export function createMigrationRuntime(options = {}) {
       const runtime = current();
       return {
         active: resolveActive(),
-        flags: { ...flags },
+        flags: cloneFeatureFlags(flags),
         status: runtime?.getStatus?.() || null
       };
     }
