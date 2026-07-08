@@ -1711,19 +1711,7 @@ function renderLiveTestRows(rows) {
   `).join('');
 }
 
-function renderOutputTruthPanel(diagnostics = null) {
-  const sourceDiagnostics = diagnostics || lastLiveTestSnapshot || {};
-  let view;
-  try {
-    view = buildGeneratorOutputTruthView(sourceDiagnostics);
-  } catch (error) {
-    if (outputTruthBadgeNode) {
-      outputTruthBadgeNode.textContent = 'PANEL ERROR';
-      outputTruthBadgeNode.className = 'warn';
-    }
-    if (outputTruthCardsNode) outputTruthCardsNode.textContent = String(error?.message || error || 'output-truth-error');
-    return null;
-  }
+function renderOutputTruthSections(view) {
   if (outputTruthBadgeNode) {
     outputTruthBadgeNode.textContent = view.headline || 'OUTPUT TRUTH';
     outputTruthBadgeNode.className = view.ok ? 'ok' : 'warn';
@@ -1748,6 +1736,22 @@ function renderOutputTruthPanel(diagnostics = null) {
   if (outputTruthHintsNode) {
     outputTruthHintsNode.innerHTML = view.hints.map((hint) => `<li class="${hint.level || 'warn'}">${hint.text}</li>`).join('');
   }
+}
+
+function renderOutputTruthPanel(diagnostics = null) {
+  const sourceDiagnostics = diagnostics || lastLiveTestSnapshot || {};
+  let view;
+  try {
+    view = buildGeneratorOutputTruthView(sourceDiagnostics);
+  } catch (error) {
+    if (outputTruthBadgeNode) {
+      outputTruthBadgeNode.textContent = 'PANEL ERROR';
+      outputTruthBadgeNode.className = 'warn';
+    }
+    if (outputTruthCardsNode) outputTruthCardsNode.textContent = String(error?.message || error || 'output-truth-error');
+    return null;
+  }
+  renderOutputTruthSections(view);
   return view;
 }
 
