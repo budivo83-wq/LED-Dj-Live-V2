@@ -1346,10 +1346,11 @@ function renderPresetBank() {
 function buildPresetBankOptionsHtml(bank) {
   const custom = bank.custom || [];
   const factory = bank.factory || [];
-  return [
-    custom.length ? `<optgroup label="Custom">${custom.map((preset) => `<option value="${preset.id}">${preset.name}</option>`).join('')}</optgroup>` : '',
-    `<optgroup label="Factory">${factory.map((preset) => `<option value="${preset.id}">${preset.name}</option>`).join('')}</optgroup>`
-  ].join('');
+  const customHtml = custom.length
+    ? '<optgroup label="Custom">' + custom.map((preset) => '<option value="' + preset.id + '">' + preset.name + '</option>').join('') + '</optgroup>'
+    : '';
+  const factoryHtml = '<optgroup label="Factory">' + factory.map((preset) => '<option value="' + preset.id + '">' + preset.name + '</option>').join('') + '</optgroup>';
+  return [customHtml, factoryHtml].join('');
 }
 
 function applyPreset(preset) {
@@ -1357,48 +1358,48 @@ function applyPreset(preset) {
   if (mode === 'live') setMode('preview');
   graph = normalizeGeneratorGraph(preset.graph || createDefaultGeneratorGraph());
   curves = normalizeGeneratorCurves(preset.curves || createDefaultGeneratorCurves());
-  patch = normalizeGeneratorPatch({ ...GENERATOR_DEFAULT_PATCH, ...(preset.patch || {}), name: preset.name || preset.patch?.name || 'Generator Patch', modules: graphToModuleFlags(graph), graph });
+  patch = normalizeGeneratorPatch({ ...GENERATOR_DEFAULT_PATCH, ...(preset.patch || {}), name: preset.name || preset.patch?.name || "Generator Patch", modules: graphToModuleFlags(graph), graph });
   updatePatchMacrosFromValues();
-  activePresetId = preset.id;
-  rememberActiveGeneratorPreset(activePresetId);
+  activeMusicModeId = saveGeneratorMusicMode(preset.patch?.musicMode || "manual", localStorage);
+  lastMusicModeMeta = { id: activeMusicModeId, enabled: musicModeRuntimeEnabled, phrasePct: 0, accent: 0 };
   resetCurveRuntime();
+  commitPresetState(preset.id, 'preset');
+  log(`Preset loaded: ${preset.name}`);
+}
+
+function saveCurrentPreset() {
+  const name = String(presetNameNode?.value || patch.name || "").trim() || `Generator ${new Date().toLocaleTimeString()}`;
+  patch = normalizeGeneratorPatch({ ...patch, name, macros: patchValuesToMacros(patch), modules: graphToModuleFlags(graph), graph });
+  const result = saveGeneratorPresetSnapshot(presetBank, { name, patch, graph, curves });
+  presetBank = result.bank;
+  commitPresetState(result.preset.id, 'preset');
+  log(`Preset uložen: ${result.preset.name}`);
+}
+
+function deleteSelectedPreset() {
+  const id = presetSelectNode?.value || "";
+  if (!id || id.startsWith('factory-')) {
+    log('Factory preset nejde smazat. Ulož si vlastní kopii a smaž až custom preset.');
+    return;
+  }
+  presetBank = deleteGeneratorPreset(presetBank, id);
+  commitPresetState(presetBank.factory?.[0]?.id || '', 'preset');
+  log('Custom preset smazán.');
+}
+
+function commitPresetState(nextPresetId, reason = "preset") {
+  activePresetId = nextPresetId || "";
+  rememberActiveGeneratorPreset(activePresetId);
   saveAll();
   renderModules();
   renderNodeFlow();
   renderMacros();
   renderControls();
-  activeMusicModeId = saveGeneratorMusicMode(preset.patch?.musicMode || 'manual', localStorage);
-  lastMusicModeMeta = { id: activeMusicModeId, enabled: musicModeRuntimeEnabled, phrasePct: 0, accent: 0 };
   renderStaticUi();
-  renderMusicModePanel('preset');
+  renderMusicModePanel(reason);
   renderPresetBank();
-  log(`Preset loaded: ${preset.name}`);
 }
 
-function saveCurrentPreset() {
-  const name = String(presetNameNode?.value || patch.name || '').trim() || `Generator ${new Date().toLocaleTimeString()}`;
-  patch = normalizeGeneratorPatch({ ...patch, name, macros: patchValuesToMacros(patch), modules: graphToModuleFlags(graph), graph });
-  const result = saveGeneratorPresetSnapshot(presetBank, { name, patch, graph, curves });
-  presetBank = result.bank;
-  activePresetId = result.preset.id;
-  rememberActiveGeneratorPreset(activePresetId);
-  renderPresetBank();
-  saveAll();
-  log(`Preset uloĹľen: ${result.preset.name}`);
-}
-
-function deleteSelectedPreset() {
-  const id = presetSelectNode?.value || '';
-  if (!id || id.startsWith('factory-')) {
-    log('Factory preset nejde smazat. UloĹľ si vlastnĂ­ kopii a smaĹľ aĹľ custom preset.');
-    return;
-  }
-  presetBank = deleteGeneratorPreset(presetBank, id);
-  activePresetId = presetBank.factory?.[0]?.id || '';
-  rememberActiveGeneratorPreset(activePresetId);
-  renderPresetBank();
-  log('Custom preset smazĂˇn.');
-}
 
 
 function renderFieldTestControls() {
