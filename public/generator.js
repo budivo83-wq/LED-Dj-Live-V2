@@ -1339,14 +1339,17 @@ function setLiveFps(value) {
 function renderPresetBank() {
   if (!presetSelectNode) return;
   presetBank = loadGeneratorPresetBank();
-  const custom = presetBank.custom || [];
-  const factory = presetBank.factory || [];
-  const optionHtml = [
+  presetSelectNode.innerHTML = buildPresetBankOptionsHtml(presetBank);
+  if (activePresetId && findGeneratorPreset(presetBank, activePresetId)) presetSelectNode.value = activePresetId;
+}
+
+function buildPresetBankOptionsHtml(bank) {
+  const custom = bank.custom || [];
+  const factory = bank.factory || [];
+  return [
     custom.length ? `<optgroup label="Custom">${custom.map((preset) => `<option value="${preset.id}">${preset.name}</option>`).join('')}</optgroup>` : '',
     `<optgroup label="Factory">${factory.map((preset) => `<option value="${preset.id}">${preset.name}</option>`).join('')}</optgroup>`
   ].join('');
-  presetSelectNode.innerHTML = optionHtml;
-  if (activePresetId && findGeneratorPreset(presetBank, activePresetId)) presetSelectNode.value = activePresetId;
 }
 
 function applyPreset(preset) {
