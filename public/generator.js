@@ -1833,18 +1833,24 @@ function renderStabilityAnalysis(analysis) {
   }
   if (stabilityVerdictNode) stabilityVerdictNode.textContent = analysis.verdict || '--';
   if (stabilityNextNode) stabilityNextNode.textContent = analysis.next || '--';
-  if (stabilityCardsNode) {
-    stabilityCardsNode.innerHTML = analysis.cards.map((card) => `
-      <article class="generator-stability-card ${card.ok ? 'ok' : 'warn'}">
-        <span>${card.label}</span>
-        <strong>${card.value}</strong>
-        <small>${card.detail}</small>
-      </article>
-    `).join('');
-  }
-  if (stabilityHintsNode) {
-    stabilityHintsNode.innerHTML = analysis.hints.map((hint) => `<li class="${hint.level || 'warn'}">${hint.text}</li>`).join('') || '<li class="ok">Žádná aktivní live varování.</li>';
-  }
+  renderStabilityCards(analysis.cards || []);
+  renderStabilityHints(analysis.hints || []);
+}
+
+function renderStabilityCards(cards) {
+  if (!stabilityCardsNode) return;
+  stabilityCardsNode.innerHTML = cards.map((card) => `
+    <article class="generator-stability-card ${card.ok ? 'ok' : 'warn'}">
+      <span>${card.label}</span>
+      <strong>${card.value}</strong>
+      <small>${card.detail}</small>
+    </article>
+  `).join('');
+}
+
+function renderStabilityHints(hints) {
+  if (!stabilityHintsNode) return;
+  stabilityHintsNode.innerHTML = hints.map((hint) => `<li class="${hint.level || 'warn'}">${hint.text}</li>`).join('') || '<li class="ok">Žádná aktivní live varování.</li>';
 }
 
 function renderStaticUiState() {
