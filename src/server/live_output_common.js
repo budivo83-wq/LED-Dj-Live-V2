@@ -76,3 +76,7 @@ export function normalizeLiveOutputRequest(request = {}, options = {}) {
     source: String(options.defaultSource || request.source || defaultSource)
   });
 }
+
+export function freezeUniqueList(values = [], limit = 16) {
+  return Object.freeze([...new Set(Array.isArray(values) ? values : [])].slice(0, limit));
+}

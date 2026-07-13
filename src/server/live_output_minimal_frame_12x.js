@@ -1,4 +1,4 @@
-import { clampInt, clampNumber, normalizePattern, normalizeTransport } from "./live_output_common.js";
+import { clampInt, clampNumber, freezeUniqueList, normalizePattern, normalizeTransport } from "./live_output_common.js";
 
 export const LIVE_OUTPUT_MINIMAL_FRAME_VERSION = "12X-minimal-live-frame-output-path";
 
@@ -86,8 +86,8 @@ function summarize({ request, targetConfig, physicalArm, outputSmokeTest }) {
     outputTouched: Boolean(outputSmokeTest?.outputTouched),
     serialTouched: Boolean(outputSmokeTest?.serialTouched),
     networkTouched: Boolean(outputSmokeTest?.networkTouched),
-    blocked: Object.freeze([...new Set(blocked)].slice(0, 16)),
-    warnings: Object.freeze([...new Set(warnings)].slice(0, 16)),
+    blocked: freezeUniqueList(blocked, 16),
+    warnings: freezeUniqueList(warnings, 16),
     nextStep: sent ? "minimal frame physically sent; verify ACK/history" : (request.physical ? "arm matching output and keep env gates enabled" : "dry minimal frame verified; arm before physical send")
   });
 }

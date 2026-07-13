@@ -1,7 +1,7 @@
 import dgram from "node:dgram";
 import { buildBlxV2FrameFullPacket, splitRgbToArtDmxPackets, summarizePacket } from "./live_output_packet_builder.js";
 import { buildRawSerialAaLen16RgbPacket, RAW_SERIAL_PACKET_LABEL } from "../output/raw_serial_contract_22cb.js";
-import { normalizeLiveOutputRequest } from "./live_output_common.js";
+import { freezeUniqueList, normalizeLiveOutputRequest } from "./live_output_common.js";
 
 export const LIVE_OUTPUT_DRIVER_BRIDGE_VERSION = "12Q-serial-artnet-output-driver-bridge";
 
@@ -38,6 +38,43 @@ function buildRgbFrames(test) {
     const bytes = [];
     for (let i = 0; i < test.pixels; i += 1) bytes.push(...rgbForPattern(test.pattern, i, frameIndex, test.brightness));
     return Uint8Array.from(bytes);
+  });
+}
+
+function buildPackets(test, rgbFrames) {
+  return test.transportKind === "serial"
+    ? rgbFrames.map((rgb, i) => test.serialProtocol === "blx-v2"
+      ? buildBlxV2FrameFullPacket({ frameId: test.frameId + i, seq: test.seq + i, segments: [{ segmentId: 0, pixels: rgb }] })
+      : ({
+          protocol: "aa_len_rgb",
+          type: "AA_LEN16_PIXELS_LE_RGB",
+          payloadBytes: rgb.length,
+          packetBytes: 3 + rgb.length,
+          pixelCount: Math.floor(rgb.length / 3),
+          packet: buildRawSerialAaLen16RgbPacket({ rgb, pixels: Math.floor(rgb.length / 3), brightness: 255 })
+        }))
+    : rgbFrames.flatMap((rgb, i) => splitRgbToArtDmxPackets({ rgb, startUniverse: test.universe, sequence: (test.seq + i) & 0xff }));
+}
+
+function preparePacketPlan(test) {
+  const rgbFrames = buildRgbFrames(test);
+  const packets = buildPackets(test, rgbFrames);
+  const packetBuffers = packets.map((packet) => packet.packet);
+  const packetBytes = packets.reduce((sum, packet) => sum + packet.packet.length, 0);
+  return Object.freeze({
+    rgbFrames: Object.freeze(rgbFrames),
+    packets: Object.freeze(packets),
+    packetBuffers: Object.freeze(packetBuffers),
+    packetBytes
+  });
+}
+
+function attachPacketPlan(target, packetPlan) {
+  Object.defineProperty(target, "packetPlan", {
+    value: packetPlan,
+    enumerable: false,
+    configurable: false,
+    writable: false
   });
 }
 
@@ -84,20 +121,9 @@ export function evaluateLiveOutputDriverBridge({
   if (test.transportKind === "serial" && !test.serialPath) blocked.push("SERIAL_PATH_MISSING");
   if (test.transportKind === "artnet" && !test.host) blocked.push("ARTNET_HOST_MISSING");
 
-  const rgbFrames = buildRgbFrames(test);
-  const packets = test.transportKind === "serial"
-    ? rgbFrames.map((rgb, i) => test.serialProtocol === "blx-v2"
-      ? buildBlxV2FrameFullPacket({ frameId: test.frameId + i, seq: test.seq + i, segments: [{ segmentId: 0, pixels: rgb }] })
-      : ({
-          protocol: "aa_len_rgb",
-          type: "AA_LEN16_PIXELS_LE_RGB",
-          payloadBytes: rgb.length,
-          packetBytes: 3 + rgb.length,
-          pixelCount: Math.floor(rgb.length / 3),
-          packet: buildRawSerialAaLen16RgbPacket({ rgb, pixels: Math.floor(rgb.length / 3), brightness: 255 })
-        }))
-    : rgbFrames.flatMap((rgb, i) => splitRgbToArtDmxPackets({ rgb, startUniverse: test.universe, sequence: (test.seq + i) & 0xff }));
-  const packetBytes = packets.reduce((sum, packet) => sum + packet.packet.length, 0);
+  const packetPlan = preparePacketPlan(test);
+  const packets = packetPlan.packets;
+  const packetBytes = packetPlan.packetBytes;
 
   const writerRequest = {
     transportKind: test.transportKind,
@@ -126,7 +152,7 @@ export function evaluateLiveOutputDriverBridge({
   if (test.dryRun) warnings.push("OUTPUT_DRIVER_BRIDGE_DRY_RUN_TRUE_NO_PHYSICAL_SEND");
 
   const canSend = blocked.length === 0 && test.dryRun === false;
-  return Object.freeze({
+  const result = {
     version: LIVE_OUTPUT_DRIVER_BRIDGE_VERSION,
     ok: blocked.length === 0,
     decision: canSend ? "OUTPUT_DRIVER_BRIDGE_READY_TO_SEND" : (blocked.length === 0 ? "OUTPUT_DRIVER_BRIDGE_READY_DRY_RUN" : "OUTPUT_DRIVER_BRIDGE_BLOCKED"),
@@ -136,15 +162,17 @@ export function evaluateLiveOutputDriverBridge({
     packetCount: packets.length,
     packetBytes,
     packets: Object.freeze(packets.slice(0, 4).map(summarizePacket)),
-    blocked: Object.freeze(blocked),
-    warnings: Object.freeze(warnings),
+    blocked: freezeUniqueList(blocked),
+    warnings: freezeUniqueList(warnings),
     physicalWriteAllowed: canSend,
     outputTouched: false,
     serialTouched: false,
     networkTouched: false,
     dryRunOnly: test.dryRun || !canSend,
     safety: `STEP22CC direct driver serial default is ${RAW_SERIAL_PACKET_LABEL}. Physical send needs LED_PHYSICAL_OUTPUT_ENABLE=1, exact confirmation, dryRun:false, and 12U arm; LED_SERIAL_LIVE_WRITER_ENABLE is no longer required for this smoke path.`
-  });
+  };
+  attachPacketPlan(result, packetPlan);
+  return Object.freeze(result);
 }
 
 export async function executeLiveOutputDriverBridge(options = {}) {
@@ -152,18 +180,15 @@ export async function executeLiveOutputDriverBridge(options = {}) {
   if (evaluation.decision !== "OUTPUT_DRIVER_BRIDGE_READY_TO_SEND") return evaluation;
 
   const test = evaluation.request;
-  const rgbFrames = buildRgbFrames(test);
-  const packets = test.transportKind === "serial"
-    ? rgbFrames.map((rgb, i) => test.serialProtocol === "blx-v2"
-      ? buildBlxV2FrameFullPacket({ frameId: test.frameId + i, seq: test.seq + i, segments: [{ segmentId: 0, pixels: rgb }] }).packet
-      : buildRawSerialAaLen16RgbPacket({ rgb, pixels: Math.floor(rgb.length / 3), brightness: 255 }))
-    : rgbFrames.flatMap((rgb, i) => splitRgbToArtDmxPackets({ rgb, startUniverse: test.universe, sequence: (test.seq + i) & 0xff }).map((p) => p.packet));
+  const packets = evaluation.packetPlan?.packetBuffers || [];
+  const packetBytes = evaluation.packetPlan?.packetBytes ?? evaluation.packetBytes;
 
   if (test.transportKind === "serial") await writeSerialPackets({ serialPath: test.serialPath, baudRate: test.baudRate, packets });
   if (test.transportKind === "artnet") await sendUdpPackets({ host: test.host, port: test.artnetPort, packets });
 
   return Object.freeze({
     ...evaluation,
+    packetBytes,
     decision: "OUTPUT_DRIVER_BRIDGE_SENT",
     status: "SENT",
     serialTouched: test.transportKind === "serial",

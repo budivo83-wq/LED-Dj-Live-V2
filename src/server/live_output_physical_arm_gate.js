@@ -1,4 +1,4 @@
-import { normalizeTransport, clampInt } from "./live_output_common.js";
+import { clampInt, freezeUniqueList, normalizeTransport } from "./live_output_common.js";
 
 export const LIVE_OUTPUT_PHYSICAL_ARM_GATE_VERSION = "12U-output-physical-arm-confirmation-gate";
 
@@ -57,7 +57,7 @@ export function createLiveOutputPhysicalArmGate({ ttlMs = DEFAULT_TTL_MS, physic
       armed = false;
       transportKind = transport;
       reason = blocked[0];
-      return Object.freeze({ ...snapshot(), ok: false, status: "BLOCKED", blocked: Object.freeze(blocked) });
+      return Object.freeze({ ...snapshot(), ok: false, status: "BLOCKED", blocked: freezeUniqueList(blocked) });
     }
     const at = nowMs();
     armed = true;
@@ -77,7 +77,7 @@ export function createLiveOutputPhysicalArmGate({ ttlMs = DEFAULT_TTL_MS, physic
     const state = snapshot();
     const requestedTransport = normalizeTransport(request.transportKind || request.transport || request.outputMode);
     const blocked = [];
-    if (request.dryRun !== false) return Object.freeze({ ...state, sendAllowed: true, decision: "PHYSICAL_ARM_NOT_REQUIRED_FOR_DRY_RUN", requestedTransport, blocked: Object.freeze([]) });
+    if (request.dryRun !== false) return Object.freeze({ ...state, sendAllowed: true, decision: "PHYSICAL_ARM_NOT_REQUIRED_FOR_DRY_RUN", requestedTransport, blocked: freezeUniqueList([]) });
     if (!state.armed) blocked.push("PHYSICAL_OUTPUT_NOT_ARMED_12U");
     if (!state.physicalWriteEnabled) blocked.push("PHYSICAL_OUTPUT_ENV_DISABLED_12U");
     if (state.armed && state.transportKind !== requestedTransport) blocked.push("PHYSICAL_OUTPUT_ARM_TRANSPORT_MISMATCH_12U");
@@ -86,7 +86,7 @@ export function createLiveOutputPhysicalArmGate({ ttlMs = DEFAULT_TTL_MS, physic
       requestedTransport,
       sendAllowed: blocked.length === 0,
       decision: blocked.length ? "PHYSICAL_OUTPUT_SEND_BLOCKED_BY_12U" : "PHYSICAL_OUTPUT_SEND_ALLOWED_BY_12U",
-      blocked: Object.freeze(blocked)
+      blocked: freezeUniqueList(blocked)
     });
   }
   return Object.freeze({

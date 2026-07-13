@@ -1,4 +1,4 @@
-import { normalizeLiveOutputRequest } from "./live_output_common.js";
+import { freezeUniqueList, normalizeLiveOutputRequest } from "./live_output_common.js";
 
 export const LIVE_OUTPUT_TEST_RUN_FLOW_VERSION = "12V-output-test-run-flow";
 
@@ -42,8 +42,8 @@ function summarizeFlow({ request, targetConfig, physicalArm, outputSmokeTest }) 
     outputTouched: Boolean(outputSmokeTest?.outputTouched),
     serialTouched: Boolean(outputSmokeTest?.serialTouched),
     networkTouched: Boolean(outputSmokeTest?.networkTouched),
-    blocked: Object.freeze([...new Set(blocked)].slice(0, 16)),
-    warnings: Object.freeze([...new Set(warnings)].slice(0, 16)),
+    blocked: freezeUniqueList(blocked, 16),
+    warnings: freezeUniqueList(warnings, 16),
     nextStep: sent ? "physical send confirmed in send-history" : (request.physical && physicalArm?.sendAllowed !== true ? "arm matching output first, then run physical test" : (blocked.length ? "fix blockers before sending" : "dry-run verified; use 12U arm before physical send"))
   });
 }

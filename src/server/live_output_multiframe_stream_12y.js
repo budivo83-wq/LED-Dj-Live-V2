@@ -1,4 +1,4 @@
-import { clampInt, clampNumber, normalizePattern, normalizeTransport } from "./live_output_common.js";
+import { clampInt, clampNumber, freezeUniqueList, normalizePattern, normalizeTransport } from "./live_output_common.js";
 
 export const LIVE_OUTPUT_MULTIFRAME_STREAM_VERSION = "12Y-multiframe-live-output-dry-run-stream";
 
@@ -77,7 +77,7 @@ function summarize({ request, results, startedAtMs, finishedAtMs }) {
   const sentFrames = results.filter((r) => r.status === "SENT" || r.decision === "MINIMAL_FRAME_OUTPUT_SENT_12X").length;
   const failedFrames = results.filter((r) => r.ok !== true).length;
   const timing = computeTiming(results.map((r) => ({ atMs: Number(r.atMs || startedAtMs) })), request.fps);
-  const uniqueBlocked = [...new Set(blocked)].slice(0, 16);
+  const uniqueBlocked = freezeUniqueList(blocked, 16);
   const dryReady = !request.physical && failedFrames === 0;
   const sent = request.physical && sentFrames > 0 && uniqueBlocked.length === 0;
   return Object.freeze({
@@ -113,7 +113,7 @@ function summarize({ request, results, startedAtMs, finishedAtMs }) {
       blocked: Array.isArray(r.blocked) ? r.blocked.slice(0, 4) : []
     }))),
     blocked: Object.freeze(uniqueBlocked),
-    warnings: Object.freeze([...new Set(warnings)].slice(0, 16)),
+    warnings: freezeUniqueList(warnings, 16),
     nextStep: sent ? "multi-frame physical stream attempted; verify ACK/history before increasing frame count" : (request.physical ? "arm matching output and keep env gates enabled" : "dry multi-frame stream verified; keep using 12Y before full live executor")
   });
 }

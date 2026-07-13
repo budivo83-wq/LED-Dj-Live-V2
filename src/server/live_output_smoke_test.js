@@ -1,4 +1,4 @@
-import { normalizeLiveOutputRequest } from "./live_output_common.js";
+import { freezeUniqueList, normalizeLiveOutputRequest } from "./live_output_common.js";
 
 export const LIVE_OUTPUT_SMOKE_TEST_VERSION = "12R-serial-artnet-output-smoke-test-layer";
 
@@ -83,8 +83,8 @@ export function evaluateLiveOutputSmokeTest({
     packetCount: Number(driverBridge?.packetCount || 0),
     packetBytes: Number(driverBridge?.packetBytes || 0),
     packets: Object.freeze(Array.isArray(driverBridge?.packets) ? driverBridge.packets : []),
-    blocked: Object.freeze([...new Set(blocked)]),
-    warnings: Object.freeze([...new Set(warnings)]),
+    blocked: freezeUniqueList(blocked),
+    warnings: freezeUniqueList(warnings),
     physicalWriteAllowed: canSend,
     outputTouched: false,
     serialTouched: false,
