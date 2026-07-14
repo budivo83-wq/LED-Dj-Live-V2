@@ -11,6 +11,7 @@ const GROUPS = {
     'test:artnet-settings-boundary',
     'test:artnet-server-boundary',
     'test:artnet-live-source-policy',
+    'test:serial-zero-copy-write',
     'test:ui-staged-boundary',
     'test:migration-flags',
   ],
