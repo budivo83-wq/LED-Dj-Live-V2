@@ -284,7 +284,11 @@ export function createSerialController({ logger = console } = {}) {
       writeStats.windowThrottled += 1;
       writeStats.pending = true;
       refreshThroughputWindow();
-      if (!writeBusy) schedulePacedPump(Math.max(1, nextAcceptAt - now));
+      if (!writeBusy) {
+        const delay = Math.max(0, Math.round(nextAcceptAt - now));
+        if (delay === 0) pumpLatestWrite();
+        else schedulePacedPump(delay);
+      }
       return true;
     }
 
@@ -301,7 +305,7 @@ export function createSerialController({ logger = console } = {}) {
     writeStats.pending = true;
     nextAcceptAt = Math.max(nextAcceptAt, now + Math.max(1, wireBudgetMs));
     refreshThroughputWindow();
-    schedulePacedPump(0);
+    pumpLatestWrite();
     return true;
   }
 
@@ -462,8 +466,12 @@ export function createSerialController({ logger = console } = {}) {
   }
 
   function schedulePacedPump(delayMs = 0) {
-    if (scheduledPumpTimer) return;
     const delay = Math.max(0, Math.round(Number(delayMs) || 0));
+    if (delay === 0 && !writeBusy) {
+      pumpLatestWrite();
+      return;
+    }
+    if (scheduledPumpTimer) return;
     writeStats.scheduledPumps += 1;
     scheduledPumpTimer = setTimeout(() => {
       scheduledPumpTimer = null;
