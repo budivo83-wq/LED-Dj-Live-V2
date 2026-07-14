@@ -84,7 +84,7 @@ async function writeSerialPackets({ serialPath, baudRate, packets }) {
   await new Promise((resolve, reject) => port.open((err) => err ? reject(err) : resolve()));
   try {
     for (const packet of packets) {
-      await new Promise((resolve, reject) => port.write(Buffer.from(packet), (err) => err ? reject(err) : resolve()));
+      await new Promise((resolve, reject) => port.write(packet, (err) => err ? reject(err) : resolve()));
       await new Promise((resolve, reject) => port.drain((err) => err ? reject(err) : resolve()));
     }
   } finally {
@@ -96,7 +96,7 @@ async function sendUdpPackets({ host, port, packets }) {
   const socket = dgram.createSocket("udp4");
   try {
     for (const packet of packets) {
-      await new Promise((resolve, reject) => socket.send(Buffer.from(packet), port, host, (err) => err ? reject(err) : resolve()));
+      await new Promise((resolve, reject) => socket.send(packet, port, host, (err) => err ? reject(err) : resolve()));
     }
   } finally {
     socket.close();

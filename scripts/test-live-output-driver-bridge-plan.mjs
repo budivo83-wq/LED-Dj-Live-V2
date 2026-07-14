@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { evaluateLiveOutputDriverBridge } from "../src/server/live_output_driver_bridge.js";
 
 function assert(condition, message) {
@@ -33,5 +35,10 @@ assert(
   evaluation.packetPlan.packetBuffers.every((packet) => packet instanceof Uint8Array || Buffer.isBuffer(packet)),
   "packetBuffers must contain binary packet payloads"
 );
+
+const source = readFileSync(new URL("../src/server/live_output_driver_bridge.js", import.meta.url), "utf8");
+assert(!source.includes("Buffer.from(packet)"), "driver bridge send path must not copy packets with Buffer.from(packet)");
+assert(source.includes("port.write(packet"), "serial send path must write packets directly");
+assert(source.includes("socket.send(packet"), "udp send path must send packets directly");
 
 console.log("Live output driver bridge packet plan test passed.");
