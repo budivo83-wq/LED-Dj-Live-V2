@@ -742,7 +742,7 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
         const skipMonitorBlit = headless
           || (liveOutputClockActive && mirrorActual > 0 && mirrorActual < 55)
           || !shellMonitorDue
-          || previewBudgetPressured;
+          || (previewBudgetPressured && previewMode !== "pixel");
         if (!skipMonitorBlit) {
           drawCenterPreviewCpu(frame);
           if (shellLiveMonitorOnly) lastShellMonitorBlitAt = now;
