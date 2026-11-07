@@ -154,6 +154,8 @@ export function createRenderPipeline(deps) {
   // cache, and a short TTL keeps manual console edits recoverable.
   let previewSettingsCacheAt = 0;
   let previewSettingsCache = null;
+  let networkOutputRouteCacheAt = 0;
+  let networkOutputRouteCache = null;
   let lastSerialConsumerDiagAt = 0;
   let lastOutputGateDiagAt = 0;
   let cachedOutputGateDetail = null;
@@ -169,6 +171,8 @@ export function createRenderPipeline(deps) {
         || key.includes("Preview") || key.includes("preview") || key.includes("Monitor") || key.includes("monitor")) {
         previewSettingsCacheAt = 0;
         previewSettingsCache = null;
+        networkOutputRouteCacheAt = 0;
+        networkOutputRouteCache = null;
       }
     });
   } catch {}
@@ -221,20 +225,27 @@ export function createRenderPipeline(deps) {
   }
 
   function isNetworkOutputClockRoute() {
+    const now = performance.now();
+    if (networkOutputRouteCache != null && now - networkOutputRouteCacheAt < 250) return networkOutputRouteCache;
+    let result = true;
     try {
       const st = typeof getState === "function" ? getState() : null;
       const mode = String(st?.outputMode || st?.runtimeOutputMode || st?.settings?.outputMode || "").toLowerCase();
-      if (["artnet", "sacn", "wifi", "network", "espnow"].includes(mode)) return true;
+      if (["artnet", "sacn", "wifi", "network", "espnow"].includes(mode)) result = true;
+      else if (mode) result = false;
     } catch {}
-    try {
+    if (result) try {
       // ArtNet master mirror is the current Performance -> server -> UDP route.
       // STEP37AV: use the cached runtime flag instead of a localStorage read in
       // the hot scheduler path. The cache is invalidated by storage events and
       // refreshed every ~2 seconds as a safety net.
-      return readPreviewSettingsCache().artnetMasterMirrorEnabled !== false;
+      result = readPreviewSettingsCache().artnetMasterMirrorEnabled !== false;
     } catch {
-      return true;
+      result = true;
     }
+    networkOutputRouteCacheAt = now;
+    networkOutputRouteCache = result;
+    return result;
   }
 
   function workerPreferred() {
