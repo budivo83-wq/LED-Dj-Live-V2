@@ -46,6 +46,9 @@ export function createLayerRuntime(deps) {
     table: new Uint8ClampedArray(256)
   };
   let frameOutputCorrectionTable = null;
+  let frameRenderTime = null;
+  let frameWidth = 0;
+  let frameHeight = 0;
   // STEP22OC: hot render path cache. The old renderer recalculated normalized
   // params, layer time and allocated a coords object for every pixel/layer.
   // At 8×300×2 layers×60 FPS that is thousands of avoidable allocations per
@@ -54,7 +57,7 @@ export function createLayerRuntime(deps) {
   const renderHotCache = new WeakMap();
 
   function getLayerHotState(layerState) {
-    const renderT = tRef();
+    const renderT = frameRenderTime == null ? tRef() : frameRenderTime;
     const params = layerState?.params;
     const previous = renderHotCache.get(layerState);
     if (previous && previous.t === renderT && previous.params === params) return previous;
@@ -69,7 +72,7 @@ export function createLayerRuntime(deps) {
   }
 
   function layerCoordX(layerState, x) {
-    const W = WRef();
+    const W = frameWidth || WRef();
     let nx = W <= 1 ? 0 : x / (W - 1);
     if (layerState.mirrorX) nx = 0.5 + Math.abs(nx - 0.5);
     if (layerState.reverse) nx = 1 - nx;
@@ -77,7 +80,7 @@ export function createLayerRuntime(deps) {
   }
 
   function layerCoordY(layerState, y) {
-    const H = HRef();
+    const H = frameHeight || HRef();
     let ny = H <= 1 ? 0 : y / (H - 1);
     if (layerState.mirrorY) ny = 0.5 + Math.abs(ny - 0.5);
     if (layerState.reverse) ny = 1 - ny;
@@ -85,7 +88,8 @@ export function createLayerRuntime(deps) {
   }
 
   function layerTime(layerState) {
-    return layerState.beatSync ? Math.floor(tRef()) : tRef();
+    const time = frameRenderTime == null ? tRef() : frameRenderTime;
+    return layerState.beatSync ? Math.floor(time) : time;
   }
 
   function getLayerVisibility(layerState) {
@@ -131,6 +135,9 @@ export function createLayerRuntime(deps) {
   }
 
   function beginFrame() {
+    frameRenderTime = tRef();
+    frameWidth = WRef();
+    frameHeight = HRef();
     frameOutputCorrectionTable = getOutputCorrectionTable();
   }
 
