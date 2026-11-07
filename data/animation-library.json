@@ -1,0 +1,313 @@
+{
+  "version": 2,
+  "schema": "animation-library-v2",
+  "updatedAt": "2026-07-06T00:00:00.000Z",
+  "items": [
+    {
+      "id": "builtin:shader_aurora_field",
+      "name": "Aurora Cathedral",
+      "description": "Wide aurora curtains with a slow architectural drift.",
+      "file": "shader_aurora_field.js",
+      "source": "l1_anims/shader_aurora_field.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 0,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_fractal_tunnel",
+      "name": "Fractal Monolith",
+      "description": "Long tunnel folds and deep perspective rings.",
+      "file": "shader_fractal_tunnel.js",
+      "source": "l1_anims/shader_fractal_tunnel.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 1,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_laser_cells",
+      "name": "Laser Cells",
+      "description": "Grid pulses with sharp luminous lattice cells.",
+      "file": "shader_laser_cells.js",
+      "source": "l1_anims/shader_laser_cells.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 2,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_liquid_chrome",
+      "name": "Liquid Chrome",
+      "description": "Reflective liquid flow with high-contrast sheen.",
+      "file": "shader_liquid_chrome.js",
+      "source": "l1_anims/shader_liquid_chrome.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 3,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_nebula",
+      "name": "Nebula Vault",
+      "description": "Dense cloud bloom with floating stellar grain.",
+      "file": "shader_nebula.js",
+      "source": "l1_anims/shader_nebula.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 4,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_moire_rings",
+      "name": "Moire Rings",
+      "description": "Large scale interference rings with slow phase drift.",
+      "file": "shader_moire_rings.js",
+      "source": "l1_anims/shader_moire_rings.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 5,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_voxel_corridor",
+      "name": "Voxel Horizon",
+      "description": "Perspective corridor built from luminous voxel rails.",
+      "file": "shader_voxel_corridor.js",
+      "source": "l1_anims/shader_voxel_corridor.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 6,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_ion_bloom",
+      "name": "Ion Bloom",
+      "description": "Radial plasma bloom with electric nodes.",
+      "file": "shader_ion_bloom.js",
+      "source": "l1_anims/shader_ion_bloom.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 7,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_crystal_lattice",
+      "name": "Crystal Lattice",
+      "description": "Facet network with luminous edges and crystalline shimmer.",
+      "file": "shader_crystal_lattice.js",
+      "source": "l1_anims/shader_crystal_lattice.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 8,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_smoke_vortex",
+      "name": "Smoke Crown",
+      "description": "Volumetric smoke vortex with a bright central eye.",
+      "file": "shader_smoke_vortex.js",
+      "source": "l1_anims/shader_smoke_vortex.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 9,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_circuit_pulse",
+      "name": "Circuit Pulse",
+      "description": "Large electronic grid with rhythmic pulses.",
+      "file": "shader_circuit_pulse.js",
+      "source": "l1_anims/shader_circuit_pulse.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 10,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_rave_slicer",
+      "name": "Rave Slicer",
+      "description": "Angular cut planes and strobing diagonal slices.",
+      "file": "shader_rave_slicer.js",
+      "source": "l1_anims/shader_rave_slicer.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 11,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_magnetic_field",
+      "name": "Magnetic Field",
+      "description": "Dual-field swirl lines with a heavy field curl.",
+      "file": "shader_magnetic_field.js",
+      "source": "l1_anims/shader_magnetic_field.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 12,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_glitch_weave",
+      "name": "Glitch Weave",
+      "description": "Scanline weave with controlled digital tearing.",
+      "file": "shader_glitch_weave.js",
+      "source": "l1_anims/shader_glitch_weave.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 13,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_solar_fluid",
+      "name": "Solar Furnace",
+      "description": "Solar fluid flare with a burning core and molten flow.",
+      "file": "shader_solar_fluid.js",
+      "source": "l1_anims/shader_solar_fluid.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 14,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_phase_ribbons",
+      "name": "Phase Ribbons",
+      "description": "Stacked ribbons that bend and phase across the frame.",
+      "file": "shader_phase_ribbons.js",
+      "source": "l1_anims/shader_phase_ribbons.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 15,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_cosmic_web",
+      "name": "Cosmic Web",
+      "description": "Star-linked web with drifting nodes and connective filaments.",
+      "file": "shader_cosmic_web.js",
+      "source": "l1_anims/shader_cosmic_web.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 16,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_bass_pressure",
+      "name": "Bass Pressure",
+      "description": "Low-end impact field with a heavy circular push.",
+      "file": "shader_bass_pressure.js",
+      "source": "l1_anims/shader_bass_pressure.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 17,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_kick_vortex",
+      "name": "Kick Vortex",
+      "description": "Spinning impact rings with punchy radial motion.",
+      "file": "shader_kick_vortex.js",
+      "source": "l1_anims/shader_kick_vortex.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 18,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_spectrum_tunnel",
+      "name": "Spectrum Tunnel",
+      "description": "Broadband tunnel with saturated color bands and depth.",
+      "file": "shader_spectrum_tunnel.js",
+      "source": "l1_anims/shader_spectrum_tunnel.js",
+      "kind": "module",
+      "origin": "builtin",
+      "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "l1", "l2"],
+      "order": 19,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_strobe_prism",
+      "name": "Strobe Prism",
+      "description": "Angular prism strobe with beat gates.",
+      "file": "shader_strobe_prism.js",
+      "source": "l1_anims/shader_strobe_prism.js",
+      "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"],
+      "tags": ["shader", "gpu", "beat", "l1", "l2"], "order": 20,
+      "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_neon_orbit", "name": "Neon Orbit", "description": "Glowing orbital laser rings.",
+      "file": "shader_neon_orbit.js", "source": "l1_anims/shader_neon_orbit.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 21, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_fractal_bloom", "name": "Fractal Bloom", "description": "Recursive fractal flower bloom.",
+      "file": "shader_fractal_bloom.js", "source": "l1_anims/shader_fractal_bloom.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 22, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_rhythm_matrix", "name": "Rhythm Matrix", "description": "Deterministic beat-synced light cells.",
+      "file": "shader_rhythm_matrix.js", "source": "l1_anims/shader_rhythm_matrix.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "beat"], "order": 23, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_chroma_vortex", "name": "Chroma Vortex", "description": "Chromatic spiral vortex tunnel.",
+      "file": "shader_chroma_vortex.js", "source": "l1_anims/shader_chroma_vortex.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 24, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_pulse_rings", "name": "Pulse Rings", "description": "Expanding concentric bass pulses.",
+      "file": "shader_pulse_rings.js", "source": "l1_anims/shader_pulse_rings.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "beat"], "order": 25, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_digital_rain", "name": "Digital Rain", "description": "High-energy procedural data rain.",
+      "file": "shader_digital_rain.js", "source": "l1_anims/shader_digital_rain.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 26, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_helix_drive", "name": "Helix Drive", "description": "Rotating double-helix energy drive.",
+      "file": "shader_helix_drive.js", "source": "l1_anims/shader_helix_drive.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 27, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_sonic_spikes", "name": "Sonic Spikes", "description": "Radial audio-reactive spike fan.",
+      "file": "shader_sonic_spikes.js", "source": "l1_anims/shader_sonic_spikes.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "beat"], "order": 28, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_hologram_grid", "name": "Hologram Grid", "description": "Scanning holographic wireframe grid.",
+      "file": "shader_hologram_grid.js", "source": "l1_anims/shader_hologram_grid.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 29, "gallery": { "thumbnail": "runtime" }
+    }
+  ]
+}

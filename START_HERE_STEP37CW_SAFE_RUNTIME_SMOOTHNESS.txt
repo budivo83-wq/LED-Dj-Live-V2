@@ -1,0 +1,26 @@
+STEP37CW_SAFE_RUNTIME_SMOOTHNESS
+
+Navazuje na STEP37CV, ne na rozbitý STEP37CU.
+
+Změny:
+1) Server WebSocket patch merge je odlehčený:
+   - při state patchi se nekopíruje celý runtime state před každou změnou,
+   - kopírují se jen dotčené větve,
+   - finální sanitizeState zůstává zachovaný, takže durable state zůstává bezpečně plain JSON/structured clone.
+
+2) Single-writer deep report je víc uspán mimo Debug:
+   - snapshot/poll běží přes runtime_loop_registry_37CE, pokud je dostupný,
+   - mimo Debug a mimo live output se diagnostika probouzí výrazně méně často,
+   - při live outputu je pořád dostupná, ale s vyšším rozestupem, aby nebrala čas output/preview cestě.
+
+3) Zachováno:
+   - loading animací a modulů z CV,
+   - ArtNet settings/server boundary,
+   - shell runner output contract,
+   - globální output slidery z CT/CV.
+
+Ověřeno:
+- npm run check:js
+- npm run test:artnet-server-boundary
+- npm run test:artnet-settings-boundary
+- npm run test:shell-runner-output-contract

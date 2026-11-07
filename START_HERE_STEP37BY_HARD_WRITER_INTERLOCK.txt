@@ -1,0 +1,22 @@
+STEP37BY_HARD_WRITER_INTERLOCK
+
+Navazuje na STEP37BX single-writer deep report.
+
+Co je nové:
+- public/runtime/output_writer_interlock_37by.js
+  - aktivně obaluje output_route_registry_37bb
+  - low-trust writery (preview/debug/test/fallback/probe/gallery) nepustí do fyzického outputu, pokud už běží důvěryhodný writer
+  - poskytuje snapshot window.__budilightOutputWriterInterlock37BY.snapshot()
+- public/runtime/artnet_master_framebus_mirror_22ej.js
+  - tvrdě potlačuje preview/startup fallback/visible-chase packety, pokud je aktivní master output
+  - fallback už nemá šanci běžet souběžně s Performance master frame path
+- public/index.html
+  - přidán interlock hned po 37BX reportu a před serial/artnet mirror runtime
+
+Diagnostika v konzoli:
+window.__budilightOutputWriterInterlock37BY.snapshot()
+window.__budilightSingleWriterDeepReport37BX.snapshot()
+window.__budilightOutputRouteRegistry37BB.snapshot()
+
+Cíl:
+Když se objeví starý fallback/preview/test writer, raději se zahodí jeho frame, než aby fyzický LED výstup dostal druhý zdroj a začal blikat/trhat se.

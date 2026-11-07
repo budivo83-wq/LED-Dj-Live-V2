@@ -1,0 +1,32 @@
+STEP37DH_REFRESH_THUMB_SEQ_DIET
+
+Cíl:
+- Pokračování performance runtime diet passu bez zásahu do ArtNet/output hotpath.
+- Omezit kosmetické UI/debug/thumbnail práce při běžícím live outputu.
+- Zmenšit step-lag riziko u quick step sequenceru.
+
+Upraveno:
+1) public/runtime/quick_step_automator.js
+   - Heavy row queue nyní coalescuje stejné rowKey akce v jednom okně.
+   - Param random řádky jsou nově deferované stejně jako anim/color.
+   - Opraveno rušení deferred heavy timeru přes runtime loop registry clear, ne přes raw clearTimeout.
+   - Profiler verze: STEP37DH_STEPSEQ_HEAVY_QUEUE_DIET.
+
+2) public/runtime/refresh_loops.js
+   - Operator UI/debug refresh scheduler převeden z přímého setInterval na runtime_loop_registry_37ce adaptiveInterval, pokud je registry dostupné.
+   - Při live outputu se kosmetické UI/debug tickování automaticky zpomalí.
+   - Debug tab click timeout jde přes registry wrapper.
+   - Scheduler diagnostic version: 37DH_ADAPTIVE_OPERATOR_UI_REFRESH.
+
+3) public/runtime/thumb_queue.js
+   - Thumbnail queue používá registry timeouty pro session write flush a pump gap/fallback.
+   - Při active live/performance outputu se thumbnail pump automaticky odtlačí větším minimálním gapem.
+   - Diagnostika: window.__ledThumbQueueStats.liveOutputRelief / liveMinGapMs.
+   - Stats version: 37DH_THUMB_QUEUE_LIVE_RELIEF.
+
+Co zbyva:
+1) Debug obrazovka: přidat čitelný panel aktivních runtime loop registry položek.
+2) Show OS: pokračovat v izolaci/lenivém renderování velkých innerHTML částí.
+3) Projít zbylé přímé setInterval v settings_clean_operator_22bu, output_route_registry_37bb a serverových health službách.
+4) Otestovat na reálném pásku, jestli step boundary hitch ubyl při zapnutém sequenceru.
+5) Až pak jemně řešit ArtNet packet hotpath, pokud bude stále viditelné trhání.

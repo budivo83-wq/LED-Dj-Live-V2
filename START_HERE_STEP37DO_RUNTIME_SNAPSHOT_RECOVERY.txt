@@ -1,0 +1,32 @@
+STEP37DO_RUNTIME_SNAPSHOT_RECOVERY
+
+Cíl:
+- Opravit situaci, kdy Debug / Output Health zůstává viset na:
+  "Loading Output Health Diagnostics... Čekám na runtime snapshoty."
+
+Změny:
+1) Přidán public/runtime/runtime_snapshot_recovery_37do.js
+   - pasivní nouzový provider runtime snapshotu
+   - každých 0.5–1.2 s publikuje window.__budilightRuntimeLoopRegistrySnapshot37CE
+   - zkouší registry API, existující snapshot i cross-window parent/top context
+   - pokud registry není dostupný, poskytne fallback snapshot, aby Debug nikdy nezůstal prázdný
+
+2) Upraven public/runtime/output_health_panel_37cd.js
+   - verze STEP37DO_RUNTIME_SNAPSHOT_RECOVERY
+   - opraveno plánování health loopu: optional chaining už tiše neselže bez fallbacku
+   - panel provede rychlý první render cca 80 ms po načtení
+   - pokud registry není dostupná, použije raw setTimeout loop
+
+3) Upraven public/index.html
+   - přidán runtime_snapshot_recovery_37do.js hned za runtime_loop_registry_37ce.js
+   - cache bust v=37do pro registry a Output Health panel
+
+Co ověřit:
+- otevři Performance -> Debug
+- panel už nesmí zůstat na Loading/WAIT
+- v Runtime loops musí být vidět buď "37CE active", nebo recovery fallback se source informací v raw snapshotu
+
+Co zbývá:
+1) Reálně zkontrolovat Debug panel ve tvém shellu
+2) Pokud Runtime loops ukáže fallback místo registry-api, dohledat proč se registry v daném contextu nenačítá
+3) Pak pokračovat profilerem sequenceru a UDP hotpath

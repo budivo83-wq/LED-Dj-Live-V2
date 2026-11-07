@@ -1,0 +1,10 @@
+STEP37DD_SHOWOS_SAVE_VISIBLE_RENDER_GUARD
+
+Safe continuation from STEP37DC.
+
+Changes:
+- Show OS localStorage persistence is guarded: render() no longer writes identical state repeatedly.
+- Show OS periodic tick repaints only currently visible heavy sections.
+- Runtime/transition labels skip redundant DOM writes.
+
+No changes to animation loading, shell boot, ArtNet output routing, or Performance render path.

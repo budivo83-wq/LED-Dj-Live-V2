@@ -1,0 +1,19 @@
+ARTNET MAPPING CLEAN FIX — 2026-06-07
+
+Upravené soubory:
+- public/runtime/mapping_v2.js
+- public/mapping.js
+- src/output/artnet_core.js
+
+Hlavní fix:
+- ArtNet startAddress se normalizuje jako lokální adresa v universe.
+- Když starý mapping uloží startAddress větší než universeSize, automaticky se převede na správný universe + lokální address.
+
+Příklad:
+- universeSize 150
+- U0 A300 150px => U2 A0 150px
+
+Důvod:
+- ArtNet DMX universe nemá 300 RGB pixelů na jednom universe.
+- Pro RGB se bezpečně používá 150 px/universe = 450 DMX kanálů.
+- 300px strip tedy musí být 2 universy po 150 px.

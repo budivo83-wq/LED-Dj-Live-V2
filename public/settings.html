@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LED ENGINE - SETTINGS</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="performance.css" />
+  <link rel="stylesheet" href="performance_topbar.css" />
+  <link rel="stylesheet" href="settings_layout.css" />
+
+  <style id="settings-clean-operator-step22bu">
+    /* STEP22BU: operator-first settings cleanup. The legacy controls stay in DOM for JS/tests,
+       but are visually hidden so Settings is usable during real hardware testing. */
+    .settings-clean-intro { border:1px solid rgba(34,255,224,.42); box-shadow:0 0 26px rgba(34,255,224,.14); }
+    .settings-clean-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; margin-top:10px; }
+    .settings-clean-group { padding:12px; border:1px solid rgba(255,255,255,.11); border-radius:16px; background:rgba(0,0,0,.20); }
+    .settings-clean-group h3 { margin:0 0 8px; font-size:13px; letter-spacing:.08em; color:#22ffe0; text-transform:uppercase; }
+    .settings-clean-actions { display:flex; flex-wrap:wrap; gap:8px; }
+    .settings-clean-actions button { min-height:36px; }
+    .settings-clean-danger button { border-color:rgba(255,70,90,.70); color:#ff8b9a; }
+    .settings-clean-status { margin-top:10px; min-height:28px; white-space:pre-wrap; font-size:12px; color:rgba(235,255,255,.78); }
+    .settings-clean-note { margin:8px 0 0; color:rgba(235,255,255,.68); font-size:12px; line-height:1.45; }
+    .settings-clean-dev-vault { display:none !important; }
+    body.settings-page .settings-card-appearance,
+    body.settings-page .settings-card-migration,
+    body.settings-page .settings-card-output-routing,
+    body.settings-page .settings-card-wireless,
+    body.settings-page .output-map-card,
+    body.settings-page .settings-card-password { display:none !important; }
+    /* STEP37EA: do not hide runtime controls by fragile nth-of-type indexes.
+       STEP37DZ added MAIN PREVIEW FPS as field #5 and the old cleanup CSS hid it.
+       Hide only the explicitly marked advanced controls. */
+    body.settings-page .settings-card-runtime .settings-runtime-hidden-operator,
+    body.settings-page .settings-card-runtime .runtime-note:nth-of-type(2) { display:none !important; }
+    body.settings-page .settings-card-runtime .settings-main-preview-fps-field { display:flex !important; }
+    body.settings-page .settings-card-runtime .settings-main-preview-fps-field input { border-color:rgba(34,255,224,.65); box-shadow:0 0 18px rgba(34,255,224,.10); }
+    body.settings-page .settings-card-runtime .settings-main-preview-fps-field small { color:rgba(235,255,255,.66); line-height:1.35; }
+    body.settings-page .settings-card-serial .raw-serial-box.shader-test-show-box { display:none !important; }
+
+    /* STEP22BV: hide experimental clutter; keep one live-test pipeline visible. */
+    body.settings-page .settings-card-blx { display:none !important; }
+    body.settings-page .settings-card-serial label.field:has(#serialProtocol) { opacity:.72; pointer-events:none; }
+    body.settings-page #rawSerialLocator,
+    body.settings-page #rawSerialGradient,
+    body.settings-page #rawSerialLiveStep,
+    body.settings-page #rawSerialAdapterStep,
+    body.settings-page #rawSerialAdapterStart,
+    body.settings-page #rawSerialAdapterStop,
+    body.settings-page #rawSerialAdapterStats { display:none !important; }
+  </style>
+
+  <style id="step22fx-live-output-cleanup">
+    body.settings-page .shader-test-show-box,
+    body.settings-page .step22al-repair-panel,
+    body.settings-page .settings-card-migration,
+    body.settings-page .settings-card-output-routing,
+    body.settings-page .settings-card-wireless,
+    body.settings-page .settings-card-blx,
+    body.settings-page .output-map-card,
+    body.settings-page .settings-card-password { display:none !important; }
+    body.settings-page .settings-card-serial,
+    body.settings-page .settings-card-artnet { border-color: rgba(34,255,224,.48); box-shadow: 0 0 28px rgba(34,255,224,.10); }
+    body.settings-page .operator-hidden-test { display:none !important; }
+    .live-output-banner { border:1px solid rgba(34,255,224,.40); border-radius:18px; padding:14px; background:linear-gradient(135deg,rgba(34,255,224,.10),rgba(140,70,255,.08)); margin-bottom:12px; }
+    .live-output-banner h2 { margin:0 0 6px; color:#22ffe0; letter-spacing:.08em; }
+    .live-output-banner p { margin:0; color:rgba(235,255,255,.78); line-height:1.45; }
+    .advanced-auto-vault { margin-top:14px; padding:12px; border:1px dashed rgba(255,255,255,.22); border-radius:14px; opacity:.72; }
+    .advanced-auto-vault summary { cursor:pointer; color:#ffcc66; font-weight:800; letter-spacing:.04em; }
+  </style>
+
+  <style id="step22fz-live-artnet-serial-cleanup">
+    /* STEP22FZ: real operator panel. Serial debug/test actions are removed from the visible UI. */
+    body.settings-page #settingsCleanOperator22BU .settings-clean-group:nth-child(3),
+    body.settings-page #rawSerialPacketPreview,
+    body.settings-page #rawSerialSegments,
+    body.settings-page #serialTest,
+    body.settings-page #rawSerialPretestSnapshot,
+    body.settings-page #rawSerialBars,
+    body.settings-page #rawSerialLocator,
+    body.settings-page #rawSerialGradient,
+    body.settings-page #rawSerialLiveStep,
+    body.settings-page #rawSerialAdapterStep,
+    body.settings-page #rawSerialAdapterStart,
+    body.settings-page #rawSerialAdapterStop,
+    body.settings-page #rawSerialAdapterStats,
+    body.settings-page #rawSerialPacketStats { display:none !important; }
+    body.settings-page .artnet-stage-box .migration-note { display:none !important; }
+    body.settings-page #artnetStageArmLive { border-color:rgba(34,255,224,.72); color:#22ffe0; }
+  </style>
+  <link rel="stylesheet" href="operator_cleanup.css" />
+  <style id="step22gg-operator-refactor-overrides">
+    body.settings-page .settings-card-output-routing,
+    body.settings-page .settings-card-serial,
+    body.settings-page .settings-card-artnet { display:block !important; }
+    body.settings-page .settings-card-migration,
+    body.settings-page .settings-card-appearance,
+    body.settings-page .settings-card-wireless,
+    body.settings-page .settings-card-blx,
+    body.settings-page .output-map-card,
+    body.settings-page .settings-card-password,
+    body.settings-page .shader-test-show-box,
+    body.settings-page .step22al-repair-panel,
+    body.settings-page .artnet-stage-box,
+    body.settings-page .operator-hidden-test { display:none !important; }
+    body.settings-page .operator-advanced-inline { opacity:.82; }
+    body.settings-page .settings-card-output-routing { border-color:rgba(255,90,220,.42); box-shadow:0 0 26px rgba(255,0,190,.10); }
+    body.settings-page .live-output-health { white-space:pre-wrap; font-family:ui-monospace,Consolas,monospace; }
+  </style>
+
+  <style id="step37ci-multiout-slot-ui">
+    .multiout-slot-panel { display:grid; gap:10px; margin:10px 0; }
+    .multiout-slot { border:1px solid rgba(34,255,224,.20); border-radius:14px; padding:10px; background:rgba(0,0,0,.18); }
+    .multiout-slot-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; color:#22ffe0; font-weight:800; letter-spacing:.05em; }
+    .multiout-slot-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:8px; }
+    .multiout-slot-grid label { display:flex; flex-direction:column; gap:4px; font-size:11px; color:rgba(235,255,255,.72); }
+    .multiout-slot-grid input, .multiout-slot-grid select { min-height:32px; }
+  </style>
+
+
+
+  <style id="step37ct-global-output-correction">
+    .settings-global-output-card { border:1px solid rgba(255,204,102,.55); box-shadow:0 0 26px rgba(255,204,102,.12); }
+    .settings-global-output-card h2 { color:#ffcc66; }
+    .settings-global-output-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px; margin-top:12px; }
+    .settings-global-output-param { padding:12px; border:1px solid rgba(255,255,255,.12); border-radius:16px; background:rgba(0,0,0,.20); }
+    .settings-global-output-param span { display:block; margin-bottom:8px; color:rgba(235,255,255,.80); font-weight:800; letter-spacing:.06em; }
+    .settings-global-output-param strong { display:block; margin-top:7px; color:#22ffe0; font-size:13px; letter-spacing:.06em; }
+    .settings-global-output-actions { margin-top:12px; }
+    .settings-global-output-actions button:first-child { border-color:rgba(255,204,102,.70); color:#ffcc66; }
+  </style>
+
+</head>
+
+<body class="ui-pro settings-page performance-page">
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="top-left-cluster">
+        <div class="brand-block">
+          <button id="onoff" class="power-btn" type="button">ON</button>
+          <div class="brand-mark">◈</div>
+          <div class="brand-text">
+            <strong>LED<br>Dj</strong>
+            <span>live</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="workspace-tabs" aria-label="Workspace">
+        <button class="nav" type="button" onclick="sessionStorage.setItem('led-main-return-fast','1');location.href='index.html'">PERFORMANCE</button>
+        <button class="nav" type="button" onclick="location.href='animations.html'">GALLERY</button>
+        <button class="nav" type="button" onclick="location.href='generator.html'">GENERATOR</button>
+        <button class="nav" type="button" onclick="location.href='mapping.html'">MAPPING</button>
+        <button class="nav active" type="button" onclick="location.href='settings.html'">SETTINGS</button>
+      </nav>
+
+      <div class="top-right-cluster">
+        <div class="status-strip status-strip-inline">
+          <div class="status-card">
+            <span>LIVE FPS</span>
+            <strong id="fpsValue">--</strong>
+            <small>LIVE</small>
+          </div>
+
+          <div class="status-card">
+            <span>OUTPUT</span>
+            <strong id="outputState">OFF</strong>
+            <small id="outputDetail">preview</small>
+          </div>
+
+
+          <div class="status-card hardware-card optional-status" title="Hardware usage">
+            <span>HW</span>
+            <strong id="hardwareMain">CPU --%</strong>
+            <small id="hardwareDetail">ram --% | --</small>
+          </div>
+        </div>
+        <button id="menuBtn" class="menu-btn" type="button">☰</button>
+      </div>
+    </header>
+    <section id="centerMenuStrip" class="center-menu-strip" aria-label="Main menu">
+      <button id="menuSettingsBtn" data-href="settings.html" type="button">SETTINGS</button>
+    <button id="menuAnimationsBtn" data-href="animations.html" type="button">GALLERY</button>
+        <button data-href="generator.html" type="button">GENERATOR</button>
+        <button id="menuMappingBtn" data-href="mapping.html" type="button">MAPPING V2</button>
+      <button id="menuShortsBtn" data-href="shorts.html" type="button">SHORTS</button>
+      <button id="menuFullscreenBtn" type="button">FULLSCREEN OFF</button>
+      <button id="menuQuitBtn" type="button">QUIT</button>
+    </section>
+
+
+    <!-- =====================================================
+      SETTINGS PAGE
+    ====================================================== -->
+    <main class="page-shell settings-shell">
+
+      <section class="page-panel settings-grid">
+        <section id="step22fxLiveOutputBanner" class="settings-card wide-card full-width-card live-output-banner"><h2>LIVE OUTPUT</h2><p>Serial a ArtNet jsou teď normální provozní výstupy v Settings. Testovací stránky jsou schované; běžné ovládání je tady: vyber profil, port/IP, zapni výstup, případně START LIVE / PANIC.</p></section>
+
+
+
+
+        <section class="settings-card wide-card full-width-card settings-global-output-card" id="settingsGlobalOutput37CT">
+          <h2>GLOBAL OUTPUT CORRECTION</h2>
+          <p class="migration-note">Původní globální korekce výstupu. Tyhle slidery zapisují stejné hodnoty jako dřív do <code>led-engine-settings-v1</code> a používá je render/output cesta: brightness limit, gamma a contrast.</p>
+
+          <div class="settings-global-output-grid">
+            <label class="param settings-global-output-param">
+              <span>GLOBAL BRIGHTNESS</span>
+              <input id="brightnessLimit" type="range" min="0.05" max="1" step="0.01" value="1" />
+              <strong id="limitValue">100%</strong>
+            </label>
+
+            <label class="param settings-global-output-param">
+              <span>GLOBAL GAMMA</span>
+              <input id="gamma" type="range" min="1" max="3.5" step="0.1" value="2.2" />
+              <strong id="gammaValue">2.2</strong>
+            </label>
+
+            <label class="param settings-global-output-param">
+              <span>GLOBAL CONTRAST</span>
+              <input id="contrast" type="range" min="0.5" max="2.5" step="0.05" value="1.35" />
+              <strong id="contrastValue">1.35</strong>
+            </label>
+          </div>
+
+          <div class="settings-clean-actions settings-global-output-actions">
+            <button id="resetGlobalOutputCorrection37CT" type="button">RESET GLOBAL BRIGHTNESS / GAMMA / CONTRAST</button>
+            <button type="button" data-proxy-click="saveSettings">SAVE GLOBAL CORRECTION</button>
+          </div>
+          <p id="globalOutputCorrectionStatus37CT" class="settings-clean-status">Neutral pro test: brightness 100 %, gamma 1.0, contrast 1.0. Původní default renderu byl gamma 2.2 / contrast 1.35.</p>
+        </section>
+
+        <section class="settings-card wide-card full-width-card settings-clean-intro" id="settingsCleanOperator22GG">
+          <h2>LIVE SETTINGS — OPERATOR PANEL</h2>
+          <p class="migration-note">Tady zůstává jen provozní ovládání: uložit nastavení, zapnout paralelní router, připojit Serial, spustit ArtNet a sledovat health. Historické STEP/test panely jsou přesunuté do archivu.</p>
+
+          <div class="settings-clean-grid">
+            <div class="settings-clean-group">
+              <h3>1) Save / rescue</h3>
+              <div class="settings-clean-actions">
+                <button type="button" data-proxy-click="saveSettings">SAVE SETTINGS</button>
+                <button type="button" data-proxy-click="rescueResetOutputState">RESET OUTPUT STATE</button>
+              </div>
+              <p class="settings-clean-note">Reset vypne pouze runtime output stav. Port/IP/mapping se nemaže.</p>
+            </div>
+
+            <div class="settings-clean-group">
+              <h3>2) Parallel router</h3>
+              <div class="settings-clean-actions">
+                <button type="button" data-proxy-click="serialOutput">SERIAL ON/OFF</button>
+                <button type="button" data-proxy-click="artnetOutput">ARTNET ON/OFF</button>
+                <button type="button" data-proxy-click="artnetSendBlackout">BLACKOUT</button>
+              </div>
+              <p class="settings-clean-note">Serial a ArtNet můžou běžet současně. Mapping rozhodne, co kam teče.</p>
+            </div>
+
+            <div class="settings-clean-group">
+              <h3>3) Hardware status</h3>
+              <div class="settings-clean-actions">
+                <button type="button" data-proxy-click="serialRefresh">REFRESH PORTS</button>
+                <button type="button" data-proxy-click="serialConnect">CONNECT SERIAL</button>
+                <button type="button" data-proxy-click="artnetValidate">VALIDATE ARTNET</button>
+              </div>
+              <p class="settings-clean-note">Health panel níž ukazuje master frame, ArtNet TX a Serial port.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-card wide-card full-width-card settings-card-rescue" style="border:1px solid #22ffe0; box-shadow:0 0 18px rgba(34,255,224,.18);">
+          <h2>RESCUE / RESET OUTPUT</h2>
+          <p class="migration-note">Když se po změně FPS pokazí output i ve starších verzích, resetuje to uložený stav pro localhost.</p>
+          <div class="device-tools-actions">
+            <button id="rescueResetOutputState" type="button" style="border-color:#22ffe0;color:#22ffe0;">RESET FPS + OUTPUT STATE</button>
+          </div>
+          <p id="rescueResetStatus" class="auth-message">Ponechá COM port, ale vrátí FPS/protokol/runtime do bezpečných hodnot.</p>
+        </section>
+
+        <!-- =================================================
+          RUNTIME
+        ================================================== -->
+        <section class="settings-card settings-card-primary settings-card-runtime">
+          <h2>RUNTIME</h2>
+
+          <label class="field">
+            <span>FPS</span>
+            <input id="fps" type="number" min="1" max="120" step="1" value="60" />
+          </label>
+
+          <label class="field">
+            <span>LED START</span>
+            <select id="ledStartOff">
+              <option value="true">OFF</option>
+              <option value="false">KEEP LAST</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>CROSS SENS</span>
+            <input id="crossMouseSensitivity" type="number" min="0.6" max="4.5" step="0.1" value="2.2" />
+          </label>
+
+          <label class="field settings-runtime-hidden-operator">
+            <span>CROSSFADER PLACE</span>
+            <select id="crossfaderPlacement">
+              <option value="normal">NORMAL</option>
+              <option value="topbar">TOPBAR</option>
+            </select>
+          </label>
+
+          <label class="field settings-main-preview-fps-field">
+            <span>MAIN PREVIEW FPS</span>
+            <input id="previewFps" type="number" min="1" max="60" step="1" value="30" list="mainPreviewFpsPresets" />
+            <small>Velký Performance preview canvas. Neovlivňuje LED/ArtNet output ani malé layer náhledy.</small>
+          </label>
+          <datalist id="mainPreviewFpsPresets">
+            <option value="5"></option>
+            <option value="10"></option>
+            <option value="15"></option>
+            <option value="20"></option>
+            <option value="25"></option>
+            <option value="30"></option>
+            <option value="40"></option>
+            <option value="50"></option>
+            <option value="60"></option>
+          </datalist>
+
+          <label class="field settings-runtime-hidden-operator">
+            <span>SHADER PREW FPS</span>
+            <input id="shaderPreviewFps" type="number" min="1" max="60" step="1" value="24" />
+          </label>
+
+          <label class="field">
+            <span>RUNTIME MODE</span>
+            <select id="raspiMode">
+              <option value="false">NORMAL</option>
+              <option value="true">RASPBERRY PI</option>
+            </select>
+          </label>
+
+  <label class="field">
+    <span>RUNTIME PRESET</span>
+    <select id="runtimePreset">
+      <option value="normal-pc" data-mode="normal">NORMAL PC</option>
+      <option value="raspi-stable" data-mode="raspi">RASPI STABLE</option>
+      <option value="raspi-safe" data-mode="raspi">RASPI SAFE</option>
+      <option value="raspi-ultra-safe" data-mode="raspi">RASPI ULTRA SAFE</option>
+      <option value="burn-in" data-mode="raspi">BURN-IN</option>
+    </select>
+  </label>
+  <div class="runtime-note" id="runtimePresetHint">
+    Vyber mód, potom preset. Zobrazují se jen presety použitelné pro aktuální mód.
+  </div>
+
+
+          <label class="field">
+            <span>ADAPTIVE FPS</span>
+            <select id="adaptiveFpsMode">
+              <option value="off">OFF</option>
+              <option value="cpu">CPU ONLY</option>
+              <option value="serial">CPU + SERIAL</option>
+              <option value="auto">AUTO</option>
+            </select>
+          </label>
+
+  <label class="field">
+    <span>ADAPTIVE APPLY</span>
+    <select id="adaptiveApplyMode">
+      <option value="observe">OBSERVE ONLY</option>
+      <option value="soft-ui">SOFT UI</option>
+      <option value="protect-output">PROTECT OUTPUT (reserved)</option>
+    </select>
+  </label>
+  <div class="runtime-note">
+    OBSERVE jen měří. SOFT UI snižuje zátěž preview/debugu. PROTECT OUTPUT je zatím rezervované.
+  </div>
+
+
+
+
+          <button id="raspiStableLiveMode" class="runtime-stable-live-btn" type="button">RASPI STABLE LIVE MODE</button>
+          <div class="runtime-note runtime-stable-live-note">
+            Rychlá volba pro RasPi: zapne RasPi mód, konzervativní preset, Adaptive AUTO a odlehčí UI. Serial output pořád řídíš zvlášť.
+          </div>
+
+          <small id="runtimeModeStatus">NORMAL selected</small>
+          <small id="runtimeModeHelp">NORMAL PC = plný výkon. RASPI = šetří CPU a UI, serial FPS nastavuj níže v Serial sekci.</small>
+
+          <div class="settings-readout">
+            <span id="fpsSettingValue">FPS 60</span>
+          </div>
+        </section>
+
+        <section class="settings-card settings-card-appearance">
+          <h2>APPEARANCE</h2>
+
+          <label class="field">
+            <span>LAYER PREVIEW</span>
+            <select id="layerPreviewEnabled">
+              <option value="true">ON</option>
+              <option value="false">OFF</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>LAYER PREW FPS</span>
+            <input id="layerPreviewFps" type="number" min="1" max="20" step="1" value="6" />
+          </label>
+
+          <label class="field">
+            <span>GPU RENDER</span>
+            <select id="gpuMode">
+              <option value="auto">AUTO</option>
+              <option value="on">ON</option>
+              <option value="cpu">CPU</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>FULLSCREEN</span>
+            <select id="fullscreenPreferred">
+              <option value="false">OFF</option>
+              <option value="true">ON</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>WELCOME</span>
+            <select id="welcomeEnabled">
+              <option value="true">ON</option>
+              <option value="false">OFF</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>WELCOME TEXT</span>
+            <input id="welcomeText" type="text" maxlength="48" value="vítej borče" />
+          </label>
+
+          <label class="field">
+            <span>LOOK</span>
+            <select id="backgroundMode">
+              <option value="dark">DARK</option>
+              <option value="light">LIGHT</option>
+              <option value="default">DEFAULT</option>
+              <option value="custom">CUSTOM</option>
+            </select>
+          </label>
+
+          <input id="backgroundImage" type="hidden" value="" />
+
+          <label class="field">
+            <span>BG FILE</span>
+            <input id="backgroundFile" type="file" accept="image/*" />
+          </label>
+
+          <button id="clearBackground" type="button">CLEAR BACKGROUND</button>
+        </section>
+
+        <section class="settings-card wide-card full-width-card settings-card-migration">
+          <h2>MIGRATION FLAGS</h2>
+          <p class="migration-note">Legacy runtime stays default. Enable only the subsystems you want to migrate first.</p>
+
+          <div class="migration-flags-grid">
+            <label><input id="flagUseNewCentralState" type="checkbox"> NEW CENTRAL STATE</label>
+            <label><input id="flagUseNewFramePipeline" type="checkbox"> NEW FRAME PIPELINE</label>
+            <label><input id="flagUseNewMapping" type="checkbox"> NEW MAPPING</label>
+            <label><input id="flagUseNewOutput" type="checkbox"> NEW OUTPUT</label>
+            <label><input id="flagUseNewPreview" type="checkbox"> NEW PREVIEW</label>
+            <label><input id="flagUseNewEvents" type="checkbox"> NEW EVENTS</label>
+            <label><input id="flagUseNewTelemetry" type="checkbox"> NEW TELEMETRY</label>
+          </div>
+
+          <div class="migration-flags-actions">
+            <button id="migrationFlagsReset" type="button">RESET FLAGS</button>
+            <button id="migrationFlagsSave" type="button">SAVE FLAGS</button>
+          </div>
+        </section>
+
+        <section class="settings-card settings-card-tools">
+          <h2>DEVICE TOOLS</h2>
+
+          <div class="device-tools-actions">
+            <button id="saveSettings" type="button">SAVE SETTINGS</button>
+            <button id="logoutButton" type="button">LOGOUT</button>
+            <button id="rebootButton" type="button">REBOOT DEVICE</button>
+            <button id="shutdownButton" type="button">OFF DEVICE</button>
+          </div>
+
+          <p id="deviceMessage" class="auth-message"></p>
+        </section>
+
+        <section class="settings-card settings-card-output-routing">
+          <h2>LIVE OUTPUT ROUTER</h2>
+          <p class="settings-clean-note">Výstupy už nejsou jeden přepínač. Serial, ArtNet a později USB-DMX můžou běžet současně. Mapping rozhoduje, která část světel jde kam.</p>
+
+          <div class="settings-row">
+            <label class="field">
+              <span>SERIAL LIVE</span>
+              <select id="routerSerialEnabled">
+                <option value="false">OFF</option>
+                <option value="true">ON</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>ARTNET LIVE</span>
+              <select id="routerArtnetEnabled">
+                <option value="false">OFF</option>
+                <option value="true">ON</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>USB DMX</span>
+              <select id="routerUsbDmxEnabled" disabled>
+                <option value="false">OFF — připraveno do budoucna</option>
+              </select>
+            </label>
+          </div>
+
+          <p class="settings-clean-note">Síťovka pro ArtNet se vybírá přímo v panelu ART-NET LIVE jako NETWORK CARD / BIND IP. Tady už není druhý duplicitní výběr.</p>
+
+          <select id="outputMode" style="display:none" aria-hidden="true" tabindex="-1">
+            <option value="preview">PREVIEW ONLY</option>
+            <option value="artnet">ART-NET</option>
+            <option value="sacn">sACN / E1.31</option>
+            <option value="wifi">WIFI STREAM</option>
+            <option value="espnow">ESP-NOW</option>
+          </select>
+          <div class="serial-status" id="routerStatus">ROUTER: preview only</div>
+          <pre class="serial-status live-output-health" id="liveOutputHealth">MASTER: waiting
+ARTNET: waiting
+SERIAL: waiting</pre>
+        </section>
+
+        <section class="settings-card wide-card settings-card-serial">
+          <h2>SERIAL OUTPUT</h2>
+
+          <div class="settings-row">
+            <label class="field">
+              <span>PORT</span>
+              <select id="serialPort"></select>
+            </label>
+
+            <label class="field">
+              <span>BAUD</span>
+              <input id="serialBaud" type="number" min="9600" max="3000000" step="1" value="115200" />
+            </label>
+
+            <label class="field">
+              <span>FPS LIMIT</span>
+              <input id="serialFps" type="number" min="1" max="60" step="1" value="25" />
+            </label>
+
+            <div class="field serial-contract-lock" role="status" aria-live="polite">
+              <span>PROTOCOL LOCK</span>
+              <strong>AA + LEN16_PIXELS_LE + RGB · 4×300</strong>
+              <small>Uzamčeno: receiver čeká 0xAA, potom 1200 px jako LEN16 little-endian, potom 3600 RGB bajtů.</small>
+              <select id="serialProtocol" style="display:none" aria-hidden="true" tabindex="-1">
+                <option value="aa_len_rgb" selected>STEP22CI RAW SERIAL — 0xAA + LEN16_PIXELS_LE + RGB</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="serial-actions">
+            <button id="serialRefresh" type="button">REFRESH</button>
+            <button id="serialConnect" type="button">CONNECT</button>
+            <button id="serialDisconnect" type="button">DISCONNECT</button>
+            <button id="serialOutput" type="button">OUTPUT OFF</button>
+          </div>
+
+          <!-- STEP22GG: raw serial test/debug box removed from operator UI. -->
+
+          <div class="serial-status serial-clean-summary">SERIAL LIVE je v běžném režimu: vyber port, baud, CONNECT a OUTPUT ON. Test patterny a raw serial ladicí tlačítka jsou schované.</div>
+
+          <div class="serial-status" id="serialStatus">SERIAL CLOSED</div>
+        </section>
+
+        <!-- STEP22GG: legacy BLX panel archived; live outputs are controlled by Serial / ArtNet router. -->
+
+        <!-- =================================================
+          OUTPUT NETWORKS
+        ================================================== -->
+        <section class="settings-card settings-card-artnet">
+          <h2>ART-NET LIVE</h2>
+
+          <div class="settings-row">
+            <label class="field">
+              <span>TARGET IP</span>
+              <input id="targetIp" type="text" value="192.168.1.50" />
+            </label>
+
+            <label class="field">
+              <span>NETWORK CARD / BIND IP</span>
+              <select id="networkAdapter">
+                <option value="">AUTO - not recommended</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>BIND IP MANUAL</span>
+              <input id="bindIp" type="text" value="" placeholder="selected NIC IP" />
+            </label>
+
+            <label class="field">
+              <span>TARGET MODE</span>
+              <select id="targetMode">
+                <option value="unicast">UNICAST</option>
+                <option value="subnet-broadcast">SUBNET BROADCAST</option>
+                <option value="global-broadcast">GLOBAL BROADCAST</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="settings-row">
+            <label class="field">
+              <span>ARTNET PORT</span>
+              <input id="artnetPort" type="number" min="1" max="65535" step="1" value="6454" />
+              <small id="artnetPortWarning" class="settings-clean-note">Default Art-Net port je 6454.</small>
+            </label>
+
+            <label class="field">
+              <span>UNIVERSE START</span>
+              <input id="universe" type="number" min="0" max="63999" step="1" value="0" />
+            </label>
+
+            <label class="field">
+              <span>PIXELS / UNIVERSE</span>
+              <input id="pixelsPerUniverse" type="number" min="1" max="170" step="1" value="170" />
+            </label>
+          </div>
+
+
+          <details class="advanced-auto-vault" open>
+            <summary>ART-NET MULTI OUT / ROUTING</summary>
+            <p class="settings-clean-note">Rozdělení hlavního LED bufferu na více ArtNet cílů. Běžné ovládání je ve slotech níž; JSON zůstává jako servisní náhled a ruční fallback.</p>
+            <div class="settings-row">
+              <label class="field">
+                <span>MULTI OUT MASTER</span>
+                <select id="artnetMultiOutEnabled">
+                  <option value="false">OFF - single target</option>
+                  <option value="true">ON - route slots</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>DEFAULT TARGET</span>
+                <input id="artnetMultiOutDefaultIp" type="text" placeholder="same as TARGET IP" />
+              </label>
+            </div>
+            <div id="artnetMultiOutSlotPanel" class="multiout-slot-panel"></div>
+            <div class="serial-actions">
+              <button id="artnetMultiOutSeed8x300" type="button">8×300 AUTO PACK</button>
+              <button id="artnetSafe8x300Reset" type="button">SAFE RESET 8×300 / 6454</button>
+              <button id="artnetMultiOutAddSplit" type="button">SPLIT EXAMPLE</button>
+              <button id="artnetMultiOutClear" type="button">CLEAR</button>
+              <button id="artnetMultiOutApply" type="button">SAVE / APPLY ROUTES</button>
+              <button id="artnetMultiOutApplyStart" type="button">APPLY + START ARTNET</button>
+            </div>
+            <details class="advanced-auto-vault">
+              <summary>RAW ROUTE JSON</summary>
+              <textarea id="artnetMultiOutRoutes" class="map-json" spellcheck="false" style="min-height:170px;" placeholder='[{"strip":0,"from":0,"count":170,"ip":"2.1.1.30","universe":0},{"strip":0,"from":170,"count":130,"ip":"2.1.1.31","universe":0}]'></textarea>
+            </details>
+            <pre class="serial-status live-output-health" id="artnetMultiOutStatus">MULTI OUT: OFF</pre>
+          </details>
+
+          <details class="advanced-auto-vault" open>
+            <summary>ART-NET PERFORMANCE PROFILE</summary>
+            <div class="settings-clean-actions operator-advanced-inline">
+              <button id="artnetPresetSafe" type="button">SAFE</button>
+              <button id="artnetPresetFast" type="button">FAST</button>
+              <button id="artnetPresetAggressive" type="button">AGGRESSIVE</button>
+            </div>
+            <div class="settings-row operator-advanced-inline">
+              <label class="field">
+                <span>MIRROR FPS</span>
+                <input id="artnetMirrorFps" type="number" min="1" max="60" step="1" value="60" />
+              </label>
+              <label class="field">
+                <span>MAX LIVE FPS</span>
+                <input id="maxLiveFps" type="number" min="1" max="120" step="1" value="60" />
+              </label>
+              <label class="field">
+                <span>PACKET PACE MS</span>
+                <input id="packetPaceMs" type="number" min="0" max="25" step="1" value="0" />
+              </label>
+              <label class="field">
+                <span>PACKETS / BURST</span>
+                <input id="packetsPerBurst" type="number" min="1" max="32" step="1" value="32" />
+              </label>
+            </div>
+            <div class="settings-row operator-advanced-inline">
+              <label class="field">
+                <span>PENDING LIMIT MS</span>
+                <input id="maxPendingBatchMs" type="number" min="50" max="2000" step="10" value="120" />
+              </label>
+              <label class="field">
+                <span>CALLBACK MODE</span>
+                <select id="callbackMode">
+                  <option value="lightweight">LIGHTWEIGHT</option>
+                  <option value="normal">NORMAL</option>
+                  <option value="none">NONE</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>PACKET ORDER</span>
+                <select id="packetOrder">
+                  <option value="sequential">SEQUENTIAL</option>
+                  <option value="interleaved-v2">INTERLEAVED V2</option>
+                  <option value="split-half">SPLIT HALF</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>ARTSYNC</span>
+                <select id="artSyncMode">
+                  <option value="off">OFF</option>
+                  <option value="every-frame">EVERY FRAME</option>
+                  <option value="every-n">EVERY N</option>
+                </select>
+              </label>
+            </div>
+            <div class="settings-row operator-advanced-inline">
+              <label class="field">
+                <span>ADAPTIVE CLOCK</span>
+                <select id="adaptiveFrameClock">
+                  <option value="on">ON</option>
+                  <option value="off">OFF</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>ADAPTIVE FLOOR FPS</span>
+                <input id="adaptiveFloorFps" type="number" min="1" max="60" step="1" value="24" />
+              </label>
+              <label class="field">
+                <span>MASTER MAX AGE MS</span>
+                <input id="masterMaxAgeMs" type="number" min="100" max="30000" step="100" value="2500" />
+              </label>
+              <label class="field">
+                <span>LAST GOOD HOLD MS</span>
+                <input id="lastGoodHoldMs" type="number" min="0" max="60000" step="100" value="0" />
+              </label>
+            </div>
+            <div class="settings-row operator-advanced-inline">
+              <label class="field">
+                <span>BLACKOUT AFTER HOLD</span>
+                <select id="blackoutAfterHold">
+                  <option value="true">ON</option>
+                  <option value="false">OFF</option>
+                </select>
+              </label>
+            </div>
+          </details>
+
+          <div class="serial-actions">
+            <button id="artnetOutput" type="button">ARTNET OUTPUT OFF</button>
+            <button id="artnetStart" type="button">ARTNET START</button>
+            <button id="artnetStop" type="button">ARTNET STOP</button>
+            <button id="artnetValidate" type="button">VALIDATE ROUTE</button>
+          </div>
+          <div class="serial-actions operator-advanced-inline">
+            <button id="artnetDiscover" type="button">DISCOVER</button>
+            <button id="artnetNodesRefresh" type="button">REFRESH NODES</button>
+            <button id="artnetSendBlackout" type="button">BLACKOUT</button>
+          </div>
+          <div class="serial-status" id="artnetStatus">ARTNET IDLE</div>
+          <pre class="serial-status live-output-health" id="artnetLiveMetrics">LIVE: waiting</pre>
+          <pre class="serial-status live-output-health" id="artnetPatchReport">PATCH: waiting</pre>
+          <pre class="serial-status live-output-health" id="artnetTruthPanel38A">OUTPUT TRUTH: waiting</pre>
+          <textarea id="artnetNodes" class="map-json operator-advanced-inline" readonly spellcheck="false" style="min-height:90px;"></textarea>
+
+          <!-- STEP22GG: ArtNet stage/debug panel removed from operator UI. -->
+
+          <!-- STEP22GG: shader/probe/repair debug show removed from operator UI. -->
+        </section>
+
+
+        <!-- STEP22GG: wireless experimental panel removed from operator UI. -->
+
+        <!-- STEP22GG: raw settings JSON panel removed from operator UI. -->
+
+        <section class="settings-card settings-card-password full-width-card">
+          <h2>PASSWORD</h2>
+
+          <form id="passwordForm" class="auth-form settings-auth-form">
+            <label class="field">
+              <span>OLD</span>
+              <input id="oldPassword" type="password" autocomplete="current-password" />
+            </label>
+
+            <label class="field">
+              <span>NEW</span>
+              <input id="newPassword" type="password" autocomplete="new-password" />
+            </label>
+
+            <label class="field">
+              <span>AGAIN</span>
+              <input id="repeatPassword" type="password" autocomplete="new-password" />
+            </label>
+
+            <button type="submit">SAVE PASSWORD</button>
+
+            <p id="passwordMessage" class="auth-message"></p>
+          </form>
+        </section>
+
+      </section>
+    </main>
+
+
+    <!-- =====================================================
+      MOBILE NAVIGATION
+    ====================================================== -->
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <button type="button" onclick="sessionStorage.setItem('led-main-return-fast','1');location.href='index.html'">Performance</button>
+      <button type="button" onclick="location.href='mapping.html'">Mapping</button>
+    </nav>
+
+  </div>
+
+  <script src="runtime/runtime_mode_authority.js?v=13bu-az"></script>
+    <script src="runtime/fps_state_rescue_13bu_cj.js?v=13bu-cj"></script>
+<script type="module" src="settings.js"></script>
+
+  <script src="settings_clean_operator_22bu.js"></script>
+</body>
+</html>

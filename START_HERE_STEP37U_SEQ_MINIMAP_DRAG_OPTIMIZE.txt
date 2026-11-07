@@ -1,0 +1,20 @@
+STEP37U - Sequencer minimap + drag/erase optimization
+
+Built on STEP37T.
+
+Changes:
+- Quick Step minimap is no longer rebuilt on every timeline/status refresh when structure did not change.
+- Minimap viewport/playhead updates are now incremental where possible.
+- Collapsed sequencer mini preview is rebuilt only when window/visible length changes, while single-cell edits update only affected slots.
+- Erase-drag batches persistence: no repeated save scheduling for every touched cell; save is flushed once at gesture end.
+- Minimap drag batches persistence: window moves stay responsive while dragging and save once after release.
+- ArtNet/output path not changed.
+
+Checks performed:
+- node --check public/runtime/quick_step_automator.js
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy
+
+Note:
+- npm run check:js still timed out in this environment, same as previous step, so it is not counted as passed.

@@ -1,0 +1,23 @@
+STEP22OK - Step Sequencer boundary lag fix
+
+Problem:
+- Pri kazdem kroku step sequenceru se sekal preview i ArtNet output.
+- Predchozi oprava resila hlavne DOM playhead, ale lag zustal, protoze step tick porad ovladal live controls pres DOM click/input/change eventy.
+- Tyto eventy spoustely syncControls + commitState primo v okamziku step boundary.
+
+Fix:
+- Pridan window.BudiStepSeqFastApi v public/app.js.
+- Quick step sequencer ted pro FX / FLIP / RAND PARAM meni live state primo pres fast API, ne pres DOM klikani.
+- UI sync + state commit jsou batched a posunute cca o 18 ms mimo presnou hranici kroku.
+- Anim/palette step/random se spousti asynchronne mimo step-boundary call stack.
+- Do BudiQuickStepAutomator.state pribylo lastRunStepMs pro rychlou kontrolu, kolik ms zabral posledni runStep.
+
+Expected:
+- Pri prazdnem nebo FX/FLIP/RAND patternu by step boundary nemel shodit preview ani ArtNet.
+- Pokud je na kazdem kroku zmena animace/palety, stale to muze byt tezsi, ale import/switch uz neni v presnem boundary stacku.
+
+Test:
+1. Restart server.
+2. Hard refresh / clear site data.
+3. Output ON, Step sequencer ON.
+4. V konzoli lze zkontrolovat: BudiQuickStepAutomator.state.lastRunStepMs

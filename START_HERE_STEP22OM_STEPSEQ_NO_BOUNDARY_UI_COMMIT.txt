@@ -1,0 +1,12 @@
+STEP22OM - Step sequencer no-boundary UI/commit fix
+
+Base: STEP22OK (the version that improved boundary lag).
+This intentionally rolls back STEP22OL soft queue because it reintroduced a hitch on every step.
+
+Fix:
+- Step FX/FLIP/PARAM state changes no longer schedule syncControls() or commitState() on every sequencer slot.
+- The live renderer/output sees state immediately, but heavy UI sync/persistence is not fired per step boundary.
+- Module anim/palette changes still use async navigation, but direct state changes remain lightweight.
+
+Why:
+The remaining hitch was not cell highlighting. It was delayed UI/state persistence work running shortly after every slot edge.

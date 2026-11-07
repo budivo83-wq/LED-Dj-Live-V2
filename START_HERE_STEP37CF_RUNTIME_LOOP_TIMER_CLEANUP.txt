@@ -1,0 +1,25 @@
+STEP37CF_RUNTIME_LOOP_TIMER_CLEANUP
+
+Focus:
+- Continue STEP37CE runtime loop registry rollout.
+- Move non-critical gallery, mapping, preview and step-sequencer deferred timers behind the shared loop registry.
+- Keep physical output scheduler untouched/critical.
+
+Changed:
+- public/animations.js
+  - gallery/editor inactive wake, thumbnail pumps, selected preview draw and shell preview start now use managed registry timers where safe.
+  - inactive/hidden gallery work is further deferred instead of competing with output.
+- public/mapping.js
+  - mapping render queue fallback timer, resize governor, viewport restore, live patch debounce and flash-status diagnostic refresh now use registry-managed timers.
+- public/runtime/render_pipeline.js
+  - preview draw timeout is managed as non-critical render-preview work.
+  - output timer remains native/critical.
+- public/app.js
+  - UI commit governor, step-sequencer automation flush and module step/random deferred calls now use registry-managed timers.
+
+Validation:
+- node --check passed for all JS/MJS files in public: 288 files, 0 syntax errors.
+
+Next recommended step:
+- Continue with remaining loose timers in ArtNet/Serial mirrors, output route registry/watchdogs, quick_step_automator.js and telemetry_store.js.
+- After that, add a Debug view table listing slow loops and most frequent loops from window.__budilightRuntimeLoopRegistry37CE.snapshot().

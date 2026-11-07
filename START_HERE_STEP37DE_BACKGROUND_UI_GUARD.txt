@@ -1,0 +1,15 @@
+STEP37DE_BACKGROUND_UI_GUARD
+
+Bezpečné pokračování z STEP37DD.
+
+Cíl:
+- dál zmenšit mikro-záseky bez zásahu do loadingu animací, ArtNet cesty nebo shell bootu.
+
+Změny:
+- topbar hardware stats nepolluje, když je dokument skrytý;
+- fullscreen/settings localStorage zápisy jsou chráněné proti identickým zápisům;
+- runtime cosmetic scheduler má vyšší minimální interval;
+- output cards a shader inspector se při live outputu obnovují pomaleji.
+
+Poznámka:
+- Toto je konzervativní optimalizace UI/background práce. Output/render cesta zůstává nedotčená.

@@ -1,0 +1,21 @@
+STEP37CK_DIRECT_STRIP_IP_RUNTIME_FIX
+
+Fix: ArtNet sender could still report/use a stale single default target when live output was started from Performance with an older localStorage/server config.
+
+Changes:
+- Runtime sender now always falls back to the latest server ArtNet patch when direct WS master frames arrive without embedded patch metadata.
+- UDP send diagnostics now include packetTargets: distinct host:port groups actually used by generated packets.
+- Performance SAFE ArtNet start prefers the currently published patch target / server live-config before stale browser targetIp.
+- Mapping server patch report now shows target IP:port per universe, so wrong .39/.36 routing is visible immediately.
+
+Expected behavior:
+- If strip row has Output=artnet and ArtNet IP=10.0.1.36, generated ArtDMX packets for that strip use 10.0.1.36.
+- Multiple strips can use different IPs directly from Mapping.
+- A stale global targetIp should no longer override per-strip IPs.
+
+Operator:
+1) Mapping: set strip Output=artnet and ArtNet IP directly in each strip row.
+2) Press Save + Apply Patch.
+3) Confirm SERVER PATCH ACTIVE shows 10.0.1.36:6454 · U...
+4) Start ArtNet from Performance/Settings.
+5) If diagnostics still show .39 in packetTargets, the active server patch is old; re-open Mapping and Save + Apply Patch once.

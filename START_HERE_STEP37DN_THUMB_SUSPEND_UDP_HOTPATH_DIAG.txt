@@ -1,0 +1,37 @@
+STEP37DN_THUMB_SUSPEND_UDP_HOTPATH_DIAG
+
+Goal:
+- Keep live output first: no runtime thumbnail backlog while physical output is active.
+- Add lightweight UDP hotpath diagnostics without changing Mapping/ArtNet packet routing.
+
+Changes:
+1) public/runtime/thumb_queue.js
+   - Version bumped to 37DN_THUMB_QUEUE_LIVE_SUSPEND.
+   - Cached/session thumbnails still draw immediately.
+   - If live output is active and a thumbnail is missing from cache/session, the runtime renderer is suspended instead of queued.
+   - Draws a cheap placeholder for misses and counts liveSuspendedRuntime/liveSuspendDrawnMissing.
+   - Prevents thumbnail backlog from growing during live output.
+
+2) src/output/artnet_sync_live_sender_22dq.js
+   - Added udpHotpath37DN diagnostics to sync-live status.
+   - Tracks UDP batch path, last batch time, max batch time, slow batch count, packet totals and callback mode.
+   - Does not alter target IP/universe/mapping logic.
+
+3) public/runtime/output_health_panel_37cd.js
+   - Debug Output Health now shows UDP hotpath KPI and thumb live suspend counters.
+
+4) public/index.html
+   - Cache bust updated to v=37dn for Output Health panel.
+
+Validation:
+- npm run check:js OK
+- npm run test:artnet-settings-boundary OK
+- npm run test:artnet-server-boundary OK
+- npm run test:shell-runner-output-contract OK
+
+Next recommended test:
+- Run Performance with ArtNet ON.
+- Open Debug view and check:
+  - Thumb queue should stay low/zero while live is active.
+  - Live suspended counter may rise when gallery/pickers request missing thumbnails.
+  - UDP hotpath last/max should ideally stay low; repeated max > 8 ms means the UDP send batch is still too heavy.

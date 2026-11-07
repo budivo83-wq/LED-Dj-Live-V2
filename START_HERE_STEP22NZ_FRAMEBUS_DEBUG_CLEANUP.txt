@@ -1,0 +1,12 @@
+STEP22NZ_FRAMEBUS_DEBUG_CLEANUP
+
+Oprava navazuje na STEP22NY.
+
+Co je opraveno:
+- Live Debug už nenechá viset starou hlášku "frame bus error gate", když FRAME BUS je už OK a gates 0/0.
+- Sticky warningy se čistí podle aktuálního stavu, ne až po dlouhém timeoutu.
+- FrameBus health gate ignoruje staré jednorázové debug/UI konzumenty, které přečetly frame jednou a pak by v diagnostice zůstaly jako stale.
+
+Důležité:
+- Tohle není maskování reálné chyby: pokud FrameBus znovu spadne do WARN/ERROR, debug ji zase ukáže.
+- Po nahrání udělej hard refresh / clear site data, ať se nenačte starý JS z cache.

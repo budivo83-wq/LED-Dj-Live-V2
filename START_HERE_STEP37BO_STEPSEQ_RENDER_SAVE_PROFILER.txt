@@ -1,0 +1,14 @@
+STEP37BO_STEPSEQ_RENDER_SAVE_PROFILER
+
+Navazuje na STEP37BN.
+
+Zmeny:
+- Pridan lehky profiler render/save operaci step sequenceru.
+- Meri renderGrid, updateTimeline, renderAll a saveState.
+- Vysledky jsou dostupne v okne prohlizece jako window.__budilightStepSeqPerf37BO.
+- HUD v sequenceru je defaultne skryty, aby nezatezoval UI.
+- Zapnuti HUD: v konzoli window.__budilightStepSeqPerf37BO.setVisible(true)
+- Vypnuti HUD: window.__budilightStepSeqPerf37BO.setVisible(false)
+
+Cil:
+Zjistit, jestli pri editu/presunu/prechodu brzdi grid render, timeline render nebo localStorage save.

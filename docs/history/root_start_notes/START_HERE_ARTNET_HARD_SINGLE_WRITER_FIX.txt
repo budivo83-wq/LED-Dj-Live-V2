@@ -1,0 +1,38 @@
+ARTNET HARD SINGLE WRITER FIX — STEP22MB
+
+Problém:
+- Settings ArtNet vypadal dobře.
+- Po přechodu na Performance začalo blikání přesně ve chvíli, kdy naskočil LED preview render.
+- To odpovídá dvěma současným writerům / senderům do stejné ArtNet cesty.
+
+Zásah:
+1) public/runtime/frame_authority.js
+   - vypnut přímý upload MASTER frame do /api/artnet/master-mirror/frame-bin.
+   - Frame Authority už pouze publikuje do interního framebusu.
+
+2) public/runtime/artnet_master_framebus_mirror_22ej.js
+   - jediný povolený browser writer na server MASTER mirror.
+   - poll upload vypnut, zůstává pouze event-driven upload z led-framebus-publish.
+
+3) src/server/live_routes.js
+   - mutující legacy endpointy /api/live/artnet/start, /tick, /frame, /frame/solid vrací 409 LEGACY_ARTNET_PATH_DISABLED.
+   - tím se odpojí starý ArtNet control sender, který mohl běžet paralelně vedle /api/artnet/sync-live/*.
+
+Platná cesta teď má být pouze:
+Performance render -> Frame Authority -> window.__ledFrameBus -> artnet_master_framebus_mirror_22ej.js -> /api/artnet/master-mirror/frame-bin -> /api/artnet/sync-live sender -> UDP ArtDmx
+
+Test:
+- Spustit aplikaci.
+- Ve Settings zapnout ArtNet přes současné /api/artnet/sync-live/*.
+- Přejít na Performance.
+- Jakmile naskočí preview, LED už nesmí začít chaoticky blikat.
+
+Kontrolní endpointy:
+/api/artnet/master-mirror/status
+/api/artnet/sync-live/status
+/api/artnet/master-bridge/monitor
+
+Pokud by blikání zůstalo i po tomhle, další podezření už není browser double writer, ale buď:
+- druhá aplikace v síti posílá stejné universe,
+- receiver/node má špatný pixel/universe split,
+- ArtSync/order/pacing problém na receiveru.

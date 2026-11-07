@@ -1,0 +1,12 @@
+STEP38N — Generator Live Stability Pass
+
+1) Spusť aplikaci.
+2) Nastav FPS v Settings.
+3) Spusť ArtNet sender v MASTER režimu.
+4) Otevři Generator.
+5) Dej LIVE MASTER.
+6) Sleduj panel 05 Live Stability Watchdog.
+
+Zelený stav: Generator vlastní MASTER, Performance je muted, MASTER source je generator-live-master-frame a ArtNet sender posílá.
+
+Když je něco špatně, panel vypíše konkrétní důvod a další krok.

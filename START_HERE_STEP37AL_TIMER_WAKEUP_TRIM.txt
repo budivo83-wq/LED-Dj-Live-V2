@@ -1,0 +1,15 @@
+STEP37AL_TIMER_WAKEUP_TRIM
+
+Goal:
+- Reduce background timer/RAF wakeups that can steal tiny slices from the live output frame budget.
+
+Changes:
+- Topbar FPS/status sampling no longer runs its own requestAnimationFrame loop. It samples once per second from real led-output-frame telemetry.
+- Headless leader lease heartbeat is relaxed from 500 ms / 1800 ms lease to 900 ms / 3500 ms lease, reducing synchronous localStorage traffic in runner/headless mode.
+
+Output/mapping/show logic:
+- Unchanged.
+
+Test notes:
+- Run npm run check:js
+- Run ArtNet boundary/source-policy tests

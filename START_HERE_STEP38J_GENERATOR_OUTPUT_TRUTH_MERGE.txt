@@ -1,0 +1,31 @@
+STEP38J GENERATOR OUTPUT TRUTH MERGE
+
+Start:
+1) Spusť appku.
+2) Otevři GENERATOR.
+3) Zapni PREVIEW a ověř obraz.
+4) Zapni LIVE MASTER, pokud chceš posílat generator frame do MASTER mirroru.
+5) V Settings spusť SAFE MASTER LIVE pro fyzický ArtNet sender.
+6) V Generatoru sleduj panel 05 Live Testing Chain a nový panel 06 Output Truth.
+
+Nový panel 06 Output Truth ukazuje:
+- MASTER source
+- ArtNet source
+- bind IP -> target IP:port
+- socket ready
+- patch/routes/universe summary
+- poslední UDP send
+- důvody, proč LED případně nesvítí
+
+Bezpečnost:
+- Output Truth je jen diagnostika.
+- Neposílá UDP sám.
+- Nespouští ArtNet sender.
+- Nemění mapping ani routes.
+
+Doporučený test:
+npm run check:js
+npm run check:full
+npm run check:layers
+npm run qa:core
+npm run test:generator-step38j

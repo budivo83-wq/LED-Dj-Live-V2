@@ -1,0 +1,31 @@
+STEP22MG_CONTINUOUS_ARTNET_PACKING
+
+Fix: ArtNet mapping now supports continuous universe packing.
+
+Before:
+- 300px strip used U0 170px + U1 130px
+- next strip was forced to U2 A0
+- that left unused gaps and WLED-style receivers interpreted the stream shifted
+
+Now:
+- universes are filled continuously
+- next strip starts at the remaining address of the previous universe
+- for 8x300, 170px/universe:
+  Strip 1: U0 A0 170px + U1 A0 130px
+  Strip 2: U1 A130 40px + U2 A0 170px + U3 A0 90px
+  Strip 3: U3 A90 80px + U4 A0 170px + U5 A0 50px
+
+Use:
+1. Open Mapping
+2. Output = ArtNet
+3. Universe px = 170
+4. Auto-route / Apply
+5. Save + Applied
+6. Start ArtNet from Settings
+
+Tests passed:
+- npm run check:js
+- node scripts/test-artnet-continuous-packing.mjs
+- npm run test:artnet-live-source-policy
+- npm run test:artnet-server-boundary
+- npm run test:artnet-settings-boundary

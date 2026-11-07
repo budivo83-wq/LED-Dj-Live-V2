@@ -1,0 +1,8 @@
+STEP37CN - BLOCK OLD .39 + REQUIRED NIC BIND
+
+- ArtNet live už nesmí spustit UDP socket bez explicitního BIND IP.
+- AUTO bind je pro start vypnutý: už se nevybere náhodná Windows síťovka.
+- Do Settings byl opraven reálný select NETWORK CARD / BIND IP.
+- Payload posílá bindIp i localAddress.
+- Server blokuje starou adresu 10.0.1.39 jako bind, output i packet target.
+- Pokud něco pořád uvidíš na .39, běží jiný/starý node.exe proces mimo tento ZIP.

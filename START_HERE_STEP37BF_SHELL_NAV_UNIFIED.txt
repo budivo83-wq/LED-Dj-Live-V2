@@ -1,0 +1,44 @@
+STEP37BF - Shell navigation unification
+
+Goal:
+- First plynulost pass: make every known application page route through the shell navigation scheduler instead of falling out to direct location.href paths.
+
+Changed:
+- public/runtime/shell_navigation_scheduler.js
+  - Added missing shell views:
+    - show-os.html
+    - control-authority-pro.html
+    - live-input.html
+  - This prevents those pages from normalizing/falling back to index.html and keeps navigation telemetry consistent.
+
+- public/runtime/shell_child_navigation.js
+  - New small helper for child pages.
+  - requestShellNavigation(href) posts led-shell-navigate to the parent shell when running inside shellView=1.
+  - Falls back to location.href when page is opened standalone.
+  - bindShellNavigationButtons(root) is ready for later pages that need explicit binding.
+
+- public/runtime/topbar_menu_global.js
+  - Center menu data-href buttons now use requestShellNavigation instead of direct location.href.
+
+- public/navigation_guard_utils.js
+  - Guarded gallery navigation now uses the shell helper instead of always forcing location.href.
+
+- public/animations.js
+  - Gallery top nav buttons use shell navigation when embedded.
+
+- public/mapping.js
+  - data-nav buttons use shell navigation when embedded.
+
+- public/shorts.js
+  - Center menu data-href buttons use shell navigation when embedded.
+
+Why this helps:
+- Shell no longer treats Show OS / Control Pro / Live Input as unknown pages.
+- Navigation clicks are funneled through one scheduler and one telemetry path.
+- This reduces inconsistent hard navigation paths before the next bigger step: iframe keep-alive/page cache.
+
+Validation:
+- node --check passed for changed JS modules.
+
+Next recommended step:
+- Add visible nav diagnostics: ui iframe load ms, ui ready ms, first runner relay ms, first preview ms.

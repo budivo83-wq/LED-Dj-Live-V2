@@ -1,0 +1,23 @@
+STEP37AZ_UI_RESIZE_GOVERNORS
+
+Navazuje na STEP37AY.
+
+Změny:
+- public/animations.js: editor split resize je coalesced přes STEP37AZ editor resize governor.
+- public/mapping.js: mapping canvas resize je coalesced přes STEP37AZ mapping resize governor.
+- public/runtime/quick_step_automator.js: sequencer fitVisibleToLayout resize je zpomalený při live output locku.
+- public/debug_panel.js: Output Stability detail ukazuje uiResize wait/ok a počet sloučených resize událostí.
+
+Cíl:
+- odstranit další mikrolagy při přepínání panelů, změně orientace/velikosti okna, fullscreen přechodech a resize stormech, aniž by se zasahovalo do LED renderu nebo ArtNet cesty.
+
+Diagnostika v konzoli:
+- window.__budilightEditorResizeGovernor37AZ
+- window.__budilightMappingResizeGovernor37AZ
+- window.__budilightStepSeqResizeGovernor37AZ
+
+Test:
+1) Zapnout ArtNet/live output.
+2) Přepínat Pixel big / Shader / Debug / Settings.
+3) Měnit fullscreen / velikost okna.
+4) V Debug > Output Stability sledovat uiResize, resize, step, uiCommit a evtGov.

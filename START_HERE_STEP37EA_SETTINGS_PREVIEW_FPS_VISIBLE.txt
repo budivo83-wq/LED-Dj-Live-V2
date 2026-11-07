@@ -1,0 +1,19 @@
+STEP37EA SETTINGS PREVIEW FPS VISIBLE
+
+Fix:
+- STEP37DZ correctly added MAIN PREVIEW FPS and runtime propagation, but old operator-cleanup CSS hid runtime fields by nth-of-type.
+- MAIN PREVIEW FPS was field #5 inside .settings-card-runtime, so it was hidden in Settings.
+
+Changes:
+- Replaced fragile nth-of-type hiding with explicit .settings-runtime-hidden-operator class.
+- Marked CROSSFADER PLACE and SHADER PREW FPS as hidden advanced/operator-clutter fields.
+- Marked MAIN PREVIEW FPS as .settings-main-preview-fps-field and forced it visible.
+- Added a light visual highlight to the MAIN PREVIEW FPS input.
+
+Validation:
+- npm run check:js OK.
+
+Expected UI:
+- Settings > Runtime now visibly shows MAIN PREVIEW FPS between CROSS SENS and RUNTIME MODE.
+- This setting still affects only the large Performance main preview canvas.
+- It does not affect LED/ArtNet output, small layer previews, or selector thumbnails.

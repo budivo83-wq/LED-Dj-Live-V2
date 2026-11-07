@@ -1,0 +1,24 @@
+STEP22OH_PREVIEW_UI_ROLLBACK_STEPSEQ_KEEP
+
+Purpose:
+- Fix broken/stopped visible preview introduced by STEP22OF monitor suppression.
+- Remove the aggressive live-output-lite UI CSS/performance mode because it made the UI feel chopped/steppy.
+- Keep STEP22OG fixes for step sequencer FX momentary, FLIP momentary, RAND PARAM fallback, and FrameBus debug reporting.
+
+Changed:
+- Restored public/runtime/render_pipeline.js from STEP22OE so the visible shell preview can draw again.
+- Restored public/shell.js from STEP22OE so the shell does not inject global transition/animation-killing CSS into the UI.
+- Kept public/runtime/quick_step_automator.js v10 momentary-fx-flip-param-fix.
+- Kept public/debug_panel.js runner-backed FrameBus warning cleanup.
+
+Test checklist:
+1. Restart server.
+2. Hard refresh / clear site data.
+3. Output ON via ArtNet.
+4. Confirm preview canvas is visible again.
+5. Confirm Live FPS stays near 57-60.
+6. Step sequencer: FX cell turns effect on only for that step, blank cell turns it off.
+7. Step sequencer: FLIP cell only flips on that step.
+8. Step sequencer: RAND PARAM changes L1/L2 params on that step.
+
+If FPS drops again with preview visible, next step should be a controllable Preview Quality switch rather than fully disabling preview.

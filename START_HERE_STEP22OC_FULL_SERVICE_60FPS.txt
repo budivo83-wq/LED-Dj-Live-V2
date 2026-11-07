@@ -1,0 +1,30 @@
+STEP22OC_FULL_SERVICE_60FPS
+
+Servisní optimalizační verze po propadu UI/output FPS.
+
+Co je změněno:
+1) Hot render path v layer_runtime.js
+   - normalizedParams už se nepočítají pro každý pixel zvlášť
+   - layer time se cacheuje per layer-state/per render tick
+   - odstraněná coords objekt alokace z největší části hot path
+   - palette clamp už nepoužívá .map() v každém pixelu
+
+2) FrameBus/FrameAuthority diagnostika
+   - framebus publish event není defaultně frame-rate diagnostický spam
+   - stats/eventy jsou stažené na servisní intervaly
+   - přímý output pipeline zůstává hlavní cesta pro fyzický výstup
+
+3) Output loop diagnostika
+   - output tick už nedělá gate/consumer/debug eventy každý frame
+   - reportOutputFrame je throttlovaný přes hot diagnostics interval
+   - výstupní frame render/sending zůstává na 60 FPS
+
+4) Live preview/side raw preview
+   - při aktivním fyzickém výstupu je visible preview silněji monitor-only
+   - raw preview side canvasy se nekreslí tak často
+
+Doporučení po nasazení:
+- vypnout/zapnout server
+- v prohlížeči hard refresh / clear site data
+- nejdřív testovat Performance s Output ON a Debug panel zavřený
+- až pak přepínat animace a sledovat Live FPS + Output Stability

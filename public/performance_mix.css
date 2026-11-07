@@ -1,0 +1,341 @@
+﻿/* Performance page final mix/crossfader overrides (single-source, deduplicated). */
+.performance-page .center-mix {
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  gap: 10px;
+  padding: 12px;
+}
+
+.performance-page .mix-core {
+  grid-template-columns: minmax(150px, 1.1fr) minmax(150px, 0.95fr);
+  gap: 8px;
+  padding: 10px;
+  width: min(100%, 860px);
+}
+
+.performance-page .master-fx-shell {
+  width: min(100%, 760px);
+}
+
+.performance-page .center-mix .performance-pads {
+  width: min(100%, 1220px);
+}
+
+.performance-page .master-fx-shell {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  margin-top: 14px;
+}
+
+.performance-page .master-fx-shell .fx-panel.master {
+  margin-top: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.performance-page .master-fx-shell .fx-panel.master > h3 {
+  grid-column: 1 / -1;
+  margin-bottom: 2px;
+}
+
+.performance-page .master-fx-shell .master-fx-block {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  align-items: end;
+  padding: 10px;
+  border: 1px solid rgba(0, 217, 255, 0.16);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(5, 12, 20, 0.82), rgba(2, 8, 14, 0.74));
+}
+
+.performance-page .master-fx-shell .master-fx-block h4 {
+  grid-column: 1 / -1;
+  margin: 0 0 2px;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  color: rgba(206, 241, 255, 0.92);
+}
+
+.performance-page .compact-mix {
+  grid-template-columns: minmax(190px, 1fr) minmax(250px, 1.36fr) minmax(170px, 0.82fr);
+  grid-template-areas:
+    "blend cross transition"
+    "mfx mfx mfx";
+  align-items: stretch;
+  gap: 10px;
+}
+
+.performance-page .crossfader-wrap {
+  grid-template-columns: 30px 22px minmax(0, 1fr) 22px 30px;
+  gap: 6px;
+  grid-area: cross;
+  align-self: stretch;
+  padding: 12px 14px;
+  border: 1px solid rgba(0, 217, 255, 0.18);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(3, 10, 18, 0.9), rgba(0, 0, 0, 0.68));
+}
+
+.performance-page .blend-field {
+  grid-area: blend;
+}
+
+.performance-page .blend-row {
+  grid-template-columns: minmax(0, 1fr) 28px 28px 28px;
+  gap: 4px;
+}
+
+.performance-page .transition-control {
+  grid-template-columns: minmax(110px, 1fr) 72px;
+  grid-area: transition;
+}
+
+.performance-page .transition-control input {
+  height: 32px;
+}
+
+.performance-page .master-fx {
+  grid-area: mfx;
+}
+
+.performance-page .crossfader,
+.performance-page .global-master-inline .master-range,
+.performance-page .level-main input[type="range"],
+.performance-page .embedded-fx input[type="range"],
+.performance-page .center-bpm input[type="range"],
+.performance-page .transition-control input[type="range"] {
+  background:
+    linear-gradient(90deg,
+      rgba(207, 47, 159, 0.98) 0,
+      rgba(110, 180, 224, 0.95) calc(var(--value, 0.5) * 100%),
+      rgba(69, 255, 217, 0.95) 100%);
+}
+
+.performance-page .knob-param input[type="range"] {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(3, 8, 15, 0.96) 0 42%, transparent 43%),
+    conic-gradient(var(--knob-color, var(--cyan)) calc(var(--value, 0.5) * 1turn), rgba(255, 255, 255, 0.08) 0);
+}
+
+.performance-page .cross-mouse-toggle {
+  height: 30px;
+}
+
+.performance-page .mix-collapse-toggle {
+  height: 30px;
+}
+
+.performance-page .mix-core.is-collapsed {
+  grid-template-columns: 1fr;
+}
+
+.performance-page .mix-core.is-collapsed .blend-field,
+.performance-page .mix-core.is-collapsed .transition-control {
+  display: none;
+}
+
+.performance-page .mix-core.is-collapsed .crossfader-wide {
+  grid-column: 1;
+}
+
+.performance-page .blend-row button,
+.performance-page .transition-control button {
+  min-height: 32px;
+  font-size: 0.72rem;
+}
+
+.performance-page .master-fx .knob-param input {
+  width: 58px;
+  height: 58px;
+}
+
+.performance-page .master-fx .knob-param::after {
+  content: attr(data-value);
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(239, 246, 255, 0.84);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.performance-page .master-fx-shell .master-fx-block .knob-param,
+.performance-page .master-fx-shell .master-fx-block .knob-param input[type="range"] {
+  --knob-color: #4a1f6d !important;
+}
+
+.performance-page .master-fx-shell .master-fx-block input.fx-knob[type="range"] {
+  --knob-color: #4a1f6d !important;
+}
+
+.performance-page .global-master-inline .master-range {
+  background:
+    linear-gradient(90deg,
+      rgba(52, 18, 79, 0.98) 0,
+      rgba(74, 28, 108, 0.95) calc(var(--value, 0.5) * 100%),
+      rgba(24, 10, 38, 0.92) 100%);
+  box-shadow: 0 0 12px rgba(52, 18, 79, 0.42);
+}
+
+.performance-page .global-master-inline .master-range::-webkit-slider-thumb,
+.performance-page .global-master-inline .master-range::-moz-range-thumb {
+  background: linear-gradient(135deg, #d8c4f0, #5d2a86 52%, #2a123f);
+  box-shadow: 0 0 0 3px rgba(8, 4, 14, 0.86), 0 0 14px rgba(73, 33, 110, 0.5);
+}
+
+/* TOPBAR crossfader mode:
+   - hide original mix frame by default (so Master FX goes up),
+   - show only BLEND + FADE after arrow expand. */
+body.performance-page[data-crossfader-placement="topbar"] .mix-core {
+  width: min(100%, 520px) !important;
+  margin: 4px auto 0 !important;
+  padding: 6px 8px !important;
+  grid-template-columns: minmax(0, 1fr) minmax(118px, 0.72fr) !important;
+  grid-template-areas: "blend transition" !important;
+  gap: 6px !important;
+}
+
+body.performance-page[data-crossfader-placement="topbar"] .mix-core #mixCrossSlot {
+  display: none !important;
+}
+
+body.performance-page[data-crossfader-placement="topbar"] .mix-core.is-collapsed {
+  display: none !important;
+}
+
+body.performance-page[data-crossfader-placement="topbar"] .mix-core:not(.is-collapsed) {
+  display: grid !important;
+}
+
+body.performance-page[data-crossfader-placement="topbar"] .mix-core .blend-row {
+  grid-template-columns: minmax(0, 1fr) 24px 24px 24px !important;
+  gap: 4px !important;
+}
+
+body.performance-page[data-crossfader-placement="topbar"] .mix-core .transition-control {
+  grid-template-columns: minmax(84px, 1fr) 62px !important;
+  gap: 4px !important;
+}
+
+body.performance-page[data-crossfader-placement="topbar"] .mix-core .transition-control input,
+body.performance-page[data-crossfader-placement="topbar"] .mix-core .blend-row button,
+body.performance-page[data-crossfader-placement="topbar"] .mix-core .transition-control button {
+  height: 28px !important;
+  min-height: 28px !important;
+}
+
+/* Force borderless compact crossfader in topbar (loaded after other files). */
+body.performance-page[data-crossfader-placement="topbar"] #topbarCrossSlot .crossfader-wrap {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+@media (max-width: 1180px) {
+  .performance-page .master-fx-shell .fx-panel.master {
+    grid-template-columns: 1fr;
+  }
+  .performance-page .master-fx-shell .master-fx-block {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .performance-page .master-fx-shell .master-fx-block {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* STEP 13BU-AL: crossfader section layout fix, using the existing mix classes only. */
+.performance-page .mix-core {
+  display: grid !important;
+  grid-template-columns: minmax(190px, 0.95fr) minmax(300px, 1.45fr) minmax(170px, 0.75fr) !important;
+  grid-template-areas: "blend cross transition" !important;
+  align-items: stretch !important;
+  gap: 10px !important;
+  width: min(100%, 960px) !important;
+  max-width: 960px !important;
+  overflow: visible !important;
+}
+
+.performance-page .mix-cross-slot {
+  grid-area: cross !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.performance-page .mix-core .crossfader-wide {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+}
+
+.performance-page .mix-core .crossfader-wrap {
+  box-sizing: border-box !important;
+  grid-template-columns: 34px 22px minmax(130px, 1fr) 22px 34px !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  align-items: center !important;
+}
+
+.performance-page .mix-core .blend-field,
+.performance-page .mix-core .transition-control {
+  min-width: 0 !important;
+  align-self: stretch !important;
+}
+
+.performance-page .mix-core .blend-row {
+  grid-template-columns: minmax(0, 1fr) 30px 30px 30px !important;
+  min-width: 0 !important;
+}
+
+.performance-page .mix-core .blend-row select {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.performance-page .mix-core .transition-control {
+  grid-template-columns: minmax(0, 1fr) 72px !important;
+}
+
+.performance-page .mix-core .transition-control button,
+.performance-page .mix-core .transition-control label,
+.performance-page .mix-core .transition-control input {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+@media (max-width: 1500px) {
+  .performance-page .mix-core {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    grid-template-areas:
+      "cross cross"
+      "blend transition" !important;
+    max-width: 760px !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .performance-page .mix-core {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "cross"
+      "blend"
+      "transition" !important;
+    max-width: 520px !important;
+  }
+
+  .performance-page .mix-core .crossfader-wrap {
+    grid-template-columns: 32px 20px minmax(90px, 1fr) 20px 32px !important;
+    padding-inline: 10px !important;
+  }
+}

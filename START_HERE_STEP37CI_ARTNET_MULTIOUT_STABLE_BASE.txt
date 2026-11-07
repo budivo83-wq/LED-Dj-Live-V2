@@ -1,0 +1,35 @@
+STEP37CI_ARTNET_MULTIOUT_STABLE_BASE
+
+Vychází z funkčního ArtNet základu STEP37CH.
+
+Změny:
+1) Opravený serverový UDP hot path pro multi-out:
+   - nejrychlejší větev sendUdpBatchPackets už neposílá všechny packety na jednu default IP.
+   - respektuje packet.targetIp / packet.targetPort z kompilovaného ArtNet patche.
+
+2) ArtSync pro multi-out:
+   - pokud patch obsahuje více cílových IP/portů, sync packet se přidá pro každý cílový node.
+   - single target chování zůstává zachované.
+
+3) Settings / Art-Net Live:
+   - přidán slotový Multi Out panel ARTNET 1-4.
+   - každý slot má ENABLE, IP, port, strip, from pixel, count, universe, start address, universe size, direction, color order.
+   - JSON route table zůstává jako RAW servisní fallback.
+   - tlačítka: 8x300 AUTO PACK, SPLIT EXAMPLE, CLEAR, SAVE/APPLY ROUTES, APPLY+START ARTNET.
+
+4) Patch report:
+   - universe report rozlišuje IP:port + universe, aby se multi-out se stejným universe číslem na různých nodech nesléval do jednoho řádku.
+
+Důležité ovládání:
+- ARTNET OUTPUT / ARTNET START pořád používá původní funkční start cestu: save config -> publish patch -> prime socket -> start live.
+- Multi Out musí mít MASTER ON a alespoň jeden enabled slot.
+- Pro klasický single ArtNet nech Multi Out MASTER = OFF.
+
+Doporučený test:
+1) Settings -> Art-Net Live -> Multi Out MASTER ON.
+2) Nastav ARTNET 1 IP node A, strip/from/count/universe.
+3) Nastav ARTNET 2 IP node B, jiný strip nebo jinou část stripu.
+4) SAVE/APPLY ROUTES.
+5) VALIDATE ROUTE.
+6) APPLY+START ARTNET nebo ARTNET START.
+7) BLACKOUT test musí jít přes stejnou route tabulku.

@@ -1,0 +1,581 @@
+/* STEP 7O: favorites + safer navigation + taller gallery workspace */
+.animations-page .app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.anim-studio {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: calc(100vh - 82px);
+  align-items: stretch;
+}
+.anim-sidebar,
+.anim-gallery-wrap,
+.anim-selectors-wrap,
+.anim-palettes-wrap,
+.anim-editor-wrap,
+.anim-inspector {
+  min-height: 0;
+}
+.anim-gallery-wrap {
+  display: flex;
+  flex-direction: column;
+}
+.anim-gallery-wrap.studio-view.is-active {
+  display: flex;
+}
+.gallery-grid {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  align-content: start;
+  padding-bottom: 12px;
+}
+.anim-card { position: relative; }
+.favorite-toggle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(0,0,0,.45);
+  color: rgba(255,255,255,.45);
+  cursor: pointer;
+  z-index: 3;
+  font-size: 15px;
+  line-height: 1;
+}
+.favorite-toggle:hover,
+.favorite-toggle.is-favorite {
+  color: white;
+  border-color: rgba(255,214,90,.72);
+  background: rgba(255,214,90,.24);
+  box-shadow: 0 0 18px rgba(255,214,90,.14);
+}
+.album-card.is-active .album-main strong::after {
+  content: '';
+}
+.leave-guard-modal[hidden] { display: none; }
+.leave-guard-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0,0,0,.62);
+  backdrop-filter: blur(10px);
+}
+.leave-guard-card {
+  width: min(520px, 100%);
+  border: 1px solid rgba(0,255,255,.22);
+  border-radius: 24px;
+  padding: 22px;
+  background: linear-gradient(180deg, rgba(18,28,42,.96), rgba(5,8,15,.98));
+  box-shadow: 0 24px 90px rgba(0,0,0,.55);
+  color: white;
+}
+.leave-guard-card small {
+  color: rgba(255,214,90,.88);
+  text-transform: uppercase;
+  letter-spacing: .16em;
+}
+.leave-guard-card h2 { margin: 8px 0 8px; }
+.leave-guard-card p { color: rgba(255,255,255,.74); line-height: 1.5; }
+.leave-guard-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+@media (max-width: 900px) {
+  .anim-studio { height: auto; }
+  .leave-guard-actions { grid-template-columns: 1fr; }
+}
+
+/* STEP 7P: restore detailed gallery cards, simplify selector cards */
+.gallery-grid {
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+}
+.anim-card {
+  border-radius: 20px;
+  border-color: rgba(255,255,255,.13);
+  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.035));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.025);
+}
+.anim-card canvas {
+  height: 82px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.anim-card-body {
+  min-height: 72px;
+  padding: 11px 12px 12px;
+  background: rgba(0,0,0,.12);
+}
+.anim-card-title {
+  font-size: 13px;
+  line-height: 1.25;
+  letter-spacing: .02em;
+}
+.anim-card-tags {
+  min-height: 22px;
+}
+.anim-tag {
+  background: rgba(0,0,0,.18);
+}
+.selector-grid {
+  grid-template-columns: repeat(auto-fill, minmax(205px, 1fr));
+  gap: 14px;
+}
+.selector-card {
+  position: relative;
+  min-height: 126px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.045);
+}
+.selector-card-main canvas {
+  height: 126px;
+  border: 0;
+}
+.selector-card .selector-index {
+  top: 9px;
+  left: 9px;
+  font-size: 11px;
+  padding: 4px 8px;
+}
+.selector-card .selector-actions {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 0;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+.selector-card .selector-actions button {
+  pointer-events: auto;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 17px;
+  line-height: 1;
+  background: rgba(120,0,40,.72);
+}
+.selector-mode .anim-inspector .preview-runner-row,
+.selector-mode .anim-inspector .preview-controls,
+.selector-mode .anim-inspector .assign-box,
+.selector-mode .anim-inspector .metadata-box,
+.selector-mode .anim-inspector .anim-meta {
+  display: none !important;
+}
+.selector-mode .anim-inspector {
+  align-self: start;
+}
+.selector-mode .anim-inspector canvas#bigPreview {
+  height: 210px;
+}
+
+/* STEP 7R: gallery view mode + dynamic multi-filter chips */
+.card-details-toggle {
+  opacity: .78;
+}
+.card-details-toggle[aria-pressed="true"] {
+  border-color: rgba(0,255,255,.34);
+  background: rgba(0,255,255,.10);
+  opacity: .95;
+}
+.filter-row {
+  align-items: center;
+  max-height: 112px;
+  overflow: auto;
+  padding-right: 2px;
+}
+.filter {
+  user-select: none;
+}
+.filter.is-active::before {
+  content: '✓ ';
+  color: rgba(0,255,190,.95);
+}
+
+/* STEP 8R: gallery details hard contract
+   Real issue: Details ON only changed thumbnail zoom because older gallery card
+   rules controlled canvas/card sizing while the metadata body could still be
+   hidden or clipped by stale compact layout. This block makes the gallery view
+   explicit: details mode shows name/tags and gives the card an auto metadata
+   row; compact mode is the only mode allowed to hide the body. */
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)) !important;
+  gap: 14px !important;
+  align-content: start !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid .anim-card {
+  display: grid !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  text-align: left !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid.is-detail-cards,
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid:not(.is-compact-cards) {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid.is-detail-cards .anim-card,
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid:not(.is-compact-cards) .anim-card,
+body.animations-page.gallery-details-on:not(.editor-mode) #galleryGrid .anim-card {
+  grid-template-rows: 92px minmax(82px, auto) !important;
+  min-height: 178px !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid.is-detail-cards .anim-card canvas,
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid:not(.is-compact-cards) .anim-card canvas,
+body.animations-page.gallery-details-on:not(.editor-mode) #galleryGrid .anim-card canvas {
+  display: block !important;
+  width: 100% !important;
+  height: 92px !important;
+  min-height: 92px !important;
+  max-height: 92px !important;
+  grid-row: 1 !important;
+  border-bottom: 1px solid rgba(255,255,255,.10) !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid.is-detail-cards .anim-card-body,
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid:not(.is-compact-cards) .anim-card-body,
+body.animations-page.gallery-details-on:not(.editor-mode) #galleryGrid .anim-card-body {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  inset: auto !important;
+  grid-row: 2 !important;
+  min-height: 82px !important;
+  height: auto !important;
+  max-height: none !important;
+  padding: 11px 12px 12px !important;
+  overflow: visible !important;
+  z-index: 2 !important;
+  background: rgba(0,0,0,.16) !important;
+  box-sizing: border-box !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid.is-detail-cards .anim-card-title,
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid:not(.is-compact-cards) .anim-card-title,
+body.animations-page.gallery-details-on:not(.editor-mode) #galleryGrid .anim-card-title {
+  display: block !important;
+  visibility: visible !important;
+  color: rgba(255,255,255,.96) !important;
+  font-size: 13px !important;
+  line-height: 1.25 !important;
+  font-weight: 850 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid.is-detail-cards .anim-card-tags,
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid:not(.is-compact-cards) .anim-card-tags,
+body.animations-page.gallery-details-on:not(.editor-mode) #galleryGrid .anim-card-tags {
+  display: flex !important;
+  visibility: visible !important;
+  flex-wrap: wrap !important;
+  gap: 5px !important;
+  margin-top: 8px !important;
+  min-height: 22px !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid.is-detail-cards .anim-tag,
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid:not(.is-compact-cards) .anim-tag,
+body.animations-page.gallery-details-on:not(.editor-mode) #galleryGrid .anim-tag {
+  display: inline-flex !important;
+  align-items: center !important;
+  max-width: 100% !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid.is-compact-cards {
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)) !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid.is-compact-cards .anim-card,
+body.animations-page.gallery-details-off:not(.editor-mode) #galleryGrid .anim-card {
+  grid-template-rows: 104px !important;
+  min-height: 104px !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid.is-compact-cards .anim-card canvas,
+body.animations-page.gallery-details-off:not(.editor-mode) #galleryGrid .anim-card canvas {
+  height: 104px !important;
+  min-height: 104px !important;
+  max-height: 104px !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid.is-compact-cards .anim-card-body,
+body.animations-page.gallery-details-off:not(.editor-mode) #galleryGrid .anim-card-body {
+  display: none !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid .thumb-badge {
+  left: 8px !important;
+  right: auto !important;
+  z-index: 4 !important;
+}
+
+body.animations-page:not(.editor-mode) #galleryGrid.gallery-grid .favorite-toggle {
+  z-index: 5 !important;
+}
+
+/* STEP 8S: editor picker + sidebar width parity
+   Editor mode uses the same side column contract as the main gallery screen.
+   The edited animation chooser is no longer a native select; the select remains
+   hidden only as a compatibility state holder, while the visible control is a
+   thumbnail popover matching the gallery cards. */
+body.editor-mode main.anim-studio {
+  grid-template-columns: minmax(250px, 310px) minmax(0, 1fr) minmax(320px, 430px) !important;
+}
+
+body.editor-mode .anim-sidebar {
+  min-width: 250px !important;
+  max-width: 310px !important;
+}
+
+body.editor-mode .anim-inspector {
+  min-width: 320px !important;
+  max-width: 430px !important;
+}
+
+body.editor-mode .editor-toolbar {
+  position: relative !important;
+  overflow: visible !important;
+  z-index: 20 !important;
+}
+
+body.editor-mode .editor-picker-field {
+  position: relative !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+.editor-hidden-select {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  left: -9999px !important;
+}
+
+.editor-picker-btn {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(0,255,255,.22);
+  background: linear-gradient(180deg, rgba(12,24,36,.9), rgba(3,7,13,.92));
+  color: rgba(255,255,255,.92);
+  border-radius: 16px;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.035);
+}
+
+.editor-picker-btn:hover,
+.editor-picker-btn[aria-expanded="true"] {
+  border-color: rgba(255,0,190,.46);
+  box-shadow: 0 0 0 1px rgba(255,0,190,.16), 0 14px 34px rgba(0,0,0,.26);
+}
+
+.editor-picker-btn canvas {
+  width: 96px;
+  height: 42px;
+  display: block;
+  border-radius: 10px;
+  background: #03050a;
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+.editor-picker-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+.editor-picker-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 100;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 8px;
+  max-height: min(56dvh, 520px);
+  overflow: auto;
+  padding: 10px;
+  border: 1px solid rgba(0,255,255,.24);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(8,14,24,.98), rgba(3,6,12,.98));
+  box-shadow: 0 24px 70px rgba(0,0,0,.58), 0 0 0 1px rgba(255,255,255,.04) inset;
+  scrollbar-gutter: stable;
+}
+
+.editor-picker-panel[hidden] {
+  display: none !important;
+}
+
+.editor-picker-card {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  grid-template-areas:
+    "thumb main"
+    "thumb tags";
+  gap: 6px 9px;
+  align-items: center;
+  min-width: 0;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.045);
+  color: white;
+  border-radius: 15px;
+  padding: 7px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.editor-picker-card:hover,
+.editor-picker-card.is-selected {
+  border-color: rgba(0,255,255,.5);
+  background: rgba(0,255,255,.075);
+}
+
+.editor-picker-card canvas {
+  grid-area: thumb;
+  width: 92px;
+  height: 42px;
+  border-radius: 10px;
+  background: #03050a;
+  border: 1px solid rgba(255,255,255,.1);
+}
+
+.editor-picker-card-main {
+  grid-area: main;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.editor-picker-card-main strong,
+.editor-picker-card-main small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-picker-card-main strong {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.editor-picker-card-main small {
+  color: rgba(255,255,255,.56);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.editor-picker-card-tags {
+  grid-area: tags;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+
+.editor-picker-card-tags em {
+  max-width: 74px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-style: normal;
+  font-size: 9px;
+  color: rgba(255,255,255,.72);
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 999px;
+  padding: 2px 5px;
+}
+
+.editor-picker-empty {
+  grid-column: 1 / -1;
+  color: rgba(255,255,255,.7);
+  border: 1px dashed rgba(255,255,255,.16);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+@media (max-width: 1320px) {
+  body.editor-mode main.anim-studio {
+    grid-template-columns: minmax(250px, 310px) minmax(0, 1fr) minmax(320px, 390px) !important;
+  }
+}
+
+@media (max-width: 1080px) {
+  body.editor-mode main.anim-studio {
+    grid-template-columns: 1fr !important;
+  }
+  body.editor-mode .anim-sidebar,
+  body.editor-mode .anim-inspector {
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+}
+
+
+
+/* STEP37DU: gallery save + prewarm action strip */
+.anim-card-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.anim-card-actions button {
+  border: 1px solid rgba(0,255,255,.22);
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: rgba(0,255,255,.075);
+  color: rgba(235,255,255,.9);
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.anim-card-actions button:hover {
+  border-color: rgba(0,255,190,.45);
+  background: rgba(0,255,190,.14);
+}
+.anim-card-actions .gallery-prewarm-mark {
+  border-color: rgba(255,214,90,.28);
+  background: rgba(255,214,90,.09);
+}
+body.animations-page #galleryGrid .anim-card.is-compact-card .anim-card-actions {
+  display: none;
+}

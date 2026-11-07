@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LED Dj live - Show OS</title>
+  <link rel="stylesheet" href="style.css?v=22hr" />
+  <link rel="stylesheet" href="performance.css?v=22hr" />
+  <link rel="stylesheet" href="performance_topbar.css?v=22hr" />
+  <link rel="stylesheet" href="show-os.css?v=22kz" />
+</head>
+<body class="ui-pro performance-page showos-page">
+  <div class="showos-bg-orb orb-a"></div>
+  <div class="showos-bg-orb orb-b"></div>
+  <div class="app-shell showos-shell">
+    <header class="topbar showos-topbar">
+      <div class="top-left-cluster">
+        <div class="brand-block">
+          <button class="power-btn" type="button" onclick="location.href='index.html'">LED</button>
+          <div class="brand-mark">◈</div>
+          <div class="brand-text"><strong>SHOW<br>OS</strong><span>control room</span></div>
+        </div>
+      </div>
+      <nav class="workspace-tabs" aria-label="Workspace">
+        <button class="nav" type="button" onclick="location.href='index.html'">PERFORMANCE</button>
+        <button class="nav" type="button" onclick="location.href='animations.html'">GALLERY</button>
+        <button class="nav" type="button" onclick="location.href='generator.html'">GENERATOR</button>
+        <button class="nav active" type="button" onclick="location.href='show-os.html'">SHOW OS</button>
+        <button class="nav" type="button" onclick="location.href='mapping.html'">MAPPING</button>
+        <button class="nav" type="button" onclick="location.href='settings.html'">SETTINGS</button>
+      </nav>
+      <div class="top-right-cluster compact-status">
+        <div><span>WORLD</span><b id="topWorld">FORGE</b></div>
+        <div><span>PHASE</span><b id="topPhase">BUILD</b></div>
+        <div><span>HEALTH</span><b id="topHealth">GOOD</b></div>
+      </div>
+    </header>
+
+    <main class="showos-layout">
+      <aside class="showos-side showos-card">
+        <div class="side-title">
+          <small>STEP22KZ</small>
+          <h1>Show OS</h1>
+          <p>Samostatný dramaturgický mozek. Performance zůstává renderer/live pult, Show OS posílá bezpečný intent a nově staví vrstvu Visual Ecosystem nad Universe/Story/Director logikou, ale přes Control Authority zůstává pod rukou operátora.</p>
+        </div>
+        <nav class="section-tabs" id="sectionTabs"></nav>
+        <div class="intent-box">
+          <span>Intent Bridge</span>
+          <strong id="intentState">LOCAL ONLY</strong>
+          <small>ukládá world/energy/journey/event do localStorage. Nic neničí v Performance.</small>
+        </div>
+        <div class="side-actions">
+          <button id="btnSendIntent" class="primary">SEND INTENT</button>
+          <button id="btnSaveAll">SAVE</button>
+          <button id="btnExportAll">EXPORT PACK</button>
+          <label class="import-label">IMPORT<input id="importFile" type="file" accept="application/json"></label>
+        </div>
+      </aside>
+
+      <section class="showos-main">
+        <section class="os-section active" data-section="control">
+          <div class="hero-card showos-card">
+            <div>
+              <small>CONTROL ROOM</small>
+              <h2>Kde jsme a kam plujeme?</h2>
+              <p>Rychlý operátorský pohled: current world, target, morph, energy, chaos, density a show phase.</p>
+            </div>
+            <div class="hero-kpis">
+              <div><span>Runtime</span><b id="runtimeVal">00:00</b></div>
+              <div><span>Transition</span><b id="transitionVal">0%</b></div>
+              <div><span>Variety</span><b id="varietyVal">86%</b></div>
+            </div>
+          </div>
+
+          <div class="control-grid">
+            <div class="showos-card status-tower">
+              <div class="world-pair">
+                <div><span>Current World</span><strong id="currentWorld">Forge Reactor</strong></div>
+                <i>→</i>
+                <div><span>Target World</span><strong id="targetWorld">Alien Temple</strong></div>
+              </div>
+              <div class="slider-stack">
+                <label><span>Energy <b id="energyText">62</b>%</span><input id="energy" type="range" min="0" max="100" value="62"></label>
+                <label><span>Chaos <b id="chaosText">34</b>%</span><input id="chaos" type="range" min="0" max="100" value="34"></label>
+                <label><span>Density <b id="densityText">48</b>%</span><input id="density" type="range" min="0" max="100" value="48"></label>
+                <label><span>Motion <b id="motionText">56</b>%</span><input id="motion" type="range" min="0" max="100" value="56"></label>
+                <label><span>Morph Time <b id="morphText">60</b>s</span><input id="morph" type="range" min="0" max="300" step="5" value="60"></label>
+              </div>
+              <div class="phase-row" id="phaseRow"></div>
+            </div>
+
+            <div class="showos-card performance-pad">
+              <div class="card-head"><h3>Performance Pad</h3><button id="btnPanicCalm">PANIC CALM</button></div>
+              <div class="pad-grid">
+                <button data-action="build">BUILD +</button>
+                <button data-action="hold">HOLD</button>
+                <button data-action="break">BREAK</button>
+                <button data-action="drop">DROP</button>
+                <button data-action="calm">CALM</button>
+                <button data-action="chaosUp">CHAOS +</button>
+                <button data-action="chaosDown">CHAOS -</button>
+                <button data-action="resetCrowd">RESET CROWD</button>
+                <button data-action="darken">DARKEN</button>
+                <button data-action="openUp">OPEN UP</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+
+        <section class="os-section" data-section="universe">
+          <div class="showos-card full-card universe-mode-card">
+            <div class="card-head"><div><h2>Universe Mode</h2><p>Nová vrstva nad civilizacemi: show necestuje jen mezi světy, ale mezi celými vesmíry s vlastní DNA, počasím a dramaturgií.</p></div><div class="head-actions"><button id="btnUniverseTravel" class="primary">UNIVERSE TRAVEL</button><button id="btnStoryPsy">PSY STORY</button><button id="btnStoryAmbient">AMBIENT STORY</button></div></div>
+            <div class="universe-grid" id="universeGrid"></div>
+            <div class="universe-bottom">
+              <div class="intel-panel"><h3>Current Path</h3><div id="universePath" class="universe-path"></div><div class="head-actions"><button id="btnTimelineExtend">EXTEND +20M</button><button id="btnTimelineShorten">SHORTEN -10M</button></div></div>
+              <div class="intel-panel"><h3>Civilization Library</h3><div id="civilizationLibrary" class="civilization-box"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="story">
+          <div class="showos-card full-card story-engine-card">
+            <div class="card-head">
+              <div>
+                <h2>Story Engine + Living Timeline</h2>
+                <p>Show už neběží jako playlist scén. Běží jako dramaturgická cesta: Discovery → Exploration → Conflict → Peak → Resolution. Director může timeline za běhu přepsat.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnStoryGeneratePsy" class="primary">GENERATE PSY</button>
+                <button id="btnStoryGenerateAmbient">AMBIENT</button>
+                <button id="btnStoryRewrite">DIRECTOR REWRITE</button>
+                <button id="btnStorySendBridge">SEND STORY BRIDGE</button>
+              </div>
+            </div>
+            <div class="story-dashboard">
+              <div class="intel-panel">
+                <h3>Living Timeline</h3>
+                <div id="storyTimeline" class="story-timeline-list"></div>
+              </div>
+              <div class="intel-panel">
+                <h3>Director Metrics</h3>
+                <div id="storyMetrics" class="story-metrics"></div>
+                <h3>Rewrite Log</h3>
+                <div id="livingTimelineLog" class="memory-log compact-log"></div>
+              </div>
+            </div>
+            <h3>Story Bridge Payload</h3>
+            <pre id="storyBridgePayload" class="payload-box"></pre>
+          </div>
+        </section>
+
+
+
+        <section class="os-section" data-section="ecosystem">
+          <div class="showos-card full-card visual-ecosystem-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22IO — Visual Ecosystem</h2>
+                <p>Ne jen animace, scény nebo světy. Tohle je živý vesmír se svojí historií, únavou, zvědavostí, hidden signály, mega eventy a Show DNA.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnDirectorPulse" class="primary">DIRECTOR PULSE</button>
+                <button id="btnHiddenSignal">HIDDEN SIGNAL</button>
+                <button id="btnMegaEvent">MEGA EVENT</button>
+                <button id="btnEcosystemBridge">SEND ECOSYSTEM BRIDGE</button>
+              </div>
+            </div>
+
+            <div class="ecosystem-kpis">
+              <div><span>AGE</span><b id="ecoAge">0m</b></div>
+              <div><span>NOVELTY</span><b id="ecoNovelty">0%</b></div>
+              <div><span>FATIGUE</span><b id="ecoFatigue">0%</b></div>
+              <div><span>CURIOSITY</span><b id="ecoCuriosity">0%</b></div>
+              <div><span>COHERENCE</span><b id="ecoCoherence">0%</b></div>
+            </div>
+
+            <div class="ecosystem-grid">
+              <div class="intel-panel">
+                <h3>Universe Director AI</h3>
+                <div id="ecoDecision" class="eco-decision"></div>
+                <div id="directorGenomeBars" class="eco-genome-bars"></div>
+              </div>
+              <div class="intel-panel">
+                <h3>Discovery System</h3>
+                <div id="hiddenSignalList" class="memory-log compact-log"></div>
+              </div>
+              <div class="intel-panel">
+                <h3>Mega Events</h3>
+                <div id="megaEventList" class="memory-log compact-log"></div>
+              </div>
+              <div class="intel-panel">
+                <div class="card-head"><h3>Show History</h3><button id="btnSaveShowHistory">SAVE HISTORY</button></div>
+                <div id="showHistoryList" class="memory-log compact-log"></div>
+              </div>
+            </div>
+
+            <h3>Visual Ecosystem Bridge Payload</h3>
+            <pre id="ecosystemPayload" class="payload-box"></pre>
+          </div>
+        </section>
+
+
+
+        <section class="os-section" data-section="authority">
+          <div class="showos-card full-card authority-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22JP — Control Authority</h2>
+                <p>Bezpečnostní a operátorská vrstva nad Director AI. Systém může radit, připravovat payloady a generovat varianty, ale skutečné řízení se drží v ručně nastavených limitech.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnAuthorityApply" class="primary">APPLY DIRECTOR SUGGESTION</button>
+                <button id="btnAuthorityFreeze">FREEZE TO MANUAL</button>
+                <button id="btnAuthoritySave">SAVE LIMITS</button>
+              </div>
+            </div>
+
+            <div class="authority-kpis">
+              <div><span>MODE</span><b id="authorityMode">ASSIST</b></div>
+              <div><span>AUTO APPLY</span><b id="authorityAuto">OFF</b></div>
+              <div><span>OPERATOR LOCK</span><b id="authorityLock">OPEN</b></div>
+            </div>
+
+            <div class="authority-mode-row">
+              <button data-auth-mode="MANUAL">MANUAL<br><small>AI jen radí</small></button>
+              <button data-auth-mode="ASSIST">ASSIST<br><small>návrhy + ruční apply</small></button>
+              <button data-auth-mode="AUTO_LIMITED">AUTO LIMITED<br><small>jen v limitech</small></button>
+            </div>
+
+            <div class="authority-grid">
+              <div class="intel-panel">
+                <h3>Operator Limits</h3>
+                <label><span>Max Energy <b id="auth_maxEnergy_txt">88</b>%</span><input id="auth_maxEnergy" type="range" min="0" max="100" value="88"></label>
+                <label><span>Max Chaos <b id="auth_maxChaos_txt">58</b>%</span><input id="auth_maxChaos" type="range" min="0" max="100" value="58"></label>
+                <label><span>Max Density <b id="auth_maxDensity_txt">76</b>%</span><input id="auth_maxDensity" type="range" min="0" max="100" value="76"></label>
+                <label><span>Max Motion <b id="auth_maxMotion_txt">88</b>%</span><input id="auth_maxMotion" type="range" min="0" max="100" value="88"></label>
+              </div>
+              <div class="intel-panel authority-switches">
+                <h3>Permission Gates</h3>
+                <label><input id="auth_autoApply" type="checkbox"> Auto-apply Director pulses</label>
+                <label><input id="auth_allowWorldTravel" type="checkbox" checked> Povolit Universe/World travel</label>
+                <label><input id="auth_allowTimelineRewrite" type="checkbox" checked> Povolit Living Timeline rewrite</label>
+                <label><input id="auth_allowDiscovery" type="checkbox" checked> Povolit Discovery system</label>
+                <label><input id="auth_allowMegaEvents" type="checkbox"> Povolit Mega Events</label>
+                <label><input id="auth_operatorLock" type="checkbox"> Operator Lock — žádné automatické zásahy</label>
+              </div>
+              <div class="intel-panel">
+                <h3>Current Director Suggestion</h3>
+                <div id="authorityDecision" class="eco-decision"></div>
+                <h3>Authority Log</h3>
+                <div id="authorityLog" class="memory-log compact-log"></div>
+              </div>
+            </div>
+
+            <h3>Controlled Bridge Preview</h3>
+            <pre id="authorityPayload" class="payload-box"></pre>
+          </div>
+        </section>
+
+
+
+        <section class="os-section" data-section="phenomena">
+          <div class="showos-card full-card phenomena-engine-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22KH — Phenomena Engine</h2>
+                <p>Animace už nejsou hlavní stavební kámen. Show OS skládá vizuál z jevů: Flow, Pulse, Storm, Growth, Swarm, Orbit. Performance renderer dostane intent, fyziku světa, náladu, entity a kameru — pořád ale pod Control Authority.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnPhenomenaForge" class="primary">FORGE</button>
+                <button id="btnPhenomenaOrganic">ORGANIC</button>
+                <button id="btnPhenomenaSynthetic">SYNTHETIC</button>
+                <button id="btnPhenomenaCosmic">COSMIC</button>
+                <button id="btnPhenomenaMutate">MUTATE</button>
+                <button id="btnPhenomenaBridge">SEND BRIDGE</button>
+              </div>
+            </div>
+            <div class="phenomena-grid">
+              <div class="intel-panel wide-intel">
+                <h3>Active Phenomena</h3>
+                <div id="phenomenaChips" class="phenomena-chips"></div>
+                <small class="muted-note">Kliknutím zapínáš/vypínáš jevy. Doporučeně 2–6 aktivních jevů najednou.</small>
+              </div>
+              <div class="intel-panel">
+                <h3>World Physics</h3>
+                <div id="physicsBars" class="slider-stack compact-sliders"></div>
+              </div>
+              <div class="intel-panel">
+                <h3>Emotion Field</h3>
+                <div id="emotionField" class="emotion-field"></div>
+              </div>
+              <div class="intel-panel">
+                <h3>Entity System</h3>
+                <div id="entityList" class="memory-log compact-log"></div>
+                <button id="btnPhenomenaEntity" class="primary small-action">BIRTH ENTITY</button>
+              </div>
+              <div class="intel-panel">
+                <h3>World Camera</h3>
+                <div id="worldCameraState" class="idea-box"></div>
+                <p class="muted-note">Kamera je zatím intent vrstva: zoom/pan/focus pro budoucí renderer, ne přímé převzetí Performance.</p>
+              </div>
+              <div class="intel-panel wide-intel">
+                <h3>Phenomena Bridge Payload</h3>
+                <pre id="phenomenaPayload" class="payload-box"></pre>
+              </div>
+              <div class="intel-panel wide-intel">
+                <h3>Phenomena Log</h3>
+                <div id="phenomenaLog" class="memory-log compact-log"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+
+        <section class="os-section" data-section="physics">
+          <div class="showos-card full-card physics-core-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22KH–KN — Visual Physics Core Pack</h2>
+                <p>Testovací jádro pro Physics Variables, Physics Debug, Memory Field, Attention Field, Flow Network, Emergent Events a World Blending. Všechno je nastavitelné a posílá se jen jako bezpečný bridge intent.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnPhysicsDerive" class="primary">DERIVE FROM SHOW</button>
+                <button id="btnPhysicsApply">APPLY SAFE</button>
+                <button id="btnPhysicsBridge" class="primary">SEND PHYSICS BRIDGE</button>
+              </div>
+            </div>
+            <div class="physics-core-grid">
+              <div class="intel-panel wide-intel"><h3>Physics Variables</h3><div id="physicsCoreVars" class="slider-stack compact-sliders"></div></div>
+              <div class="intel-panel"><h3>Physics Monitor</h3><div id="physicsMonitor" class="physics-monitor"></div></div>
+              <div class="intel-panel"><h3>Core Config</h3><div id="physicsCoreConfig" class="physics-config"></div></div>
+              <div class="intel-panel"><h3>Memory Field</h3><div id="memoryFieldList" class="memory-log compact-log"></div><button id="btnPhysicsInject" class="primary small-action">INJECT ENERGY</button></div>
+              <div class="intel-panel"><h3>Attention Field</h3><div id="attentionMap" class="attention-map"></div><small class="muted-note">Světlé body = místa, kam renderer může dát kontrast, jas nebo detail.</small></div>
+              <div class="intel-panel"><h3>Flow Network</h3><div id="flowNodeList" class="memory-log compact-log"></div></div>
+              <div class="intel-panel"><h3>Emergent Events</h3><div class="head-actions mini-actions"><button id="btnEmergentScan" class="primary">SCAN</button><button id="btnEmergentForce">FORCE TEST</button></div><div id="emergentEventList" class="memory-log compact-log"></div></div>
+              <div class="intel-panel wide-intel"><h3>World Blending</h3><div class="blend-row"><select id="blendWorldA"></select><input id="blendMix" type="range" min="0" max="100" value="30"><select id="blendWorldB"></select><button id="btnApplyBlend" class="primary">APPLY BLEND</button></div><div id="worldBlendPreview" class="idea-box"></div></div>
+              <div class="intel-panel wide-intel"><h3>Physics Bridge Payload</h3><pre id="physicsPayload" class="payload-box"></pre></div>
+              <div class="intel-panel wide-intel"><h3>Physics Log</h3><div id="physicsLog" class="memory-log compact-log"></div></div>
+            </div>
+          </div>
+        </section>
+
+
+
+        <section class="os-section" data-section="stability">
+          <div class="showos-card full-card stability-lab-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22KO — Stability & Performance Lab</h2>
+                <p>Ladicí vrstva pro reálné testování: výkonové profily, runtime pressure, bridge heartbeat, watchdog guardy, auto-degrade a bezpečné limity pro flow/memory. Cíl je stabilita při dlouhém běhu, ne další autopilot.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnStabilityScan" class="primary">HEALTH SCAN</button>
+                <button id="btnStabilityTrim">TRIM LOAD</button>
+                <button id="btnStabilityBridge" class="primary">SEND STABILITY BRIDGE</button>
+              </div>
+            </div>
+            <div id="stabilityProfileButtons" class="profile-buttons"></div>
+            <div id="stabilityKpis" class="ecosystem-kpis stability-kpis"></div>
+            <div class="physics-core-grid stability-grid">
+              <div class="intel-panel wide-intel"><h3>Performance Config</h3><div id="stabilityConfig" class="physics-config stability-config"></div></div>
+              <div class="intel-panel"><h3>Safety Guards</h3><div id="stabilityGuards" class="physics-config guard-list"></div><small class="muted-note">Guardy pouze omezují zátěž a hlídají bridge. Neřídí dramaturgii samy.</small></div>
+              <div class="intel-panel"><h3>Runtime Load</h3><div id="stabilityMeters" class="physics-monitor"></div></div>
+              <div class="intel-panel wide-intel"><h3>Stability Bridge Payload</h3><pre id="stabilityPayload" class="payload-box"></pre></div>
+              <div class="intel-panel wide-intel"><h3>Stability Log</h3><div id="stabilityLog" class="memory-log compact-log"></div></div>
+            </div>
+          </div>
+        </section>
+
+
+
+        <section class="os-section" data-section="health">
+          <div class="showos-card full-card health-console-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22KP — System Health Console</h2>
+                <p>Jedno místo pro testování celé appky: health score, modulární checklist, bridge inspector, cleanup radar a jasné doporučení, co ladit jako první.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnRunHealthScan" class="primary">RUN HEALTH SCAN</button>
+                <button id="btnSendHealthBridge">SEND HEALTH BRIDGE</button>
+                <button id="btnExportHealthReport">EXPORT REPORT</button>
+              </div>
+            </div>
+            <div class="health-kpis ecosystem-kpis" id="healthKpis"></div>
+            <div class="health-grid">
+              <div class="intel-panel wide-intel"><h3>Module Checklist</h3><div id="healthChecklist" class="health-checklist"></div></div>
+              <div class="intel-panel"><h3>Priority Fixes</h3><div id="healthFixes" class="memory-log compact-log"></div></div>
+              <div class="intel-panel"><h3>Bridge Inspector</h3><div id="healthBridgeInspector" class="physics-monitor"></div></div>
+              <div class="intel-panel wide-intel"><h3>Cleanup Radar</h3><div id="cleanupRadar" class="cleanup-radar"></div></div>
+              <div class="intel-panel wide-intel"><h3>Health Payload</h3><pre id="healthPayload" class="payload-box"></pre></div>
+            </div>
+          </div>
+        </section>
+
+
+
+        <section class="os-section" data-section="cleanup">
+          <div class="showos-card full-card cleanup-console-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22KQ — Cleanup & Architecture Console</h2>
+                <p>První praktický úklidový panel před společným laděním celé appky. Ukáže moduly, rizika, payload kontrakty, duplicity a navrhne bezpečný cleanup plán bez mazání funkčních částí.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnRunCleanupAudit" class="primary">RUN CLEANUP AUDIT</button>
+                <button id="btnBuildArchitectureMap">BUILD MAP</button>
+                <button id="btnExportCleanupPlan">EXPORT PLAN</button>
+              </div>
+            </div>
+            <div class="cleanup-kpis ecosystem-kpis" id="cleanupKpis"></div>
+            <div class="cleanup-grid">
+              <div class="intel-panel wide-intel"><h3>Architecture Map</h3><div id="architectureMap" class="architecture-map"></div></div>
+              <div class="intel-panel"><h3>Cleanup Priority</h3><div id="cleanupPriority" class="memory-log compact-log"></div></div>
+              <div class="intel-panel"><h3>Safe Actions</h3><div id="cleanupActions" class="cleanup-actions"></div></div>
+              <div class="intel-panel wide-intel"><h3>Payload Contract Matrix</h3><div id="contractMatrix" class="contract-matrix"></div></div>
+              <div class="intel-panel wide-intel"><h3>Module Registry</h3><div id="moduleRegistry" class="module-registry"></div></div>
+              <div class="intel-panel wide-intel"><h3>Cleanup Plan Payload</h3><pre id="cleanupPayload" class="payload-box"></pre></div>
+            </div>
+          </div>
+        </section>
+
+
+        <section class="os-section" data-section="cleanup-pass">
+          <div class="showos-card full-card cleanup-pass-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22KR — SHOW OS Cleanup Pass 1</h2>
+                <p>První skutečný úklid bez mazání funkcí. Přidává režimy UI, bezpečné schování advanced sekcí, operátorské kontrakty a test plán pro výkon/stabilitu.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnRunCleanupPass" class="primary">RUN CLEANUP PASS 1</button>
+                <button id="btnExportCleanupPass">EXPORT PASS</button>
+              </div>
+            </div>
+            <div class="cleanup-kpis ecosystem-kpis" id="cleanupPassKpis"></div>
+            <div class="authority-mode-row cleanup-mode-row">
+              <button data-cleanup-mode="BEGINNER">BEGINNER<br><small>jen hlavní ovládání</small></button>
+              <button data-cleanup-mode="PRO">PRO<br><small>plný show workflow</small></button>
+              <button data-cleanup-mode="DEBUG">DEBUG<br><small>všechny interní panely</small></button>
+            </div>
+            <div class="cleanup-grid">
+              <div class="intel-panel"><h3>Cleanup Findings</h3><div id="cleanupPassFindings" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel"><h3>Hidden Advanced Sections</h3><div id="cleanupHiddenSections" class="hidden-section-list"></div></div>
+              <div class="intel-panel wide-intel"><h3>Operator Contracts</h3><div id="cleanupPassContracts" class="contract-matrix"></div></div>
+              <div class="intel-panel wide-intel"><h3>Real Test Plan</h3><div id="cleanupTestPlan" class="cleanup-test-plan"></div></div>
+              <div class="intel-panel wide-intel"><h3>Cleanup Pass Payload</h3><pre id="cleanupPassPayload" class="payload-box"></pre></div>
+            </div>
+          </div>
+        </section>
+
+
+
+        <section class="os-section" data-section="cleanup-pass2">
+          <div class="showos-card full-card cleanup-pass-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22KS — Cleanup Pass 2</h2>
+                <p>Praktický testovací průchod: sjednocená navigace, route map, live status, fallbacky a checklist pro reálné ladění výkonu/stability. Funkce se nemažou, jen se řadí do LIVE / CREATE / DEBUG / ARCHIVE.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnRunCleanupPass2" class="primary">RUN PASS 2</button>
+                <button id="btnExportCleanupPass2">EXPORT PASS 2</button>
+              </div>
+            </div>
+            <div class="ecosystem-kpis" id="cleanupPass2Kpis"></div>
+            <div class="head-actions cleanup-mode-row">
+              <button data-nav-profile="LIVE">LIVE</button>
+              <button data-nav-profile="TEST">TEST</button>
+              <button data-nav-profile="FULL">FULL DEBUG</button>
+            </div>
+            <div class="cleanup-pass-grid">
+              <div class="intel-panel"><h3>Route Map</h3><div id="cleanupRouteMap" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel"><h3>Live Status Cards</h3><div id="cleanupStatusCards" class="contract-list"></div></div>
+              <div class="intel-panel"><h3>Safe Fallbacks</h3><div id="cleanupFallbacks" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel"><h3>Real Test Checklist</h3><div id="cleanupTestChecklist" class="cleanup-pass-list"></div></div>
+            </div>
+            <h3>Pass Notes</h3><div id="cleanupPass2Notes" class="memory-log compact-log"></div>
+            <h3>Cleanup Pass 2 Payload</h3><pre id="cleanupPass2Payload" class="payload-box"></pre>
+          </div>
+        </section>
+
+
+        <section class="os-section" data-section="cleanup-pass3">
+          <div class="showos-card full-card cleanup-pass-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22KT — Cleanup Pass 3 / Test Mode Polish</h2>
+                <p>Finální příprava na společné ladění: řízený testovací průchod, risk register, release gates, runbook a jasné provozní poznámky. Nic nemaže, pouze zpřehledňuje testování.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnRunCleanupPass3" class="primary">RUN PASS 3</button>
+                <button id="btnExportCleanupPass3">EXPORT PASS 3</button>
+              </div>
+            </div>
+            <div class="ecosystem-kpis" id="cleanupPass3Kpis"></div>
+            <div class="head-actions cleanup-mode-row">
+              <button data-test-mode="FAST">FAST</button>
+              <button data-test-mode="GUIDED">GUIDED</button>
+              <button data-test-mode="BURNIN">BURN-IN</button>
+            </div>
+            <div class="cleanup-pass-grid">
+              <div class="intel-panel"><h3>Session Checklist</h3><div id="cleanupPass3Checklist" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel"><h3>Risk Register</h3><div id="cleanupRiskRegister" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel"><h3>Routing Summary</h3><div id="cleanupRoutingSummary" class="contract-list"></div></div>
+              <div class="intel-panel"><h3>Release Gates</h3><div id="cleanupReleaseGates" class="contract-matrix"></div></div>
+              <div class="intel-panel wide-intel"><h3>Operator Runbook</h3><div id="cleanupRunbook" class="cleanup-test-plan"></div></div>
+              <div class="intel-panel wide-intel"><h3>Performance Notes</h3><div id="cleanupPerformanceNotes" class="cleanup-test-plan"></div></div>
+            </div>
+            <h3>Cleanup Pass 3 Payload</h3><pre id="cleanupPass3Payload" class="payload-box"></pre>
+          </div>
+        </section>
+
+
+        <section class="os-section" data-section="field-test">
+          <div class="showos-card full-card cleanup-pass-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22KU — Field Test RC Pack</h2>
+                <p>Release-candidate panel pro první reálný průchod celé appky: preflight, live route, burn-in plán, rollback postupy a export test reportu. Stále bez destruktivního mazání funkcí.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnRunFieldTest" class="primary">RUN FIELD TEST RC</button>
+                <button id="btnExportFieldTest">EXPORT RC REPORT</button>
+              </div>
+            </div>
+            <div class="ecosystem-kpis" id="fieldTestKpis"></div>
+            <div class="head-actions cleanup-mode-row">
+              <button data-field-mode="DRY_RUN">DRY RUN</button>
+              <button data-field-mode="LIVE_ROUTE">LIVE ROUTE</button>
+              <button data-field-mode="BURN_IN">BURN-IN</button>
+            </div>
+            <div class="cleanup-pass-grid">
+              <div class="intel-panel"><h3>Preflight</h3><div id="fieldPreflight" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel"><h3>Live Test Route</h3><div id="fieldLiveRoute" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel"><h3>Burn-in Plan</h3><div id="fieldBurnin" class="contract-matrix"></div></div>
+              <div class="intel-panel"><h3>Rollback / Safe Actions</h3><div id="fieldRollback" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel wide-intel"><h3>Operator Notes</h3><div id="fieldOperatorNotes" class="cleanup-test-plan"></div></div>
+            </div>
+            <h3>Field Test RC Payload</h3><pre id="fieldPayload" class="payload-box"></pre>
+          </div>
+        </section>
+
+
+        <section class="os-section" data-section="final-qa">
+          <div class="showos-card full-card cleanup-pass-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22KV — Final QA & Stabilization Pass</h2>
+                <p>Poslední kontrolní vrstva před společným ručním průchodem celé aplikace. Neřeší nové světy, ale jasný verdikt: co je připravené, co sledovat, co je blokátor a jak bezpečně rollbacknout.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnRunFinalQA" class="primary">RUN FINAL QA</button>
+                <button id="btnExportFinalQA">EXPORT QA REPORT</button>
+              </div>
+            </div>
+            <div class="ecosystem-kpis" id="finalQaKpis"></div>
+            <div class="head-actions cleanup-mode-row">
+              <button data-qa-depth="FAST">FAST</button>
+              <button data-qa-depth="FULL">FULL</button>
+              <button data-qa-depth="FIELD">FIELD</button>
+            </div>
+            <div class="cleanup-pass-grid">
+              <div class="intel-panel"><h3>Verdict Board</h3><div id="finalQaVerdicts" class="contract-matrix"></div></div>
+              <div class="intel-panel"><h3>Blockers / Watch</h3><div id="finalQaBlockers" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel"><h3>Module QA Matrix</h3><div id="finalQaModules" class="contract-list"></div></div>
+              <div class="intel-panel"><h3>Fallback Drill</h3><div id="finalQaFallback" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel wide-intel"><h3>Stabilization Notes</h3><div id="finalQaNotes" class="cleanup-test-plan"></div></div>
+            </div>
+            <h3>Final QA Payload</h3><pre id="finalQaPayload" class="payload-box"></pre>
+          </div>
+        </section>
+
+
+        <section class="os-section" data-section="production">
+          <div class="showos-card full-card cleanup-pass-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22KW — Production Readiness Pack</h2>
+                <p>Ostrý provoz bez chaosu: startovací sekvence, recovery postupy, production gates, rollback body a jasný verdikt, jestli je build připravený na kontrolovaný field test.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnRunProductionReady" class="primary">RUN PRODUCTION CHECK</button>
+                <button id="btnExportProductionReady">EXPORT PRODUCTION REPORT</button>
+              </div>
+            </div>
+            <div class="ecosystem-kpis" id="productionKpis"></div>
+            <div class="head-actions cleanup-mode-row">
+              <button data-prod-mode="FIELD_SAFE">FIELD SAFE</button>
+              <button data-prod-mode="LIVE_LOW_BRIGHTNESS">LIVE LOW BRIGHTNESS</button>
+              <button data-prod-mode="BURN_IN">BURN-IN</button>
+            </div>
+            <div class="cleanup-pass-grid">
+              <div class="intel-panel"><h3>Startup Sequence</h3><div id="productionStartup" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel"><h3>Recovery Playbook</h3><div id="productionRecovery" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel"><h3>Production Gates</h3><div id="productionOps" class="contract-list"></div></div>
+              <div class="intel-panel"><h3>Version / Rollback</h3><div id="productionVersions" class="cleanup-test-plan"></div></div>
+            </div>
+            <h3>Production Payload</h3><pre id="productionPayload" class="payload-box"></pre>
+          </div>
+        </section>
+
+
+        <section class="os-section" data-section="launch">
+          <div class="showos-card full-card cleanup-pass-card">
+            <div class="card-head">
+              <div>
+                <h2>STEP22KX — Operator Launch Pack</h2>
+                <p>Ostrý start show bez neřízeného autopilota. Tohle je launch vrstva pro operátora: preflight, ARM/DISARM, live-safe quick actions, watch signály a bridge payload pro kontrolovaný výstup.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnRunLaunchPreflight" class="primary">RUN LAUNCH PREFLIGHT</button>
+                <button id="btnArmLaunch">ARM</button>
+                <button id="btnDisarmLaunch">DISARM / SAFE</button>
+                <button id="btnExportLaunch">EXPORT LAUNCH REPORT</button>
+              </div>
+            </div>
+            <div class="ecosystem-kpis" id="launchKpis"></div>
+            <div class="head-actions cleanup-mode-row">
+              <button data-launch-mode="DRY_RUN">DRY RUN</button>
+              <button data-launch-mode="LIVE_LOW_BRIGHTNESS">LIVE LOW BRIGHTNESS</button>
+              <button data-launch-mode="LIVE_ARMED">LIVE ARMED</button>
+              <button data-launch-action="safe">SAFE CALM</button>
+              <button data-launch-action="freeze">FREEZE DIRECTOR</button>
+              <button data-launch-action="low">LOW BRIGHTNESS</button>
+              <button data-launch-action="bridge">SEND LAUNCH BRIDGE</button>
+            </div>
+            <div class="cleanup-pass-grid">
+              <div class="intel-panel"><h3>Launch Preflight</h3><div id="launchPreflight" class="contract-matrix"></div></div>
+              <div class="intel-panel"><h3>Live Quick Actions</h3><div id="launchQuickActions" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel"><h3>Launch Sequence</h3><div id="launchLiveActions" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel"><h3>Watch Signals</h3><div id="launchWatch" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel wide-intel"><h3>Operator Notes</h3><div id="launchNotes" class="cleanup-test-plan"></div></div>
+            </div>
+            <h3>Launch Bridge Payload</h3><pre id="launchPayload" class="payload-box"></pre>
+          </div>
+        </section>
+
+
+
+        <section class="os-section" data-section="liveops">
+          <div class="showos-card full-card">
+            <div class="card-head">
+              <div>
+                <small>STEP22KY</small>
+                <h2>Live Operations Console</h2>
+                <p>Panel pro běžící show: sleduje stav, incidenty, rychlé zásahy a bridge heartbeat. Je to ruční live vrstva, ne samovolný autopilot.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnRunLiveOps" class="primary">RUN LIVE OPS SCAN</button>
+                <button id="btnLiveOpsBridge">SEND LIVE OPS BRIDGE</button>
+                <button id="btnExportLiveOps">EXPORT LIVE OPS REPORT</button>
+              </div>
+            </div>
+            <div class="qa-verdict-row">
+              <div><span>Verdict</span><b id="liveOpsVerdict">GREEN</b></div>
+              <div><span>Score</span><b id="liveOpsScore">--%</b></div>
+              <div><span>Mode</span><b id="liveOpsMode">WATCH</b></div>
+              <div><span>Severity</span><b id="liveOpsSeverity">GREEN</b></div>
+              <div><span>Live Runtime</span><b id="liveOpsRuntime">0m 0s</b></div>
+            </div>
+            <div class="mode-row">
+              <button data-live-mode="WATCH">WATCH</button>
+              <button data-live-mode="ACTIVE">ACTIVE</button>
+              <button data-live-mode="INTERVENTION">INTERVENTION</button>
+              <button data-live-severity="GREEN">GREEN</button>
+              <button data-live-severity="AMBER">AMBER</button>
+              <button data-live-severity="RED">RED</button>
+            </div>
+            <div class="mode-row">
+              <button data-live-action="calm">CALM LOAD</button>
+              <button data-live-action="hold">HOLD / SLOW</button>
+              <button data-live-action="bridgePulse">BRIDGE PULSE</button>
+              <button data-live-action="safe">SAFE VISUAL</button>
+              <button data-live-action="logWatch">LOG WATCH</button>
+            </div>
+            <div class="cleanup-grid">
+              <div class="intel-panel"><h3>Live Checks</h3><div id="liveOpsChecks" class="contract-matrix"></div></div>
+              <div class="intel-panel"><h3>Open Incident Log</h3><div id="liveOpsIncidents" class="cleanup-pass-list"></div></div>
+            </div>
+            <div class="intel-panel"><h3>Operator Action Log</h3><div id="liveOpsActions" class="cleanup-pass-list"></div></div>
+            <h3>Live Ops Bridge Payload</h3><pre id="liveOpsPayload" class="payload-box"></pre>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="postshow">
+          <div class="showos-card full-card">
+            <div class="card-head">
+              <div>
+                <small>STEP22KZ</small>
+                <h2>Post‑Show Review & Learning Pack</h2>
+                <p>Vyhodnocení po show: stabilita, incidenty, zásahy operátora, timeline, doporučení pro další verzi a bezpečné učení bez automatického přebírání kontroly.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnBuildPostShow" class="primary">BUILD REVIEW</button>
+                <button id="btnSaveLearningSnapshot">SAVE LEARNING SNAPSHOT</button>
+                <button id="btnExportPostShow">EXPORT POST‑SHOW REPORT</button>
+              </div>
+            </div>
+            <div class="qa-verdict-row">
+              <div><span>Review</span><b id="postShowVerdict">NOT BUILT</b></div>
+              <div><span>Stability</span><b id="postShowStability">--%</b></div>
+              <div><span>Incidents</span><b id="postShowIncidents">0</b></div>
+              <div><span>Actions</span><b id="postShowActions">0</b></div>
+              <div><span>Learning</span><b id="postShowLearning">MANUAL</b></div>
+            </div>
+            <div class="mode-row">
+              <button data-review-window="SHORT">SHORT SET</button>
+              <button data-review-window="FULL_NIGHT">FULL NIGHT</button>
+              <button data-review-window="INSTALLATION">INSTALLATION</button>
+              <button data-review-focus="STABILITY">FOCUS STABILITY</button>
+              <button data-review-focus="CREATIVE">FOCUS CREATIVE</button>
+              <button data-review-focus="OPERATOR">FOCUS OPERATOR</button>
+            </div>
+            <div class="cleanup-grid">
+              <div class="intel-panel"><h3>Review Summary</h3><div id="postShowSummary" class="contract-matrix"></div></div>
+              <div class="intel-panel"><h3>Lessons / Next Fixes</h3><div id="postShowLessons" class="cleanup-pass-list"></div></div>
+            </div>
+            <div class="cleanup-grid">
+              <div class="intel-panel"><h3>Timeline Recap</h3><div id="postShowTimeline" class="cleanup-pass-list"></div></div>
+              <div class="intel-panel"><h3>Learning Snapshot</h3><div id="postShowSnapshot" class="cleanup-pass-list"></div></div>
+            </div>
+            <h3>Post‑Show Payload</h3><pre id="postShowPayload" class="payload-box"></pre>
+          </div>
+        </section>
+
+
+        <section class="os-section" data-section="legendary">
+          <div class="factory-grid">
+            <div class="showos-card">
+              <div class="card-head"><div><h2>Legendary Worlds</h2><p>Vzácné světy. Normální scan má chance 0.5 %. FORCE je pro testování UI.</p></div></div>
+              <div class="pad-grid"><button id="btnLegendaryScan" class="primary">SCAN 0.5%</button><button id="btnLegendaryForce">FORCE LEGENDARY</button><button id="btnMutateEventGenome">🧬 MUTATE EVENT</button></div>
+              <div class="idea-box">Black Sun · Crystal Cathedral · Infinite Reactor · Silent Machine · Living Star</div>
+            </div>
+            <div class="showos-card"><h2>Saved Legendary Library</h2><div id="legendaryList" class="generated-list"></div></div>
+            <div class="showos-card full-card"><h2>Event Genome</h2><p>Každý event může mít DNA: Impact, Chaos, Brightness, Motion, Heat. Mutace vytvoří Mk2 variantu.</p><div id="eventGenomeList" class="genome-list"></div></div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="market">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>World Market</h2><p>Lokální databáze pro Worlds, Events, Journeys, Civilizations a Universes. Zatím běží v localStorage, bez zásahu do rendereru.</p></div><div class="head-actions"><button id="btnMarketClone">📋 CLONE CURRENT</button><button id="btnMarketVariant" class="primary">🎲 RANDOM VARIANT</button></div></div>
+            <div id="marketBoard" class="market-board"></div>
+            <div class="intel-panel"><h3>Favorites</h3><div id="marketFavorites" class="memory-log"></div></div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="creator">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>Creator Mode</h2><p>Ulož vlastní tvorbu jako balíček: světy, eventy, cesty, počasí a story state.</p></div><button id="btnSaveCreatorPack" class="primary">SAVE PACKAGE</button></div>
+            <label class="wide-label">Package Name<input id="creatorName" placeholder="Budi Ritual"></label>
+            <div class="creator-summary">
+              <div><span>Universe</span><b id="creatorUniverse">auto</b></div>
+              <div><span>Weather</span><b id="creatorWeather">auto</b></div>
+              <div><span>Worlds</span><b>current + generated</b></div>
+              <div><span>Events</span><b>saved palette</b></div>
+            </div>
+            <h3>Saved Packages</h3><div id="creatorPackages" class="generated-list"></div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="bridge">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>Performance Bridge Pro</h2><p>SHOW OS posílá jen intent: Target Universe, Target World, Weather, Energy, Chaos, Density a Story Phase. Performance renderer zůstává autonomní.</p></div><button id="btnBridgePro" class="primary">SEND BRIDGE PAYLOAD</button></div>
+            <div class="bridge-status" id="bridgeStatus"></div>
+            <pre id="bridgePayload" class="payload-box"></pre>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="generator-bridge">
+          <div class="showos-card full-card">
+            <div class="card-head">
+              <div>
+                <h2>Generator Bridge</h2>
+                <p>STEP38G převádí Show OS world/weather/phase/energy/chaos/density/motion do Generator maker, křivek a node graphu. Tady payload jen připravíš; fyzický output se pořád zapíná až bezpečně v Generatoru/Settings.</p>
+              </div>
+              <div class="head-actions">
+                <button id="btnGeneratorBridge" class="primary">SEND GENERATOR BRIDGE</button>
+                <button data-generator-auto="on">AUTO FOLLOW ON</button>
+                <button data-generator-auto="off">AUTO FOLLOW OFF</button>
+                <button id="btnOpenGenerator">OPEN GENERATOR</button>
+              </div>
+            </div>
+            <div class="bridge-status" id="generatorBridgeStatus"></div>
+            <pre id="generatorBridgePreview" class="payload-box"></pre>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="map">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>World Navigator</h2><p>Klikni na svět a Show OS nastaví target. Čáry ukazují dramaturgické cesty.</p></div><button id="btnRandomTarget">RANDOM TARGET</button></div>
+            <div class="world-map" id="worldMap"><svg id="worldLinks" viewBox="0 0 100 100" preserveAspectRatio="none"></svg></div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="composer">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>Show Composer</h2><p>Generuj dramaturgii jako hudební formu: warmup, build, tension, drop, peak, recovery, afterhours.</p></div><div class="head-actions"><button id="btnJourney2h">2H CLUB</button><button id="btnJourney6h">6H PSY</button><button id="btnJourney12h">12H AMBIENT</button></div></div>
+            <div class="journey-tools">
+              <label>Style<select id="journeyStyle"><option>Psytrance Journey</option><option>Tribe Ritual</option><option>Peak Techno</option><option>Forest Flow</option><option>Darkpsy Night</option><option>Ambient Installation</option><option>Forge Longform</option><option>Alien Story</option></select></label>
+              <label>Intensity<select id="journeyIntensity"><option>Balanced</option><option>Soft</option><option>Strong</option><option>Extreme Safe</option></select></label>
+              <label>Detail<select id="journeyDetail"><option>Normal</option><option>More Variation</option><option>Long Morphs</option><option>Minimal Repetition</option></select></label>
+              <button id="btnGenerateCustomJourney" class="primary">GENERATE CUSTOM</button>
+            </div>
+            <div class="journey-timeline" id="journeyTimeline"></div>
+            <div class="journey-list" id="journeyList"></div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="factory">
+          <div class="factory-grid">
+            <div class="showos-card">
+              <div class="card-head"><h2>World Factory</h2><button id="btnGenerateWorld" class="primary">GENERATE WORLD</button></div>
+              <input id="worldNameInput" class="name-input" placeholder="např. Solar Forge, Crystal Temple...">
+              <div class="dna-sliders" id="dnaSliders"></div>
+              <div class="factory-actions"><button id="btnCloneWorld">CLONE CURRENT</button><button id="btnMutateWorld">MUTATE DNA</button><button id="btnBreedWorld">BREED CURRENT+TARGET</button><button id="btnSaveWorld">SAVE WORLD</button></div>
+            </div>
+            <div class="showos-card">
+              <h2>Generated Worlds</h2>
+              <div class="generated-list" id="generatedWorlds"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="events">
+          <div class="factory-grid">
+            <div class="showos-card">
+              <div class="card-head"><h2>Event Factory</h2><button id="btnBuildEvent" class="primary">BUILD EVENT</button></div>
+              <p>Event je krátká světelná událost: sweep, pulse, spark, blackout, bloom. Skládáš ho jako lego.</p>
+              <div class="event-lego" id="eventLego"></div>
+              <label class="wide-label">Event Name<input id="eventName" placeholder="např. Forge Impact"></label>
+              <div class="factory-actions"><button id="btnRandomEvent">RANDOM EVENT</button><button id="btnSaveEvent">SAVE EVENT</button></div>
+            </div>
+            <div class="showos-card">
+              <h2>Event Palette</h2>
+              <div class="generated-list" id="eventList"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="graph">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>Node Show Designer</h2><p>První funkční koncept grafu. Generuje uzly z aktuální journey a umožňuje kliknout na kterýkoliv uzel jako target.</p></div><div class="head-actions"><button id="btnGraphFromJourney">GRAPH FROM JOURNEY</button><button id="btnGraphPreset" class="primary">PSY GRAPH</button></div></div>
+            <div class="node-canvas" id="nodeCanvas"><svg id="nodeLinks" viewBox="0 0 100 100" preserveAspectRatio="none"></svg></div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="inspire">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>Inspire Lab</h2><p>Intuitivní tvorba bez audio analýzy. Systém navrhne další world, event, journey, transition nebo bezpečný cleanup.</p></div><button id="btnMegaInspire" class="primary">MEGA INSPIRE</button></div>
+            <div class="inspire-grid">
+              <button data-inspire="world">NEW WORLD</button>
+              <button data-inspire="journey">NEW JOURNEY</button>
+              <button data-inspire="event">NEW EVENT</button>
+              <button data-inspire="mood">NEW MOOD</button>
+              <button data-inspire="ambient">AMBIENT IDEA</button>
+              <button data-inspire="transition">TRANSITION IDEA</button>
+              <button data-inspire="safety">SAFETY CLEANUP</button>
+              <button data-inspire="surprise">SURPRISE ME</button>
+            </div>
+            <div id="inspireOutput" class="idea-box">Klikni na Inspire a systém navrhne další kreativní krok.</div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="memory">
+          <div class="memory-grid">
+            <div class="showos-card"><h2>Show Health</h2><div class="health-bars" id="healthBars"></div></div>
+            <div class="showos-card"><h2>Visual Memory</h2><div class="memory-log" id="memoryLog"></div></div>
+            <div class="showos-card"><h2>Saved Worlds</h2><div class="generated-list" id="savedWorlds"></div></div>
+            <div class="showos-card"><h2>Saved Events</h2><div class="generated-list" id="savedEvents"></div></div>
+          </div>
+        </section>
+
+
+
+        <section class="os-section" data-section="intelligence">
+          <div class="showos-card full-card intelligence-card">
+            <div class="card-head">
+              <div><h2>Show Intelligence Center</h2><p>Metasystém pro dlouhé show: heartbeat, fatigue/staleness detekce, doporučení a radar posledního vývoje.</p></div>
+              <div class="head-actions"><button id="btnAnalyzeShow">ANALYZE</button><button id="btnApplyRecommendation" class="primary">APPLY BEST FIX</button></div>
+            </div>
+            <div class="intelligence-grid">
+              <div class="intel-panel heartbeat-panel">
+                <h3>Show Heartbeat</h3>
+                <div id="heartbeatGrid" class="heartbeat-grid"></div>
+              </div>
+              <div class="intel-panel">
+                <h3>Fatigue Detector</h3>
+                <div id="fatigueBox" class="risk-box"></div>
+              </div>
+              <div class="intel-panel">
+                <h3>Staleness Detector</h3>
+                <div id="stalenessBox" class="risk-box"></div>
+              </div>
+              <div class="intel-panel wide-intel">
+                <h3>Recommendation Feed</h3>
+                <div id="recommendations" class="recommendations"></div>
+              </div>
+              <div class="intel-panel wide-intel">
+                <h3>30 min Trend Radar</h3>
+                <div id="trendRadar" class="trend-radar"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="weather">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>Visual Weather System</h2><p>Počasí mění charakter stejného světa bez přepnutí worldu: calm, mist, storm, electrical, ritual, solar, void.</p></div><button id="btnRandomWeather" class="primary">RANDOM WEATHER</button></div>
+            <div class="weather-grid" id="weatherGrid"></div>
+            <div class="weather-status" id="weatherStatus"></div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="history">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>World History & Relationships</h2><p>Historie cestování mezi světy, návrat do předchozích stavů a doporučené dramaturgické přechody.</p></div><button id="btnCleanHistory">CLEAN DUPLICATES</button></div>
+            <div class="history-grid">
+              <div class="intel-panel"><h3>World History</h3><div id="worldHistory" class="world-history"></div></div>
+              <div class="intel-panel"><h3>Relationship Matrix</h3><div id="relationshipMatrix" class="relationship-matrix"></div></div>
+              <div class="intel-panel wide-intel"><h3>Suggested Next Worlds</h3><div id="nextWorlds" class="next-worlds"></div></div>
+            </div>
+          </div>
+        </section>
+
+
+        <section class="os-section" data-section="director">
+          <div class="showos-card full-card command-center">
+            <div class="card-head"><div><h2>Director AI</h2><p>Dramaturgický plánovač bez audio analýzy. Vybereš délku, počet peaků a recovery momentů; systém vytvoří návrh cesty a doporučí bezpečný další krok.</p></div><div class="head-actions"><button id="btnDirectorPlan" class="primary">GENERATE DIRECTOR PLAN</button><button id="btnDirectorNext">APPLY NEXT MOVE</button></div></div>
+            <div class="director-grid">
+              <div class="intel-panel">
+                <h3>Show Goal</h3>
+                <label class="wide-label">Duration<select id="directorDuration"><option value="2">2h club test</option><option value="4">4h night</option><option value="6" selected>6h psy journey</option><option value="12">12h ambient</option></select></label>
+                <label class="wide-label">Peaks<select id="directorPeaks"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+                <label class="wide-label">Recovery<select id="directorRecovery"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+              </div>
+              <div class="intel-panel">
+                <h3>Director Verdict</h3>
+                <div id="directorVerdict" class="risk-box"></div>
+              </div>
+              <div class="intel-panel wide-intel">
+                <h3>Director Plan</h3>
+                <div id="directorPlan" class="director-plan"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="economy">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>World Economy</h2><p>Každý world spotřebovává pozornost. Čím častěji ho používáš, tím menší má účinek. Economy ti ukáže, co je čerstvé a co je přepálené.</p></div><button id="btnRebalanceEconomy">REBALANCE</button></div>
+            <div class="economy-grid" id="economyGrid"></div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="discovery">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>Discovery Engine</h2><p>Generátor nových světů, eventů a malých dramaturgických nápadů. Vhodné pro intuitivní tvorbu bez audio vstupu.</p></div><div class="head-actions"><button id="btnDiscoverWorld" class="primary">DISCOVER WORLD</button><button id="btnDiscoverEvent">DISCOVER EVENT</button><button id="btnDiscoverCivilization">DISCOVER CIVILIZATION</button></div></div>
+            <div class="discovery-grid">
+              <div class="intel-panel"><h3>Latest Discovery</h3><div id="latestDiscovery" class="idea-box"></div></div>
+              <div class="intel-panel"><h3>Civilization Builder</h3><div id="civilizationBox" class="civilization-box"></div></div>
+              <div class="intel-panel wide-intel"><h3>Discovery Library</h3><div id="discoveryLibrary" class="generated-list"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="operator">
+          <div class="showos-card full-card club-operator">
+            <div class="card-head"><div><h2>Club Operator Mode</h2><p>Velká tlačítka pro reálné hraní: minimum prvků, maximum jistoty. Pořád jen posílá intent, Performance renderer zůstává zachovaný.</p></div><button id="btnOperatorSafe">SAFE STATE</button></div>
+            <div class="operator-status">
+              <div><span>WORLD</span><b id="operatorWorld">FORGE</b></div>
+              <div><span>ENERGY</span><b id="operatorEnergy">62%</b></div>
+              <div><span>CHAOS</span><b id="operatorChaos">34%</b></div>
+              <div><span>NEXT</span><b id="operatorNext">ALIEN</b></div>
+            </div>
+            <div class="operator-pad">
+              <button data-op="build">BUILD</button>
+              <button data-op="break">BREAK</button>
+              <button data-op="drop">DROP</button>
+              <button data-op="calm">CALM</button>
+              <button data-op="inspire">INSPIRE</button>
+              <button data-op="next">NEXT WORLD</button>
+            </div>
+          </div>
+        </section>
+
+
+
+        <section class="os-section" data-section="festival">
+          <div class="showos-card full-card festival-mode">
+            <div class="card-head"><div><h2>Festival / Long Run Mode</h2><p>Dlouhé běhy bez audio analýzy: systém skládá dramaturgii podle délky, počtu peaků, intenzity a míry překvapení.</p></div><div class="head-actions"><button id="btnFestival6h" class="primary">BUILD 6H STAGE</button><button id="btnFestival12h">BUILD 12H NIGHT</button><button id="btnFestival24h">BUILD 24H INSTALL</button></div></div>
+            <div class="festival-grid">
+              <div class="intel-panel"><h3>Long Run Setup</h3><label class="wide-label">Target Duration<select id="festivalDuration"><option value="4">4h club</option><option value="6" selected>6h psy stage</option><option value="8">8h extended</option><option value="12">12h night</option><option value="24">24h installation</option></select></label><label class="wide-label">Personality<select id="festivalPersonality"><option>Psytrance Journey</option><option>Tribe Techno Ritual</option><option>Dark Forest Night</option><option>Forge Industrial</option><option>Ambient Civilization</option></select></label><label class="wide-label">Surprise Rate<select id="festivalSurprise"><option>Low</option><option selected>Balanced</option><option>High but safe</option></select></label></div>
+              <div class="intel-panel"><h3>Stage Clock</h3><div id="festivalClock" class="big-readout">00:00 / 06:00</div><div id="festivalPhase" class="idea-box"></div></div>
+              <div class="intel-panel wide-intel"><h3>Generated Long Run Plan</h3><div id="festivalPlan" class="director-plan"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="evolution">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>World Evolution Lab</h2><p>Nech svět vyvíjet do dalších forem: Molten Forge → Ritual Forge → Ancient Forge. Ideální proti nudě při dlouhé show.</p></div><div class="head-actions"><button id="btnEvolveCurrent" class="primary">EVOLVE CURRENT</button><button id="btnEvolutionTree">BUILD EVOLUTION TREE</button></div></div>
+            <div class="evolution-grid">
+              <div class="intel-panel"><h3>Evolution Controls</h3><label class="wide-label">Mutation Amount<select id="mutationAmount"><option value="5">5% subtle</option><option value="15" selected>15% musical</option><option value="30">30% visible</option><option value="50">50% wild</option></select></label><label class="wide-label">Evolution Style<select id="evolutionStyle"><option>Organic</option><option>Ritual</option><option>Industrial</option><option>Alien</option><option>Minimal</option></select></label></div>
+              <div class="intel-panel wide-intel"><h3>Evolution Tree</h3><div id="evolutionTree" class="evolution-tree"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="genome">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>World Genome Library</h2><p>DNA knihovna pro ukládání povedených charakterů světů. Z uložené DNA můžeš generovat nové varianty.</p></div><div class="head-actions"><button id="btnSaveGenome" class="primary">SAVE CURRENT DNA</button><button id="btnGenerateFromGenome">GENERATE FROM DNA</button></div></div>
+            <div class="genome-grid">
+              <div class="intel-panel"><h3>Current Genome</h3><div id="currentGenome" class="genome-bars"></div></div>
+              <div class="intel-panel wide-intel"><h3>Saved Genomes</h3><div id="genomeLibrary" class="generated-list"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="recipes">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>Automation Recipes</h2><p>Rychlé dramaturgické recepty: build bez chaosu, bezpečný drop, dlouhý ambient drift, recovery po peaku.</p></div><button id="btnGenerateRecipes" class="primary">GENERATE RECIPES</button></div>
+            <div id="recipeBoard" class="recipe-board"></div>
+          </div>
+        </section>
+
+        <section class="os-section" data-section="ambient">
+          <div class="showos-card full-card">
+            <div class="card-head"><div><h2>Ambient Master</h2><p>Dlouhé generativní profily bez audio vstupu: 6h, 8h, 12h, 24h, 48h. Cíl je plynulá změna a minimální opakování.</p></div><button id="btnAmbientNeverRepeat" class="primary">NEVER REPEAT MODE</button></div>
+            <div class="ambient-grid" id="ambientGrid"></div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+  <script src="runtime/runtime_loop_registry_37ce.js?v=37ce"></script>
+  <script type="module" src="show-os.js?v=38g-showos-generator-bridge"></script>
+</body>
+</html>

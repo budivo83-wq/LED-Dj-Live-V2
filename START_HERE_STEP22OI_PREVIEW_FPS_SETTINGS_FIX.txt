@@ -1,0 +1,17 @@
+STEP22OI_PREVIEW_FPS_SETTINGS_FIX
+
+Oprava:
+- Settings ma novou/aktivni kolonku PREVIEW FPS.
+- Hodnota previewFps se uklada do led-engine-settings-v1.
+- Stejna hodnota se zapisuje i do live preview cap klicu:
+  - budilightLivePreviewFpsCap
+  - budilightShellLivePreviewFpsCap
+- app.js pri startu prepisuje RUNTIME_PROFILE.previewFps podle ulozene hodnoty.
+- fps_governor cte previewFps dynamicky z localStorage.
+- render_pipeline uz nepouziva natvrdo 6/10 FPS pri live outputu; visible shell/live preview jede podle Settings -> PREVIEW FPS.
+
+Doporuceni pro test:
+1) Settings -> PREVIEW FPS nastav napr. 20 nebo 30.
+2) Uloz/reloadni appku.
+3) Output ArtNet nech na 60 FPS.
+4) Kdyz UI zacne cukat, sniz PREVIEW FPS, ne output FPS.

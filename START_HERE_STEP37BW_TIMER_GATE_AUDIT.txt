@@ -1,0 +1,39 @@
+STEP37BW_TIMER_GATE_AUDIT
+
+Cil teto verze:
+- zmensit mnozstvi kosmetickych timer wakeupu pri live LED outputu
+- nenechat route-health/watchdog/topbar diagnostiku krast cas fyzickemu output scheduleru
+- zachovat diagnostiku, ale zpomalit ji podle live-output a shell visibility stavu
+
+Upravy:
+1) public/runtime/live_output_gate_37bw.js
+   - novy sdileny gate pro non-critical smycky
+   - detekuje live output podle output consumer gate, render publish, ArtNet mirroru, runner statusu, output locku a route health
+   - detekuje shellViewOnly / shell inactive stav
+   - poskytuje interval(), shouldRun(), isLive(), isUiActive(), snapshot()
+
+2) public/index.html
+   - nacita live_output_gate_37bw.js pred output route health a single writer watchdogem
+   - cache bust parametry pro dotcene runtime skripty
+
+3) public/runtime/output_route_health_37bd.js
+   - route health polling uz pouziva gate interval
+   - pri live outputu zpomali server poll a publish cadence
+   - pri hidden/shell inactive stavu spadne na pomaly heartbeat cca 5 s
+
+4) public/runtime/output_single_writer_watchdog_37be.js
+   - watchdog tick je gateovany
+   - pri live outputu mene casto prebudi main thread
+   - pri hidden/shell inactive stavu pouziva pomaly heartbeat
+
+5) public/topbar.js
+   - topbar FPS snapshot respektuje gate
+   - pri hidden/shell inactive stavu nepise DOM a nedispatchuje zbytecne eventy
+   - pri live outputu se snapshot muze zredit bez ztraty fyzickeho outputu
+
+Poznamka:
+- Nezasahoval jsem do samotneho render/output hot path scheduleru z predchozi verze.
+- Tato verze resi hlavne vedlejsi wakeupy a diagnostiku okolo outputu.
+
+Dalsi doporuceny krok:
+- udelat single-writer deep report: presne logovat frame publisher ownera, output route ownera a server ownera do jednoho debug snapshotu, aby bylo definitivne videt, jestli jeste nekde bezi druhy writer nebo fallback.

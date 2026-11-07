@@ -1,0 +1,18 @@
+STEP22OE_ARTNET_SERVICE_PRIORITY
+
+Cíl: ArtNet 60 FPS bez toho, aby viditelná shell UI stránka soutěžila s output runnerem.
+
+Opravy:
+- potvrzeno: ArtNet cesta, ne serial limit;
+- viditelný shell Performance je monitor-only a už nepublikuje preview frame do Frame Authority / ArtNet mirroru;
+- shell preview je při live outputu defaultně stažené na 6 FPS, aby CPU zůstalo pro headless output runner;
+- shell raw L1/L2 preview je při live outputu defaultně 1× za sekundu;
+- diagnostika zůstává zachovaná, nevyhazuje se;
+- headless runner zůstává jediný vlastník master-frame publisheru pro ArtNet.
+
+Volitelné ladění v DevTools konzoli:
+localStorage.setItem('budilightShellLivePreviewFpsCap','4')   // ještě víc výkonu pro output
+localStorage.setItem('budilightShellLivePreviewFpsCap','10')  // plynulejší UI preview, víc CPU
+localStorage.setItem('budilightShellLiveRawPreviewGapMs','1500')
+
+Po nahrání: restart serveru + hard refresh / clear site data.

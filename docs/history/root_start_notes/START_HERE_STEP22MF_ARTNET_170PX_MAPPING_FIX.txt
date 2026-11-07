@@ -1,0 +1,29 @@
+STEP22MF_ARTNET_170PX_MAPPING_FIX
+
+Oprava posunutého ArtNet mappingu na 8×300 RGB LED.
+
+Příčina:
+- Předchozí build používal default 150 RGB pixelů / universe.
+- Běžný ArtNet/DMX RGB LED receiver počítá 170 pixelů / universe (510 kanálů + 2 volné DMX kanály).
+- Výsledek: na hraně universe vznikla díra a konec pásku přetékal do dalšího pásku.
+
+Změny:
+- ArtNet default pixelsPerUniverse změněn na 170.
+- Mapping UI bulk Universe px default změněn na 170.
+- Live config default změněn na 170.
+- ArtNet patch compiler přidává universeSize.
+- ArtNet sender umí bezpečně opravit starý legacy 150+150 patch na 170+130 pro 300px strip.
+
+Doporučený postup po spuštění:
+1) Otevři Mapping.
+2) Bulk output nastav ArtNet, Universe px = 170.
+3) Dej Auto-route / Apply na aktivní stripy.
+4) Save + Applied.
+5) Settings → ArtNet zkontroluj Pixels/universe = 170.
+6) Start ArtNet a otestuj Flash strip.
+
+Pro 300px strip má být routa:
+Strip 1: U0 0–169 + U1 0–129
+Strip 2: U2 0–169 + U3 0–129
+Strip 3: U4 0–169 + U5 0–129
+...

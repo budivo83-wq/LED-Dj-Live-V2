@@ -1,0 +1,14 @@
+STEP37CZ_SAFE_TELEMETRY_SMOOTHNESS
+
+Base: STEP37CY_SAFE_EVENT_LOOP_SMOOTHNESS
+
+Safe performance changes:
+- Writer interlock heartbeat now uses the shared adaptive loop registry instead of a fixed 1.8s interval. The actual interlock/blocking logic is unchanged.
+- Topbar hardware stats polling now avoids overlapping fetches, slows down more during live output/hidden views, and skips DOM writes when text/classes are unchanged.
+- Runtime output telemetry cards refresh more gently during live physical output to reduce periodic DOM pressure.
+
+Scope deliberately avoided:
+- animation loading path
+- ArtNet packet/output mapping logic
+- renderer/framebus ownership logic
+- server websocket merge logic

@@ -1,0 +1,12 @@
+STEP37DR_DEBUG_OFF_COMPACT_ACTIVE_FIX
+
+Fixed:
+- Debug tab active detection now also accepts aria-pressed=true and previewModeStatus DEBUG text.
+- Output Health OFF/SLEEP state is compact and no longer fills the whole debug canvas.
+- METRICS ON and PROFILE 10s buttons are visible even from SLEEP/OFF state.
+- Force refresh is attached to the DEBUG tab click/event without enabling heavy metrics automatically.
+
+Still default-safe:
+- Metrics stay OFF until manually enabled.
+- Server polling is still disabled during live output unless Refresh server is pressed.
+- Leaving Debug still disables metrics.

@@ -1,0 +1,16 @@
+STEP38V GENERATOR BEAT INTELLIGENCE
+
+1) Spusť server.
+2) Otevři Generator.
+3) Zapni PREVIEW.
+4) V panelu 05B Beat Intelligence nech BEAT INTEL ON.
+5) Zkus TAP BEAT několikrát po sobě. BPM patchu se přizpůsobí tap tempu.
+6) Dej PHRASE RESET na začátku fráze.
+7) Dej DROP MARK a sleduj dočasný drop accent.
+8) V Music Modes zapni Build nebo Drop, protože ty z Beat Intelligence těží nejvíc.
+9) Až to sedí v preview, zapni LIVE MASTER.
+
+Výstupová cesta je pořád bezpečná:
+Generator frame -> LIVE MASTER bridge -> server MASTER mirror -> ArtNet sender -> LED
+
+Žádný nový UDP writer nebyl přidán.

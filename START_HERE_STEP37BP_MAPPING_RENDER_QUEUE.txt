@@ -1,0 +1,19 @@
+STEP37BP_MAPPING_RENDER_QUEUE
+
+Cíl:
+- snížit drobné záseky při práci v Mapping obrazovce, hlavně při tazích sliderů a inline změnách stripů.
+
+Změny:
+- public/mapping.js má nový Mapping render queue/profiler.
+- Inline změny stripů už nevolají synchronně updateStripSummary + renderDiagnostics + drawPreview na každý input tick.
+- Korekční slidery (brightness/gamma/contrast/whiteLimit) překreslí lehké readouty a těžší diagnostiku/preview dávkují přes RAF.
+- Těžké změny mapy (pixelCount/output/universe/direction/rgb/enable) pořád plánují diagnostiku + preview, ale sloučeně.
+- Cached/inactive shell stránka queue nezahazuje; při návratu na stránku se flushne.
+
+Debug:
+- window.__budilightMappingPerf37BP
+  - last / max / counts pro renderAll, renderDiagnostics, drawPreview, renderSegmentList atd.
+  - queued, skippedInactive, active, lastReason
+
+Ověření:
+- node --check public/mapping.js

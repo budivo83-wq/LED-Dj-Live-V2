@@ -1,0 +1,592 @@
+/* Performance page refinement and compact layout rules.
+   Source: split from public/performance.css. Keep import order in ../performance.css. */
+
+@media (max-width: 1280px) {
+  .settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wide-card {
+    grid-column: span 2;
+  }
+
+  .mapping-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1180px) {
+  .topbar {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .status-action,
+  .menu-btn,
+  .master-control {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .performance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-nav button,
+  .mobile-nav button:first-child:not(:hover) {
+    color: var(--muted);
+    box-shadow: none;
+    transform: none;
+  }
+
+  .mobile-nav button:hover,
+  .mobile-nav button.active {
+    color: var(--mag);
+  }
+}
+
+@media (max-width: 760px) {
+  html {
+    font-size: 12px;
+  }
+
+  .app-shell {
+    padding: 8px 8px 88px;
+  }
+
+  .brand-block {
+    padding: 10px;
+  }
+
+  .workspace-tabs button {
+    min-width: 92px;
+  }
+
+  .status-card {
+    min-width: 96px;
+  }
+
+  .settings-grid,
+  .mapping-controls,
+  .serial-actions,
+  .shortcut-list {
+    grid-template-columns: 1fr;
+  }
+
+  .wide-card {
+    grid-column: span 1;
+  }
+
+  .seq-transport {
+    flex-wrap: wrap;
+  }
+
+  .mobile-nav {
+    height: 68px;
+    padding: 0 8px;
+  }
+}
+
+/* Performance page refinement */
+.performance-page .app-shell {
+  padding: 8px 10px 72px;
+  gap: 10px;
+}
+
+.performance-page .topbar,
+.performance-page .performance-grid,
+.performance-page .bottom-status {
+  width: min(100%, 1520px);
+  margin-inline: auto;
+}
+
+.performance-page .brand-block {
+  gap: 10px;
+  padding: 8px 12px;
+}
+
+.performance-page .brand-mark {
+  width: 20px;
+  height: 20px;
+  font-size: 0;
+  color: transparent;
+  text-shadow: none;
+}
+
+.performance-page .brand-mark::before,
+.performance-page .brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 52, 208, 0.78);
+  transform: rotate(45deg);
+  border-radius: 3px;
+  box-shadow: 0 0 14px rgba(255, 52, 208, 0.24);
+}
+
+.performance-page .brand-mark::after {
+  inset: 5px;
+  border-color: rgba(0, 217, 255, 0.78);
+  box-shadow: 0 0 14px rgba(0, 217, 255, 0.18);
+}
+
+.performance-page .brand-text strong {
+  font-size: 1.02rem;
+  line-height: 0.95;
+}
+
+.performance-page .brand-text span {
+  min-width: 34px;
+  height: 16px;
+  margin-top: 2px;
+  font-size: 0.62rem;
+}
+
+.performance-page .power-btn {
+  min-width: 50px;
+  height: 30px;
+  font-size: 0.84rem;
+}
+
+.performance-page .status-card {
+  min-width: 74px;
+  padding: 7px 10px;
+}
+
+.performance-page .status-card span,
+.performance-page .status-card small {
+  font-size: 0.64rem;
+}
+
+.performance-page .status-card strong {
+  font-size: 1rem;
+}
+
+.performance-page .bpm-card strong {
+  font-size: 1.7rem;
+}
+
+.performance-page .bpm-card button {
+  width: 44px;
+  height: 20px;
+  font-size: 0.68rem;
+}
+
+.performance-page .menu-btn {
+  width: 62px;
+  font-size: 0;
+}
+
+.performance-page .menu-btn::before {
+  content: "MENU";
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+}
+
+.performance-page .performance-grid {
+  grid-template-columns: minmax(260px, 300px) minmax(620px, 760px) minmax(260px, 300px);
+  justify-content: center;
+  align-items: start;
+  gap: 10px;
+}
+
+.performance-page .panel,
+.performance-page .preview-shell,
+.performance-page .performance-strip,
+.performance-page .seq-dock,
+.performance-page .manual-palette,
+.performance-page .fx-panel,
+.performance-page .mix {
+  border-radius: 12px;
+}
+
+.performance-page .panel {
+  padding: 10px;
+}
+
+.performance-page .panel-head {
+  margin-bottom: 8px;
+}
+
+.performance-page .panel-head h2 {
+  font-size: 1.2rem;
+  letter-spacing: 0.03em;
+}
+
+.performance-page .mini-actions button {
+  height: 24px;
+  padding: 0 8px;
+  font-size: 0.68rem;
+}
+
+.performance-page .layer-raw-preview {
+  height: 34px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+}
+
+.performance-page .select-block {
+  gap: 6px;
+}
+
+.performance-page .select-block strong,
+.performance-page .param span,
+.performance-page .field span,
+.performance-page .dock-subtitle {
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+}
+
+.performance-page .picker-row {
+  grid-template-columns: 1fr 30px 30px 30px;
+  gap: 5px;
+}
+
+.performance-page .picker-row button,
+.performance-page .layer-actions button,
+.performance-page .layer-tools button,
+.performance-page .layer-tools label,
+.performance-page .flash-btn,
+.performance-page .manual-palette-toggle,
+.performance-page .manual-palette-slot button,
+.performance-page .seq-dock-actions button {
+  min-height: 32px;
+  font-size: 0.72rem;
+}
+
+.performance-page .knob-grid {
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.performance-page .knob-param {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 2px 0 20px;
+}
+
+.performance-page .knob-param::after {
+  content: attr(data-value);
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(239, 246, 255, 0.84);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.performance-page .knob-param input {
+  width: 58px;
+  height: 58px;
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 30%),
+    radial-gradient(circle at 58% 72%, rgba(0, 0, 0, 0.52), rgba(0, 0, 0, 0) 48%),
+    radial-gradient(circle at 50% 50%, rgba(3, 8, 15, 0.96) 0 42%, transparent 43%),
+    conic-gradient(var(--knob-color, var(--cyan)) calc(var(--value, 0.5) * 1turn), rgba(255, 255, 255, 0.08) 0);
+  box-shadow:
+    inset 0 2px 6px rgba(255, 255, 255, 0.22),
+    inset 0 -9px 14px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 7px rgba(3, 8, 15, 0.96),
+    0 8px 14px rgba(0, 0, 0, 0.42),
+    0 0 16px color-mix(in srgb, var(--knob-color, var(--cyan)) 24%, transparent);
+}
+
+.performance-page .fx-knob-grid .knob-param {
+  justify-items: center;
+}
+
+.performance-page .fx-knob-grid .knob-param input {
+  width: 58px;
+  height: 58px;
+}
+
+.performance-page .l2-zone .knob-param input {
+  --knob-color: #db3d68;
+}
+
+.performance-page .knob-param input {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  outline: none;
+  cursor: pointer;
+}
+
+.performance-page .knob-param input::-webkit-slider-runnable-track {
+  height: 0;
+  background: transparent;
+  border: 0;
+}
+
+.performance-page .knob-param input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0;
+  height: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  opacity: 0;
+}
+
+.performance-page .knob-param input::-moz-range-track {
+  height: 0;
+  background: transparent;
+  border: 0;
+}
+
+.performance-page .knob-param input::-moz-range-thumb {
+  width: 0;
+  height: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  opacity: 0;
+}
+
+.performance-page .layer-tools,
+.performance-page .layer-actions {
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.performance-page .layer-tools label {
+  height: 32px;
+  padding: 0 8px;
+  font-size: 0.68rem;
+}
+
+.performance-page .embedded-fx {
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.performance-page .embedded-fx h3 {
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.performance-page .manual-palette {
+  margin-top: 10px;
+  padding: clamp(6px, 0.6vw, 10px);
+}
+
+.performance-page .manual-palette-wheel {
+  width: clamp(152px, 11.8vw, 212px);
+  height: clamp(152px, 11.8vw, 212px);
+}
+
+.performance-page .center-stage {
+  gap: 10px;
+}
+
+.performance-page .preview-shell {
+  padding: 10px;
+}
+
+.performance-page .preview-head {
+  height: 34px;
+  margin-bottom: 8px;
+}
+
+.performance-page .preview-head h3 {
+  font-size: 1rem;
+}
+
+.performance-page .preview-tabs {
+  gap: 4px;
+}
+
+.performance-page .preview-tabs button {
+  min-width: 72px;
+  height: 30px;
+  font-size: 0.68rem;
+}
+
+.performance-page .preview-box,
+.performance-page #ledCanvas {
+  min-height: clamp(38vh, 54vh, 76vh);
+}
+
+body[data-preview-mode="shader"] .preview-shell,
+body[data-preview-mode="pixel-big"] .preview-shell {
+  padding: 0;
+}
+
+body[data-preview-mode="shader"] .preview-head,
+body[data-preview-mode="pixel-big"] .preview-head {
+  margin-bottom: 0;
+}
+
+body[data-preview-mode="shader"] .preview-box,
+body[data-preview-mode="pixel-big"] .preview-box {
+  min-height: clamp(30vh, 42vh, 52vh);
+}
+
+body[data-preview-mode="shader"] #ledCanvas,
+body[data-preview-mode="shader"] #shaderPreviewCanvas,
+body[data-preview-mode="pixel-big"] #ledCanvas,
+body[data-preview-mode="pixel-big"] #shaderPreviewCanvas {
+  min-height: clamp(30vh, 42vh, 52vh);
+}
+
+body[data-preview-mode="shader"].shader-preview-zoom-1to1 .preview-box,
+body[data-preview-mode="shader"].shader-preview-zoom-1to1 #shaderPreviewCanvas {
+  min-height: clamp(52vh, 72vh, 88vh);
+}
+
+.performance-page .performance-strip {
+  padding: 10px;
+  gap: 10px;
+}
+
+.performance-page .center-bpm {
+  grid-template-columns: 34px minmax(0, 1fr) 34px;
+  gap: 8px;
+}
+
+.performance-page .center-bpm button {
+  height: 34px;
+}
+
+.performance-page .performance-pads {
+  gap: 8px;
+}
+
+.performance-page .performance-pads button {
+  height: 58px;
+  font-size: 0.84rem;
+}
+
+.performance-page .global-master-inline {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(0, 217, 255, 0.14);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(4, 10, 18, 0.92), rgba(6, 11, 20, 0.76));
+}
+
+.performance-page .global-master-inline span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+}
+
+.performance-page .global-master-inline strong {
+  color: var(--text);
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.performance-page .seq-dock {
+  padding: 10px;
+}
+
+.performance-page .seq-dock-head {
+  margin-bottom: 8px;
+}
+
+.performance-page .seq-dock-head h3 {
+  font-size: 1rem;
+}
+
+.performance-page .top-seq-box {
+  min-height: 104px;
+}
+
+.performance-page .seq-grid,
+.performance-page .top-seq-grid {
+  grid-template-columns: 90px repeat(64, minmax(6px, 1fr));
+  gap: 2px;
+  min-height: 82px;
+}
+
+.performance-page .seq-cell,
+.performance-page .top-seq-grid button {
+  min-height: 12px;
+}
+
+.performance-page .bottom-status {
+  height: 40px;
+  padding: 0 12px;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 1360px) {
+  .performance-page .performance-grid {
+    grid-template-columns: minmax(230px, 280px) minmax(560px, 1fr) minmax(230px, 280px);
+  }
+
+  .performance-page .topbar {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 1180px) {
+  .performance-page .topbar,
+  .performance-page .performance-grid,
+  .performance-page .bottom-status {
+    width: min(100%, 1180px);
+  }
+
+  .performance-page .topbar {
+    grid-template-columns: 1fr;
+  }
+
+  .performance-page .performance-grid {
+    grid-template-columns: minmax(250px, 320px) minmax(250px, 320px);
+    grid-template-areas:
+      "center center"
+      "left right";
+  }
+
+  .performance-page .center-stage {
+    grid-column: 1 / -1;
+    width: min(100%, 760px);
+    margin-inline: auto;
+  }
+
+  .performance-page .l1-zone {
+    width: min(100%, 320px);
+    justify-self: end;
+  }
+
+  .performance-page .l2-zone {
+    width: min(100%, 320px);
+    justify-self: start;
+  }
+}
+
+@media (max-width: 860px) {
+  .performance-page .performance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .performance-page .l1-zone,
+  .performance-page .l2-zone,
+  .performance-page .center-stage {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .performance-page .compact-mix {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .performance-page .performance-pads {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .performance-page .global-master-inline,
+  .performance-page .compact-mix {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,20 @@
+STEP37CJ - direct ArtNet IP per strip
+
+Zmena proti predchozi multiout verzi:
+- Mapping strip card ma primo pole ArtNet IP a ArtNet port.
+- Detail strip editor ma take ArtNet cilovou IP a port.
+- Kdyz ma strip Output = artnet, compile patch prenese outputIp/targetIp/targetPort az do route parts.
+- Server packet plan uz umi rozlisit stejny universe na ruznych IP:port cilech.
+- Overlap validace se pocita podle output:IP:port:universe, takze stejny universe na dvou ruznych nodech nehlasi falesny konflikt.
+
+Doporuceny workflow:
+1. Mapping -> u stripu zapnout ON.
+2. Output = artnet.
+3. Vyplnit ArtNet IP primo v radku stripu, napr. 2.1.1.30.
+4. Port nechat 6454, pokud node nema jiny.
+5. Nastavit Start universe / Start address / Pixels per universe.
+6. SAVE + APPLY PATCH.
+7. V Settings pouze spustit ARTNET OUTPUT / SAFE MASTER LIVE podle stavajici funkcni cesty.
+
+Poznamka:
+Global multiout sloty v Settings nejsou pro tento workflow potreba. Stripova IP je ulozena primo v mappingu a jde do ArtNet patch routingu.

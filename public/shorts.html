@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LED Dj live - Shorts</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="performance.css" />
+  <link rel="stylesheet" href="performance_topbar.css" />
+  <link rel="stylesheet" href="settings_layout.css" />
+</head>
+<body class="ui-pro shorts-page settings-page performance-page">
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="top-left-cluster">
+        <div class="brand-block">
+          <button id="onoff" class="power-btn" type="button">ON</button>
+          <div class="brand-mark">◈</div>
+          <div class="brand-text"><strong>LED<br>Dj</strong><span>live</span></div>
+        </div>
+      </div>
+      <nav class="workspace-tabs" aria-label="Workspace">
+        <button class="nav" type="button" onclick="sessionStorage.setItem('led-main-return-fast','1');location.href='index.html'">PERFORMANCE</button>
+        <button class="nav" type="button" onclick="location.href='animations.html'">GALLERY</button>
+        <button class="nav" type="button" onclick="location.href='mapping.html'">MAPPING</button>
+      <button class="nav" type="button" onclick="location.href='settings.html'">SETTINGS</button>
+        <button class="nav active" type="button" onclick="location.href='shorts.html'">SHORTS</button>
+      </nav>
+      <div class="top-right-cluster">
+        <div class="status-strip status-strip-inline">
+          <div class="status-card"><span>KEYS</span><strong id="shortcutCount">--</strong><small>mapped</small></div>
+          <div class="status-card"><span>PRESET</span><strong id="presetState">LOCAL</strong><small id="presetDetail">ready</small></div>
+          <div class="status-card"><span>INPUT</span><strong>KEYBOARD</strong><small>live</small></div>
+        </div>
+        <button id="menuBtn" class="menu-btn" type="button">☰</button>
+      </div>
+    </header>
+
+    <section id="centerMenuStrip" class="center-menu-strip" aria-label="Main menu">
+      <button id="menuSettingsBtn" data-href="settings.html" type="button">SETTINGS</button>
+      <button id="menuAnimationsBtn" data-href="animations.html" type="button">GALLERY</button>
+      <button id="menuMappingBtn" data-href="mapping.html" type="button">MAPPING V2</button>
+      <button id="menuShortsBtn" data-href="shorts.html" type="button">SHORTS</button>
+      <button id="menuFullscreenBtn" type="button">FULLSCREEN OFF</button>
+      <button id="menuQuitBtn" type="button">QUIT</button>
+    </section>
+
+    <main class="page-shell shorts-shell">
+      <section class="shorts-hero">
+        <div>
+          <p class="eyebrow">CONTROL MAPPING CENTER</p>
+          <h1>Shorts / ovládání</h1>
+          <p class="hero-copy">Připraveno pro keyboard mapping teď, později MIDI / OSC / gamepad. Zatím ukládáme lokální preset do prohlížeče.</p>
+        </div>
+        <div class="preset-panel">
+          <label for="presetSelect">Preset</label>
+          <div class="preset-row">
+            <select id="presetSelect"></select>
+            <button id="savePresetBtn" type="button">ULOŽIT</button>
+            <button id="loadPresetBtn" type="button">NAČÍST</button>
+            <button id="resetPresetBtn" type="button">RESET</button>
+          </div>
+          <input id="presetName" type="text" placeholder="Název nového presetu" />
+        </div>
+      </section>
+
+      <section class="shorts-layout">
+        <aside class="shorts-side">
+          <article class="shorts-card">
+            <h2>Speciální ovládání</h2>
+            <div class="special-list">
+              <div><strong>ALT + myš</strong><span>jemné ovládání crossfaderu / hodnot</span></div>
+              <div><strong>SHIFT</strong><span>rychlejší krokování hodnot</span></div>
+              <div><strong>CTRL</strong><span>jemnější fader sensitivity</span></div>
+              <div><strong>DOUBLE TAP</strong><span>budoucí rychlá akce / reset parametru</span></div>
+            </div>
+          </article>
+
+          <article class="shorts-card">
+            <h2>Nastavení ovládání</h2>
+            <label>Fader sensitivity <input id="faderSensitivity" type="range" min="0.1" max="3" step="0.1" /></label>
+            <label>Wheel sensitivity <input id="wheelSensitivity" type="range" min="0.1" max="3" step="0.1" /></label>
+            <label>Fine modifier <select id="fineModifier"><option>CTRL</option><option>ALT</option><option>SHIFT</option></select></label>
+            <label>Fast modifier <select id="fastModifier"><option>SHIFT</option><option>ALT</option><option>CTRL</option></select></label>
+          </article>
+
+          <article class="shorts-card muted-card">
+            <h2>Budoucí vstupy</h2>
+            <p><strong>MIDI:</strong> CC / Note / encoder mapping.</p>
+            <p><strong>OSC:</strong> externí kontrolery a tablet UI.</p>
+            <p><strong>Gamepad:</strong> analogové osy pro fadery.</p>
+          </article>
+        </aside>
+
+        <section class="shorts-main">
+          <div class="mapping-toolbar">
+            <input id="mappingSearch" type="search" placeholder="Filtrovat parametr…" />
+            <select id="groupFilter"><option value="all">Všechny skupiny</option></select>
+          </div>
+          <div id="mappingList" class="mapping-list"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="shorts.js"></script>
+</body>
+</html>

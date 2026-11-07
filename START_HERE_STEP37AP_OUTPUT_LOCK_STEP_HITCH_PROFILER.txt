@@ -1,0 +1,40 @@
+STEP37AP_OUTPUT_LOCK_STEP_HITCH_PROFILER
+
+Co je zmeneno:
+1) ArtNet master mirror ma runtime output lock:
+   - window.__budilightOutputLock37AP
+   - defaultne aktivni, vypnuti pres localStorage budilightOutputLock37AP=0
+   - pri aktivnim ArtNet mirroru oznaci fyzicky output jako vlastneny cestou artnet-master-framebus-mirror
+
+2) Optional serial app mirror je lock-aware:
+   - kdyz ArtNet mirror drzi fyzicky output lock, serial mirror neposila duplicitni frame do serveru
+   - neodstraneno, jen bezpecnostni brzda proti paralelnim fyzickym writerum
+
+3) Step sequencer ma profiler hitchu:
+   - window.__budilightStepSequencerProfiler37AP
+   - meri lastTotalMs / release / apply / flush / changedRows / avg / max
+
+4) Step sequencer uz nedela plny commit primo na step boundary:
+   - realtime step flush bezi commit:false, delayMs:1
+   - commit se odklada mimo kriticky okamzik stepu cca 160-240 ms podle poctu zmen
+   - pri OFF se porad provede plny commit, aby se stav korektne vratil
+
+5) Debug panel ukazuje:
+   - step cost v detailu Output Stability
+   - output lock stav v detailu Frame Bus
+   - mirror transport / WS buffer / duplicate suppression v Dispatch detailu
+   - sticky warning pri step hitchi nad cca 18 ms
+
+Cil:
+- odstranit souboj vice fyzickych output writeru
+- snizit lag presne na kroku sequenceru
+- ziskat presna cisla, jestli dalsi problem dela runStep, flush, WS buffer nebo dispatch
+
+Doporucene testovani:
+1) Spust aplikaci normalne.
+2) Zapni ArtNet output.
+3) Sleduj Debug -> Output Stability:
+   - Frame Bus detail musi ukazat lock artnet-master...
+   - Dispatch detail musi ukazat websocket-master-frame nebo mirror cestu
+   - pri prehravani sequenceru sleduj step X.Xms
+4) Pokud step hitch stale vyleze vysoko, dalsi cil je konkretni row/action, ne cela output cesta.

@@ -1,0 +1,28 @@
+STEP37AY_STATE_PERSISTENCE_GOVERNOR
+
+Navazuje na STEP37AX.
+
+Cil:
+- odstranit mikrolagy z plne serializace state + localStorage write pri live vystupu,
+- zredukovat full-state postMessage clone do shell/parent okna,
+- zachovat spolehlive ukladani mimo output-critical frame.
+
+Zmeny:
+1) public/state.js
+   - saveLocalState ma governor pro fyzicky output.
+   - Pri aktivnim ArtNet/Serial locku se full JSON.stringify + localStorage.setItem odklada do idle okna.
+   - Stejny JSON se znovu nezapisuje.
+   - Diagnostika: window.__budilightLocalSaveGovernor37AY
+
+2) public/app.js
+   - broadcastStateSync ma governor.
+   - Pri live outputu neposila full state clone casteji nez cca 1.1 s.
+   - Lehke state-sync zpravy jsou omezeny cca 180 ms.
+   - Diagnostika: window.__budilightStateBroadcastGovernor37AY
+
+Test:
+- spustit ArtNet/Serial output, otevrit Debug, klikat Pixel/Shader/Settings, nechat bezet sequencer.
+- Sledovat, jestli zmizely periodic 300-500ms mikrocuky.
+- V konzoli lze zkontrolovat:
+  window.__budilightLocalSaveGovernor37AY
+  window.__budilightStateBroadcastGovernor37AY

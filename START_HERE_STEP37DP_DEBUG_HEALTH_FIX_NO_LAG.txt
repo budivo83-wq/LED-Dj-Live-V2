@@ -1,0 +1,23 @@
+STEP37DP_DEBUG_HEALTH_FIX_NO_LAG
+
+Fixuje problém: Debug pořád visel na Loading Output Health Diagnostics a po 37DO začal lagovat output.
+
+Hlavní příčina:
+- output_health_panel_37cd.js měl syntax chybu: duplicitní `const obj = getCrossWindow(name);` ve firstSnapshotObject().
+- Kvůli tomu se celý panel vůbec nespustil, takže Debug zůstal na statickém loading textu.
+
+Úpravy:
+1) Opravena syntax chyba v output_health_panel_37cd.js.
+2) Zlepšena detekce aktivního DEBUG tabu: active / is-active / aria-selected / viditelný debugPanel.
+3) Nouzový runtime_snapshot_recovery_37do.js je vypnutý jako no-op bez timerů a bez klonování snapshotů.
+4) Debug panel při live outputu nedělá automatické /api pollingy; server Refresh zůstává jen přes tlačítko.
+5) Debug render loop je při live outputu výrazně zpomalený.
+
+Co ověřit:
+- Po přepnutí na DEBUG musí zmizet Loading karta a ukázat se Output Health panel.
+- Output už nesmí začít lagovat jen kvůli otevřenému Debugu.
+
+Co zbývá:
+1) Reálný test Debug panelu.
+2) Pokud panel ukáže Runtime loops 0/0, registry context stále není vidět, ale panel už nesmí viset.
+3) Pokud output stále laguje, další krok je rollback/omezování thumb/UDP diagnostiky z DN/DM.

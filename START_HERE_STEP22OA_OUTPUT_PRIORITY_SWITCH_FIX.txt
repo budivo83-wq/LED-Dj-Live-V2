@@ -1,0 +1,19 @@
+STEP22OA OUTPUT PRIORITY + SWITCH FREEZE FIX
+
+Co je opraveno:
+- přepnutí animace už nedělá dvojitý sync UI v jednom klik tasku,
+- dynamic import animace dostane yield, aby se output tick nezasekl přímo v kliknutí,
+- sousední animace se pre-importují až později a po jedné, ne hromadně,
+- selector nepřepaluje runtime thumbnails během zapnutého live outputu; používá cache/placeholder a moduly pre-loaduje na hover/focus,
+- live preview/raw preview jsou při outputu víc přiškrcené, output clock má prioritu,
+- ArtNet mirror fetch fallback drží poslední pending frame místo slepého dropu při inFlight.
+
+Po nahrání:
+1) hard refresh / clear site data,
+2) zapnout Performance + Output,
+3) otevřít Debug a sleduj hlavně ArtNet mirror actual FPS / Live FPS,
+4) zkus přepínat animace přes +/- a klikem v selectoru.
+
+Když thumbnaily chceš renderovat i během live outputu, nastav v konzoli:
+localStorage.setItem('budilightLiveThumbRender22OA','1')
+Ale pro test FPS nech nejdřív vypnuto.

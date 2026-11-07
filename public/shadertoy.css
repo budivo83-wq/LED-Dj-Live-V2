@@ -1,0 +1,317 @@
+/* STEP 13BU-AX · ShaderToy clean rebuild.
+   This file intentionally isolates ShaderToy from the old Gallery/Editor layout
+   classes that were fighting each other and creating the black overlay. */
+
+body.shadertoy-page-v3 {
+  overflow: hidden !important;
+}
+
+body.shadertoy-page-v3 .app-shell {
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  max-height: 100dvh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 8px !important;
+  gap: 8px !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Keep the Performance topbar format, but prevent it from stealing workspace height. */
+body.shadertoy-page-v3 .topbar {
+  position: relative !important;
+  flex: 0 0 72px !important;
+  height: 72px !important;
+  min-height: 72px !important;
+  max-height: 72px !important;
+  margin: 0 !important;
+  padding: 6px 8px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  z-index: 10 !important;
+}
+
+body.shadertoy-page-v3 .top-left-cluster,
+body.shadertoy-page-v3 .top-right-cluster,
+body.shadertoy-page-v3 .status-strip.status-strip-inline {
+  min-width: 0 !important;
+  max-height: 60px !important;
+  overflow: hidden !important;
+}
+
+body.shadertoy-page-v3 .workspace-tabs {
+  align-self: center !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 520px !important;
+}
+
+body.shadertoy-page-v3 .workspace-tabs .nav,
+body.shadertoy-page-v3 .workspace-tabs button {
+  height: 38px !important;
+  min-width: 76px !important;
+  padding: 0 10px !important;
+  font-size: 0.74rem !important;
+}
+
+body.shadertoy-page-v3 .status-card {
+  min-width: 64px !important;
+  max-width: 105px !important;
+  padding: 6px 8px !important;
+  gap: 2px !important;
+}
+
+body.shadertoy-page-v3 .status-card span { font-size: 8px !important; }
+body.shadertoy-page-v3 .status-card strong { font-size: 12px !important; line-height: 1.1 !important; }
+body.shadertoy-page-v3 .status-card small,
+body.shadertoy-page-v3 .status-card button { font-size: 8px !important; line-height: 1.1 !important; }
+body.shadertoy-page-v3 #menuBtn.menu-btn {
+  flex: 0 0 54px !important;
+  height: 58px !important;
+  min-height: 58px !important;
+  align-self: center !important;
+}
+
+/* The hidden menu must not reserve vertical space when closed. */
+body.shadertoy-page-v3 .center-menu-strip:not(.open) {
+  display: none !important;
+}
+
+/* New clean workbench. No inherited editor-mode grid, no sticky headers, no overlays. */
+body.shadertoy-page-v3 .shadertoy-workbench {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 8px !important;
+  box-sizing: border-box !important;
+  display: grid !important;
+  grid-template-columns: minmax(220px, 270px) minmax(0, 1fr) minmax(300px, 390px) !important;
+  grid-template-areas: "tools editor preview" !important;
+  gap: 10px !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+}
+
+body.shadertoy-page-v3 .shadertoy-tools-panel { grid-area: tools !important; }
+body.shadertoy-page-v3 .shadertoy-editor-main { grid-area: editor !important; }
+body.shadertoy-page-v3 .shadertoy-inspector { grid-area: preview !important; }
+
+body.shadertoy-page-v3 .shadertoy-card {
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+  width: auto !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 12px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  overflow: hidden !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(80, 255, 235, 0.16) !important;
+  background: linear-gradient(180deg, rgba(6, 14, 28, 0.84), rgba(3, 7, 15, 0.70)) !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32) !important;
+}
+
+body.shadertoy-page-v3 .shadertoy-tools-panel,
+body.shadertoy-page-v3 .shadertoy-inspector {
+  overflow-y: auto !important;
+  scrollbar-gutter: stable !important;
+}
+
+body.shadertoy-page-v3 .panel-head,
+body.shadertoy-page-v3 .editor-panel-head,
+body.shadertoy-page-v3 .compact {
+  position: static !important;
+  top: auto !important;
+  z-index: auto !important;
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+body.shadertoy-page-v3 .panel-head h2 {
+  margin: 0 !important;
+  line-height: 1.1 !important;
+}
+
+body.shadertoy-page-v3 .shadertoy-editor-workspace {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+body.shadertoy-page-v3 .editor-main-form {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  display: grid !important;
+  grid-template-rows: minmax(0, 1fr) auto auto !important;
+  gap: 10px !important;
+  overflow: hidden !important;
+}
+
+body.shadertoy-page-v3 .code-editor-label {
+  min-height: 0 !important;
+  height: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+body.shadertoy-page-v3 .code-editor-label > span {
+  flex: 0 0 auto !important;
+}
+
+body.shadertoy-page-v3 #shaderSourceInput {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  width: 100% !important;
+  resize: none !important;
+  overflow: auto !important;
+  box-sizing: border-box !important;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace !important;
+  line-height: 1.45 !important;
+}
+
+body.shadertoy-page-v3 .editor-actions-main {
+  flex: 0 0 auto !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+body.shadertoy-page-v3 #shaderErrorPanel[hidden] {
+  display: none !important;
+}
+
+body.shadertoy-page-v3 #shaderErrorPanel {
+  max-height: 90px !important;
+  overflow: auto !important;
+  white-space: pre-wrap !important;
+}
+
+body.shadertoy-page-v3 #shaderPreviewCanvas {
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9 !important;
+  min-height: 170px !important;
+  max-height: 34vh !important;
+  display: block !important;
+  background: #000 !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+}
+
+body.shadertoy-page-v3 .preview-runner-row,
+body.shadertoy-page-v3 .preview-controls,
+body.shadertoy-page-v3 .assign-box,
+body.shadertoy-page-v3 .workflow-hints,
+body.shadertoy-page-v3 .library-note,
+body.shadertoy-page-v3 .album-manager,
+body.shadertoy-page-v3 .quick-actions,
+body.shadertoy-page-v3 .search-box {
+  flex: 0 0 auto !important;
+}
+
+body.shadertoy-page-v3 .preview-controls,
+body.shadertoy-page-v3 .quick-actions {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 8px !important;
+}
+
+body.shadertoy-page-v3 .library-note,
+body.shadertoy-page-v3 .workflow-hints {
+  font-size: 11px !important;
+  line-height: 1.35 !important;
+}
+
+@media (max-width: 1380px) {
+  body.shadertoy-page-v3 .shadertoy-workbench {
+    grid-template-columns: minmax(200px, 240px) minmax(0, 1fr) minmax(260px, 330px) !important;
+  }
+  body.shadertoy-page-v3 .status-strip.status-strip-inline .hardware-card {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1080px) {
+  body.shadertoy-page-v3 {
+    overflow: auto !important;
+  }
+  body.shadertoy-page-v3 .app-shell {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  body.shadertoy-page-v3 .shadertoy-workbench {
+    grid-template-columns: 1fr !important;
+    grid-template-areas: "tools" "editor" "preview" !important;
+    overflow: visible !important;
+  }
+  body.shadertoy-page-v3 .shadertoy-card {
+    height: auto !important;
+    min-height: 260px !important;
+  }
+  body.shadertoy-page-v3 #shaderSourceInput {
+    min-height: 420px !important;
+  }
+}
+
+/* STEP 13BU-AY: hard fix for the black top overlay in Shell.
+   performance.css defines #shaderPreviewCanvas as an absolute hidden preview canvas
+   for the Performance stage. ShaderToy reuses the same id inside the inspector,
+   so it inherited position:absolute; inset:0; z-index:2 and painted one large
+   black canvas over the top of the page. Keep ShaderToy canvas local/static. */
+body.shadertoy-page-v3 #shaderPreviewCanvas {
+  position: static !important;
+  inset: auto !important;
+  z-index: auto !important;
+  pointer-events: auto !important;
+}
+
+/* Menu is a dropdown on ShaderToy, not a layout block that can reserve a black row. */
+body.shadertoy-page-v3 .center-menu-strip {
+  position: absolute !important;
+  top: 84px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 80 !important;
+  margin: 0 !important;
+}
+body.shadertoy-page-v3 .center-menu-strip:not(.open) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+body.shadertoy-page-v3 .center-menu-strip.open {
+  display: grid !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  max-height: min(70vh, 420px) !important;
+  overflow: auto !important;
+  pointer-events: auto !important;
+}

@@ -1,0 +1,23 @@
+STEP37BE_SINGLE_WRITER_WATCHDOG
+
+Navazuje na STEP37BD_OUTPUT_ROUTE_HEALTH.
+
+Test:
+1. Spusť aplikaci.
+2. Zapni ArtNet output.
+3. Otevři Debug / Output Stability.
+4. Normální stav:
+   routeHealth match ... writerDog ok_match b0
+5. Když se objeví konflikt server/browser writerů:
+   writerDog block:<family> b<number>
+
+Přidané:
+- public/runtime/output_single_writer_watchdog_37be.js
+- patch v public/runtime/artnet_master_framebus_mirror_22ej.js
+- patch v public/runtime/live_serial_app_mirror_22cr.js
+- patch v public/debug_panel.js
+- docs/runtime/SINGLE_WRITER_WATCHDOG_STEP37BE.md
+
+Smysl:
+Když backend ukazuje jinou aktivní fyzickou output cestu než browser,
+watchdog zabrání tomu, aby druhý browser writer dál posílal do LEDek.

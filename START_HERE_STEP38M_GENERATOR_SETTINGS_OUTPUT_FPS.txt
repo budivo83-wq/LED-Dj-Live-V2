@@ -1,0 +1,18 @@
+STEP38M GENERATOR SETTINGS OUTPUT FPS
+
+Problem:
+Generator LIVE MASTER correctly interrupted Performance after STEP38L, but the visible output could be low FPS because Generator still had its own Live FPS storage/control.
+
+Fix:
+Generator LIVE FPS now follows Settings → Runtime FPS. It also falls back through ArtNet Mirror FPS and server live-config.
+
+How to test:
+1. Open Settings and set FPS to the desired output value, for example 60.
+2. Start ArtNet sender as usual.
+3. Open Generator.
+4. The Live Operator panel should show "Live FPS ze Settings" with the resolved FPS/source.
+5. Turn on LIVE MASTER.
+6. LED output should run from Generator at the Settings FPS target instead of an old Generator-only low FPS value.
+
+New test:
+npm run test:generator-step38m

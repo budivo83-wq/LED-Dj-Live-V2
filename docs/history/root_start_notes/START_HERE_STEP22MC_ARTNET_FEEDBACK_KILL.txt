@@ -1,0 +1,21 @@
+STEP22MC_ARTNET_FEEDBACK_KILL
+
+Problem targeted:
+- LEDs improved after disabling duplicate browser writers, but still flickered when Performance preview started.
+- The remaining likely path was ArtNet live input / alternate ArtNet transport picking up frames and feeding them back into the master frame store, or old scheduler/multi-transport endpoints being able to send UDP beside sync-live.
+
+Hard rule in this build:
+ONLY ONE ArtNet UDP writer is allowed:
+Performance FrameBus -> /api/artnet/master-mirror/frame-bin -> /api/artnet/sync-live/* -> UDP 6454
+
+Disabled / locked:
+- ArtNet live input bridge (/api/artnet/live-input/start returns 409)
+- ArtNet scheduler live writer control/send-test-frame
+- Multi-transport ArtNet send/start/control routes
+- Legacy /api/live/artnet/* writer routes were already disabled in previous build
+
+Check after launch:
+1) /api/artnet/live-input/status must show disabled:true
+2) /api/artnet/sync-live/status is the only place where sentFrameCount/packetCount should grow
+3) /api/live/artnet/status may exist for compatibility, but active must stay false
+4) /api/output/multi-transport/22u/status should not show processed/sent increasing during Performance

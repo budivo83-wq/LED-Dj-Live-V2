@@ -1,0 +1,33 @@
+STEP37CX_DEBUG_POLL_GATED_SMOOTHNESS
+
+Base: STEP37CW_SAFE_RUNTIME_SMOOTHNESS.
+
+Goal:
+- Keep the known-good CW loading/UI path intact.
+- Reduce periodic micro-stutters during Performance/output by preventing Debug/Health diagnostics from polling the server while the Debug tab is not active.
+
+Changes:
+1) public/runtime/output_writer_deep_report_37bx.js
+   - Server polling now runs only when Debug/Health is active.
+   - Passive browser snapshot remains available.
+   - Initial load no longer performs a server poll unless Debug is active.
+
+2) public/runtime/output_route_health_37bd.js
+   - Background /api/output/server-route-registry polling is disabled outside Debug.
+   - Browser registry publish remains passive.
+   - Manual/Debug polling still works through the exposed poll API.
+
+3) public/runtime/output_health_panel_37cd.js
+   - Output Health render/poll loop now short-circuits outside Debug.
+   - Publishes a lightweight inactive snapshot instead of fetching/rendering while Performance is active.
+
+Validation:
+- npm run check:js
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:shell-runner-output-contract
+
+Notes:
+- No websocket merge rewrite in this step.
+- No animation loading path changes.
+- No app.js bootstrap changes.

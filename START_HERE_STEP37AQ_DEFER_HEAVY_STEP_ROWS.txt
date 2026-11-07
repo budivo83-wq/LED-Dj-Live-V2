@@ -1,0 +1,19 @@
+STEP37AQ_DEFER_HEAVY_STEP_ROWS
+
+Cíl: snížit krátké záseky přesně na hraně kroku sequenceru.
+
+Změny:
+- Anim/Color řádky step sequenceru se nově defaultně neaplikují přímo v boundary ticku.
+- Heavy změny se řadí do malé deferred fronty a aplikují se po krátkém odkladu s časovým budgetem.
+- FX/Flip/Param zůstávají realtime, aby hudební reakce nepůsobila opožděně.
+- Profiler přidává heavyDeferred/heavyApplied/heavyQueue/lastHeavyMs/lastHeavyDelayMs.
+- Debug Output Stability ukazuje i heavy q a varování, když se fronta začne hromadit.
+
+Přepínač pro test:
+localStorage.setItem('budilightStepSeqDeferHeavyRows37AQ','0')  // vypnout defer
+localStorage.removeItem('budilightStepSeqDeferHeavyRows37AQ')   // default zapnuto
+
+Co sledovat:
+- step ms by měl klesnout hlavně při krocích, kde se mění animace/paleta.
+- heavy q by měl být většinou 0 nebo 1, neměl by růst.
+- pokud heavy q roste, animace/palety jsou pořád moc drahé a další krok je prewarm/palette cache.

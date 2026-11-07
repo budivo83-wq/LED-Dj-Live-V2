@@ -1,0 +1,17 @@
+STEP38L — Generator Output Takeover Fix
+
+This build fixes the bug where Performance kept driving LED output while Generator LIVE MASTER was enabled.
+
+Test:
+1. Start server normally.
+2. Start ArtNet sender in SAFE MASTER LIVE as before.
+3. Open Performance and confirm normal output.
+4. Open Generator.
+5. Press LIVE MASTER.
+
+Expected:
+- Performance output is interrupted.
+- LED output follows Generator continuously.
+- No 0.5s Generator flicker over Performance.
+
+If you turn Generator OFF, Performance can take over again.

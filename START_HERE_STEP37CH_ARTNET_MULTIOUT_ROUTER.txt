@@ -1,0 +1,32 @@
+STEP37CH_ARTNET_MULTIOUT_ROUTER
+
+Co bylo přidáno:
+- Settings / ART-NET LIVE má nový blok: ART-NET MULTI OUT / ROUTING.
+- Lze zapnout route-table režim a posílat části stripů na různé ArtNet IP adresy/universe.
+- Route table je JSON seznam řádků ve stylu:
+  { "strip":0, "from":0, "count":170, "ip":"2.1.1.30", "universe":0, "startAddress":0 }
+  { "strip":0, "from":170, "count":130, "ip":"2.1.1.31", "universe":0, "startAddress":0 }
+- Přidána tlačítka:
+  - 8x300 DEFAULT: vytvoří základní 8x300 trasování po 170/130 px.
+  - ADD SPLIT EXAMPLE: přidá ukázku rozdělení jednoho stripu na dvě IP.
+  - CLEAR: vypne multiout.
+  - SAVE / APPLY ROUTES: uloží a publikuje patch do master mirroru.
+
+Backend / output změny:
+- ArtNet patch routes nově drží outputIp/targetIp/port.
+- Packet build umí u každého ArtDMX packetu nést vlastní targetIp/targetPort.
+- UDP sender posílá packet na packet.targetIp, pokud je nastavený; jinak používá původní globální TARGET IP.
+- Zachována zpětná kompatibilita: když multiout vypnutý, jede starý single target režim.
+
+Doporučené použití:
+1. Settings -> ART-NET LIVE.
+2. Nastav hlavní TARGET IP jako defaultní node.
+3. Otevři ART-NET MULTI OUT / ROUTING.
+4. Zapni MULTI OUT.
+5. Dej ADD SPLIT EXAMPLE nebo 8x300 DEFAULT.
+6. Uprav ip/universe/startAddress podle nodů.
+7. Klikni SAVE / APPLY ROUTES.
+8. Spusť ARTNET START.
+
+Poznámka:
+- Pro multiout doporučeno ARTSYNC nechat OFF, dokud neověříme chování více nodů. ArtDMX data samotná se už routují per-packet na správné IP.

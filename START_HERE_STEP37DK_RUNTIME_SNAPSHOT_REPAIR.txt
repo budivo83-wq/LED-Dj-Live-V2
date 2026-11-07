@@ -1,0 +1,25 @@
+STEP37DK_RUNTIME_SNAPSHOT_REPAIR
+
+Cíl:
+- Opravit Debug / Output Health stav, kdy panel zůstal viset na "Loading Output Health Diagnostics... Čekám na runtime snapshoty".
+
+Hotovo:
+- Opravený runtime loop snapshot lookup v output_health_panel_37cd.js.
+- Přidán cross-window lookup pro případy, kdy Debug běží v jiném window/contextu než registry.
+- Přidána normalizace loop snapshotu, aby Debug nespadl ani když registry ještě není připravený.
+- Opraven chybějící renderer loop listu: původní volání loopListHtml37DI nebylo definované a mohlo zastavit render Debug panelu.
+- Přidán Runtime loops seznam: top 12 loopů podle last/max duration, next delay, active/off stav.
+- Cache-bust query v index.html změněno na v=37dk.
+
+Ověřeno:
+- npm run check:js OK
+- npm run test:artnet-settings-boundary OK
+- npm run test:artnet-server-boundary OK
+- npm run test:shell-runner-output-contract OK
+
+Co zbyva:
+1. Reálný test Debug tabu: musí zmizet loading a zobrazit Runtime loops / Writer / Backend / FrameBus.
+2. Pokud OUTPUT last dál roste, prověřit zdroj telemetry v levém NAV PERF boxu.
+3. Profilovat quick_step_automator.js při reálném step lagu.
+4. Prověřit thumb/preload queue při live outputu.
+5. Až po funkční diagnostice řešit ArtNet UDP hotpath.

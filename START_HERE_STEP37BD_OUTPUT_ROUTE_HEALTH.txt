@@ -1,0 +1,22 @@
+STEP37BD_OUTPUT_ROUTE_HEALTH
+
+Co testovat:
+1) Spusť server a appku.
+2) Zapni ArtNet output.
+3) Otevři Debug → Output Stability.
+4) Sleduj nový údaj: routeHealth.
+
+Správně:
+- routeHealth match = browser a server se shodují na output cestě.
+- browser_only může být krátce normální při přepnutí nebo preview-only stavu.
+
+Podezřelé:
+- server_only = server něco posílá bez browser locku.
+- mismatch = browser a server ukazují rozdílné fyzické writery.
+
+Nové soubory:
+- public/runtime/output_route_health_37bd.js
+- docs/runtime/OUTPUT_ROUTE_HEALTH_STEP37BD.md
+
+Další krok po testu:
+STEP37BE_OUTPUT_WRITER_INVENTORY – projít všechny skutečné write() / send() cesty a připojit je do registry, pokud ještě někde existují mimo kontrolu.

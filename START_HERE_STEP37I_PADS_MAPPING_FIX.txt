@@ -1,0 +1,14 @@
+STEP37I – Pads flash actions + mapping output correction
+
+Changes:
+- PADS: BLACKOUT is now momentary black-frame flash only; it no longer switches LED/output OFF.
+- PADS: added L1 FX and L2 FX momentary flash pads.
+- PADS: STROBE pad renamed to MASTER FX1 and flashes master FX 1.
+- PADS: added MASTER FX2 momentary flash pad.
+- SHORTS: added assignable keyboard shortcuts for all performance pads.
+- Mapping: Art-Net patch now carries direction, color order, brightness/intensity, gamma, contrast and white limit into the server output path.
+- Art-Net output splitter now applies reverse/forward, RGB/GRB/BRG/RBG/BGR/GBR and correction sliders per routed strip/part.
+- Mapping diagnostics block moved below the strip list, at the bottom of the mapping center column.
+
+Note:
+- Mapping changes still need SAVE + APPLY PATCH before they affect physical output.

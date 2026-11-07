@@ -1,0 +1,20 @@
+STEP37DX_DROP_AND_LAST_SHADER_FIX
+
+Opravy:
+1) DROP pad už nečeká synchronně na dva přepínače modulů a nespouští okamžitý full sync/commit v click handleru.
+   - Přepnutí L1/L2 se pouze zařadí do fronty.
+   - UI sync + commit jsou odložené.
+   - Beat/sequencer pozice se dál nemění.
+   - Ochrana proti opakovanému mačkání během krátkého okna.
+
+2) Náhledy posledních hudebních shaderů jsou stabilnější.
+   - Některé nové CPU shadery jsou rytmicky gated a v pevném čase t=1.25 mohou vyjít skoro černé.
+   - Thumbnail renderer si teď nejdřív vybere viditelný čas z několika krátkých vzorků.
+   - Totálně černý gated frame se neukládá jako trvalý cache thumbnail.
+
+3) Fallback manifest doplněn podle skutečných souborů v public/l1_anims.
+   - l1_anims i l2_anims teď obsahují i poslední nové shadery.
+   - Když API list selže nebo se jede z fallbacku, nové shadery nezmizí / nebudou nekonzistentní.
+
+Kontrola:
+- npm run check:js OK, 451 JavaScript files.

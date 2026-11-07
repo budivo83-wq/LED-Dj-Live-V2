@@ -1,0 +1,15 @@
+STEP22OF LIVE UI + OUTPUT STABILIZER
+
+Cíl: output už je lepší, ale UI i ArtNet občas mikro-laguje. Tahle verze odděluje viditelnou UI stránku od live outputu ještě tvrději.
+
+Změny:
+1) Viditelný shell v live outputu už nerenderuje vlastní CPU master frame, ani když nemá lokální preview buffer.
+2) Skrytý output runner zůstává jediný live frame producer pro ArtNet.
+3) Při Output ON se do UI automaticky přidá live-output-lite-ui režim: vypne drahé CSS animace/transitions/dekorativní efekty ve viditelné stránce. Diagnostika zůstává.
+4) Center preview v shell monitoru se při live outputu defaultně neblituje, aby nebralo čas output runneru.
+
+Volitelné ladění přes DevTools console/localStorage:
+- localStorage.setItem('budilightShellLiveCanvasMonitor22OF','1') = zapne center monitor canvas i při live outputu.
+- localStorage.removeItem('budilightShellLiveCanvasMonitor22OF') = zpět na stabilizační režim.
+
+Po nahrání: restart serveru + hard refresh / clear site data.

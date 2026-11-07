@@ -1,0 +1,39 @@
+STEP37AX_EVENT_STATS_GOVERNOR
+
+Cíl:
+- snížit mikrolagy způsobené diagnostickými CustomEventy a stats pollingem při aktivním fyzickém outputu.
+- LED render/output cesta se nemění; jen se zpomaluje probouzení UI/debug/adaptive listenerů.
+
+Změny:
+1) public/runtime/frame_bus.js
+- verze navýšena na 13BT-N-live-stats-event-governor.
+- __ledFrameBusStats zůstává aktuální.
+- DOM event led-framebus-stats se při aktivním output locku neposílá častěji než cca 650 ms.
+- přidán debug objekt __ledFrameBusStatsEventGovernor37AX.
+
+2) public/runtime/render_pipeline.js
+- __ledSerialConsumerStats a __ledOutputConsumerGate zůstávají aktuální.
+- DOM eventy led-serial-consumer-stats a led-output-consumer-gate se při live outputu zpomalují na cca 700 ms.
+- přidán debug objekt __budilightRuntimeDiagEventGovernor37AX.
+
+3) public/runtime/output_pipeline.js
+- __ledOutputPipelineStats zůstává aktuální.
+- onMetrics callback se dál volá.
+- DOM event led-output-pipeline-stats je při live outputu omezený.
+- přidán debug objekt __budilightOutputMetricsEventGovernor37AX.
+
+4) public/topbar.js
+- topbar snapshot zůstává na window.__ledTopbarFpsSnapshot.
+- diagnostický event led-topbar-fps-snapshot je při live outputu chráněný governor logikou.
+
+5) public/debug_panel.js
+- Output Stability řádek ukazuje evtGov fb/rt/out hodnoty.
+
+Test:
+- Spusť ArtNet/Serial output.
+- Otevři Debug → Output Stability.
+- Sleduj řádek evtGov fb650/rt700/out700.
+- Zkontroluj, zda mikrolagy při běžícím outputu a Debug panelu klesly.
+
+Poznámka:
+- Pokud by adaptive FPS governor reagoval pomaleji, je to záměr při live outputu. Stále má vlastní 1s interval.

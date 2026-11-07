@@ -1,0 +1,8 @@
+STEP22OG - Step sequencer + framebus cleanup
+
+- STEP FX rows are now momentary: effect is ON only on the marked cell and is force-released on blank FX cells.
+- STEP FLIP rows are now momentary: reverse is ON only on the marked cell and is released on the next blank FLIP cell.
+- STEP random parameters now have a direct fallback that randomizes P1-P4 even if the button binding is not ready.
+- Debug panel no longer marks FRAME BUS red only because the visible UI bus is idle while the hidden output-runner is producing healthy live frames.
+
+Recommended after update: restart server + hard refresh / clear site data.

@@ -1,0 +1,110 @@
+export const BLX_MAGIC_0 = 0x42; // B
+export const BLX_MAGIC_1 = 0x58; // X
+
+export const BLX_VERSIONS = Object.freeze({
+  V1: 0x01,
+  V2: 0x02
+});
+
+export const BLX_PACKET_TYPES_V1 = Object.freeze({
+  PIXEL_FRAME: 0x10,
+  SYNC: 0x20,
+  STATUS_REQUEST: 0x40,
+  STATUS_REPLY: 0x41,
+  ACK: 0x50,
+  NACK: 0x51,
+  ERROR: 0x60
+});
+
+export const BLX_PACKET_TYPES_V2 = Object.freeze({
+  HELLO: 0x01,
+  HELLO_REPLY: 0x02,
+  CAPABILITY_REQUEST: 0x03,
+  CAPABILITY_REPLY: 0x04,
+  PIXEL_SEGMENT: 0x11,
+  PIXEL_DELTA: 0x12,
+  PIXEL_FILL: 0x13,
+  PIXEL_COMPRESSED: 0x14,
+  CLOCK_MASTER: 0x22,
+  CLOCK_REPLY: 0x23,
+  NODE_GROUP_ASSIGN: 0x24,
+  PARAM_UPDATE: 0x31,
+  PRESET_TRIGGER: 0x32,
+  CONFIG_READ: 0x33,
+  CONFIG_WRITE: 0x34,
+  SHADER_PARAM: 0x35,
+  FAILOVER_TARGET: 0x36
+});
+
+export const BLX_COLOR_ORDER = Object.freeze({
+  RGB: 0,
+  GRB: 1
+});
+
+export const BLX_FLAGS_V1 = Object.freeze({
+  NONE: 0x0000,
+  REQUIRE_ACK: 0x0001,
+  IMPORTANT: 0x0002,
+  COMPRESSED: 0x0004,
+  DELTA: 0x0008,
+  FRAME_START: 0x0010,
+  FRAME_END: 0x0020,
+  LOW_LATENCY: 0x0040,
+  TELEMETRY_REPLY: 0x0080
+});
+
+export const BLX_CAPABILITY_FLAGS = Object.freeze({
+  RGB: 1 << 0,
+  GRB: 1 << 1,
+  DELTA: 1 << 2,
+  SEGMENT: 1 << 3,
+  TELEMETRY: 1 << 4,
+  PRESET: 1 << 5,
+  TEMP: 1 << 6,
+  VOLTAGE: 1 << 7,
+  SERIAL: 1 << 8,
+  UDP: 1 << 9,
+  ETH: 1 << 10,
+  HOLD_LAST: 1 << 11,
+  TEST_PATTERN: 1 << 12
+});
+
+export const BLX_PRIORITY_CLASS = Object.freeze({
+  CRITICAL: 0,
+  CONTROL: 1,
+  FRAME: 2,
+  TELEMETRY: 3
+});
+
+export const BLX_COMPRESSION_CODEC = Object.freeze({
+  RAW: 0,
+  RLE: 1,
+  DELTA_RLE: 2
+});
+
+export const BLX_STATUS_CODES = Object.freeze({
+  OK: 0x0000,
+  ACCEPTED: 0x0001,
+  APPLIED: 0x0002,
+  QUEUED: 0x0003,
+  FALLBACK_ACTIVE: 0x0010,
+  ARMED: 0x0011,
+  DISARMED: 0x0012,
+  BUSY: 0x0013
+});
+
+export const BLX_ERROR_CODES = Object.freeze({
+  ERR_MAGIC: 0x1001,
+  ERR_VERSION_UNSUPPORTED: 0x1002,
+  ERR_TYPE_UNSUPPORTED: 0x1003,
+  ERR_LENGTH: 0x1004,
+  ERR_CRC: 0x1005,
+  ERR_SEQ_STALE: 0x1006,
+  ERR_SEQ_GAP: 0x1007,
+  ERR_NODE_ID: 0x1008,
+  ERR_CHANNEL: 0x1009,
+  ERR_TIMEOUT: 0x100a,
+  ERR_NOT_ARMED: 0x100b,
+  ERR_OVERFLOW: 0x100c,
+  ERR_INTERNAL: 0x100d
+});

@@ -3,6 +3,7 @@ import { renderGeneratorFrame, paintGeneratorFrameToCanvas, normalizeGeneratorPa
 import {
   createDefaultGeneratorGraph,
   graphToModuleFlags,
+  graphToRenderPlan,
   GENERATOR_MODULES,
   normalizeGeneratorGraph,
   updateGeneratorGraphNode,
@@ -287,6 +288,26 @@ const menuFullscreen = $('menuFullscreenBtn');
 
 const stored = loadGeneratorState();
 let graph = normalizeGeneratorGraph(stored.graph || createDefaultGeneratorGraph());
+let renderGraphPlan = graphToRenderPlan(graph);
+let renderGraphPlanGraph = graph;
+let graphModuleFlags = graphToModuleFlags(graph);
+let graphModuleFlagsGraph = graph;
+
+function getRenderGraphPlan() {
+  if (renderGraphPlanGraph !== graph) {
+    renderGraphPlan = graphToRenderPlan(graph);
+    renderGraphPlanGraph = graph;
+  }
+  return renderGraphPlan;
+}
+
+function getGraphModuleFlags() {
+  if (graphModuleFlagsGraph !== graph) {
+    graphModuleFlags = graphToModuleFlags(graph);
+    graphModuleFlagsGraph = graph;
+  }
+  return graphModuleFlags;
+}
 let curves = normalizeGeneratorCurves(stored.curves || createDefaultGeneratorCurves());
 let patch = normalizeGeneratorPatch({
   ...GENERATOR_DEFAULT_PATCH,
@@ -323,6 +344,7 @@ let transitionConfig = readGeneratorTransitionConfig(localStorage);
 let transitionRuntime = createGeneratorTransitionRuntime({ width: patch.width, height: patch.height, curve: transitionConfig.curve });
 let pendingReleaseMode = '';
 let transitionBusy = false;
+let lastTransitionUiAt = 0;
 let activeMusicModeId = loadGeneratorMusicMode(localStorage);
 let musicModeRuntimeEnabled = isGeneratorMusicModeRuntimeEnabled(localStorage);
 let lastMusicModeMeta = { id: activeMusicModeId, enabled: musicModeRuntimeEnabled, phrasePct: 0, accent: 0 };
@@ -364,6 +386,10 @@ function saveAll() {
 
 function updatePatchMacrosFromValues() {
   graph = normalizeGeneratorGraph(graph);
+  renderGraphPlan = graphToRenderPlan(graph);
+  renderGraphPlanGraph = graph;
+  graphModuleFlags = graphToModuleFlags(graph);
+  graphModuleFlagsGraph = graph;
   patch = normalizeGeneratorPatch({ ...patch, macros: patchValuesToMacros(patch), modules: graphToModuleFlags(graph), graph });
 }
 
@@ -1947,9 +1973,9 @@ function draw(now) {
   }
   const musicRuntime = applyGeneratorMusicModeRuntimeValues(activeMusicModeId, beatIntel.values, { enabled: musicModeRuntimeEnabled, bpm: baseBpm, beat, time, beatIntelligence: beatIntel.meta });
   lastMusicModeMeta = musicRuntime.meta || lastMusicModeMeta;
-  graph = normalizeGeneratorGraph(graph);
   let renderGraph = graph;
-  let livePatch = normalizeGeneratorPatch({ ...patch, ...musicRuntime.values, musicMode: activeMusicModeId, beatContext: beatIntel.meta, modules: graphToModuleFlags(graph), graph });
+  let livePatch = normalizeGeneratorPatch({ ...patch, ...musicRuntime.values, musicMode: activeMusicModeId, beatContext: beatIntel.meta, modules: getGraphModuleFlags(), graph });
+  let liveGraphPlan = getRenderGraphPlan();
   if (sceneMorphRuntime.active) {
     const morphResult = applyGeneratorSceneMorph(sceneMorphRuntime, { patch: livePatch, graph: renderGraph, curves }, {
       time,
@@ -1966,7 +1992,9 @@ function draw(now) {
       commitSceneMorphState(morphResult.state, morphResult.target);
       log(`Scene morph dokonÄŤenĂ˝: ${morphResult.target?.name || sceneMorphConfig.targetId}.`);
     }
-    renderSceneMorphPanel('draw');
+    // Scene morph state changes continuously, but its inspector is control
+    // plane UI; keep it off the pixel/render hot path.
+    if (now - lastSceneMorphSnapshotAt > 120) renderSceneMorphPanel('draw');
   }
   if (journeyRuntime.active) {
     const tick = tickGeneratorJourney(journeyRuntime, journeyConfig, {
@@ -1983,6 +2011,7 @@ function draw(now) {
       lastJourneySnapshotAt = now;
     }
   }
+  if (renderGraph !== graph) liveGraphPlan = graphToRenderPlan(renderGraph);
   if (mode === 'preview' || mode === 'live') {
     let releaseCompleteAfterPublish = '';
     const fieldRendered = renderActiveFieldTestFrame(time);
@@ -1990,12 +2019,12 @@ function draw(now) {
     let liveRendered = null;
     if (!rendered) {
       const renderStarted = performance.now();
-      rendered = renderGeneratorFrame({ patch: livePatch, graph: renderGraph, time, bpm: livePatch.bpm, beat });
+      rendered = renderGeneratorFrame({ patch: livePatch, normalizedPatch: true, graph: renderGraph, graphPlan: liveGraphPlan, time, bpm: livePatch.bpm, beat });
       rendered.meta.renderMs = Math.max(0, performance.now() - renderStarted);
       liveRendered = rendered;
     } else if (mode === 'live' && activeFieldTest?.publish !== true) {
       const renderStarted = performance.now();
-      liveRendered = renderGeneratorFrame({ patch: livePatch, graph: renderGraph, time, bpm: livePatch.bpm, beat });
+      liveRendered = renderGeneratorFrame({ patch: livePatch, normalizedPatch: true, graph: renderGraph, graphPlan: liveGraphPlan, time, bpm: livePatch.bpm, beat });
       liveRendered.meta.renderMs = Math.max(0, performance.now() - renderStarted);
     } else {
       liveRendered = rendered;
@@ -2008,7 +2037,10 @@ function draw(now) {
       if (transitionResult.done && pendingReleaseMode) {
         releaseCompleteAfterPublish = pendingReleaseMode === 'preview' ? 'preview' : 'off';
       }
-      updateTransitionStatus('draw');
+      if (now - lastTransitionUiAt > 120) {
+        updateTransitionStatus('draw');
+        lastTransitionUiAt = now;
+      }
     }
     paintGeneratorFrameToCanvas(canvas, rendered);
     frames += 1;
@@ -2070,6 +2102,16 @@ function draw(now) {
 }
 
 function setupGeneratorShellControls() {
+  const previewExpandNode = $('generatorPreviewExpand');
+  const setPreviewExpanded = (expanded) => {
+    document.body.classList.toggle('generator-preview-expanded', expanded);
+    previewExpandNode?.setAttribute('aria-expanded', String(expanded));
+    if (previewExpandNode) previewExpandNode.textContent = expanded ? 'CLOSE LARGE VIEW' : 'LARGE VIEW';
+  };
+  previewExpandNode?.addEventListener('click', () => setPreviewExpanded(!document.body.classList.contains('generator-preview-expanded')));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && document.body.classList.contains('generator-preview-expanded')) setPreviewExpanded(false);
+  });
   $('generatorOff')?.addEventListener('click', () => setMode('off'));
   $('generatorPreview')?.addEventListener('click', () => setMode('preview'));
   $('generatorLive')?.addEventListener('click', () => setMode(mode === 'live' ? 'off' : 'live'));

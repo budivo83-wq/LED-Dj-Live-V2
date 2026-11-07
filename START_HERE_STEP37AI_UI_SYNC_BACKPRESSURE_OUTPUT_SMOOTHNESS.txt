@@ -1,0 +1,36 @@
+STEP37AI_UI_SYNC_BACKPRESSURE_OUTPUT_SMOOTHNESS
+
+Base: STEP37AH_OUTPUT_WS_MASTER_ALLOC_TRIM
+
+Goal:
+- Reduce occasional UI/output micro-stutters by trimming non-output work while live ArtNet output is active.
+- No changes to mapping, show logic, sequencer pattern logic, or ArtNet routing.
+
+Changes:
+1) public/runtime/websocket_sync.js
+   - Normal runtime commits now send the already-built patch only.
+   - Removed expensive full-state JSON.stringify comparison on every small UI change.
+   - Added WebSocket bufferedAmount guard; if the state socket is backed up, it retries shortly instead of piling work onto the main thread.
+
+2) public/runtime/refresh_loops.js
+   - Output cards refresh slower while live output is active.
+   - Shader inspector refresh is strongly throttled during live output.
+   - Visible DEBUG refresh is still available, but defaults to a slower live-output interval.
+
+3) src/server/runtime_profile.js
+   - Added tunables:
+     LED_LIVE_OUTPUT_UI_CARDS_MS
+     LED_LIVE_OUTPUT_SHADER_INSPECTOR_MS
+     LED_DEBUG_LIVE_OUTPUT_REFRESH_MS
+     LED_WS_STATE_BUFFERED_SKIP_BYTES
+     LED_WS_STATE_BACKPRESSURE_RETRY_MS
+
+Verification:
+- npm run check:js
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy
+
+Notes:
+- Physical output hot path remains untouched.
+- This step targets main-thread/UI jitter and sync backpressure, not color/mapping behavior.

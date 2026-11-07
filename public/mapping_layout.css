@@ -1,0 +1,1133 @@
+/*
+  STEP 9P — Mapping V2 performance-style layout
+  ------------------------------------------------
+  Goal: keep Mapping V2 visually aligned with the Performance page while
+  avoiding the old scroll/focus side effects.
+
+  Important rules:
+  - This file is loaded AFTER style.css + performance.css + performance_topbar.css.
+  - Do not use global scroll locks or focus hacks.
+  - The page uses the normal app shell/topbar style; only the mapping work area has
+    internal scrolling panes.
+*/
+
+body.mapping-page {
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--bg-main, #02040a);
+}
+
+.mapping-page .app-shell {
+  min-height: 100vh;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.mapping-page .topbar {
+  flex-shrink: 0;
+}
+
+.mapping-status-card strong {
+  color: var(--accent-green, #2cff7d);
+  letter-spacing: .08em;
+}
+
+.mapping-grid {
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(420px, 1fr) minmax(300px, 380px);
+  gap: 14px;
+  padding: 14px;
+  overflow: hidden;
+}
+
+.mapping-panel,
+.mapping-center {
+  min-height: 0;
+}
+
+.mapping-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding-right: 3px;
+}
+
+.mapping-center {
+  display: grid;
+  grid-template-rows: minmax(260px, .86fr) minmax(220px, 1fr);
+  gap: 12px;
+  overflow: hidden;
+}
+
+.mapping-card,
+.preview-card,
+.segment-list-card {
+  border: 1px solid rgba(0, 217, 255, .18);
+  background:
+    linear-gradient(180deg, rgba(8, 17, 30, .88), rgba(3, 7, 14, .94)),
+    radial-gradient(circle at 20% 0%, rgba(0, 217, 255, .08), transparent 44%);
+  box-shadow: 0 0 24px rgba(0, 0, 0, .26), inset 0 0 0 1px rgba(255,255,255,.035);
+  border-radius: 18px;
+}
+
+.mapping-card {
+  padding: 12px;
+}
+
+.mapping-card h2,
+.preview-header h1,
+.section-title-row h2 {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.mapping-card h2,
+.section-title-row h2 {
+  font-size: 13px;
+  color: var(--accent-cyan, #00d9ff);
+}
+
+.preview-header h1 {
+  font-size: 18px;
+  color: var(--text-main, #eff6ff);
+}
+
+.mapping-card h2 {
+  margin-bottom: 10px;
+}
+
+.field {
+  display: grid;
+  gap: 5px;
+  margin: 8px 0;
+}
+
+.field span,
+.switch-row,
+.mini-note,
+.preview-header p,
+#selectionReadout {
+  color: var(--text-muted, rgba(239, 246, 255, .62));
+}
+
+.field span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.mapping-page input,
+.mapping-page select,
+.mapping-page textarea {
+  width: 100%;
+  min-height: 34px;
+  border: 1px solid rgba(135, 180, 255, .18);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, .28);
+  color: var(--text-main, #eff6ff);
+  outline: none;
+}
+
+.mapping-page input,
+.mapping-page select {
+  padding: 0 9px;
+}
+
+.mapping-page textarea {
+  padding: 9px;
+  resize: vertical;
+}
+
+.mapping-page input:focus,
+.mapping-page select:focus,
+.mapping-page textarea:focus {
+  border-color: rgba(0, 217, 255, .56);
+  box-shadow: 0 0 0 1px rgba(0, 217, 255, .22), 0 0 18px rgba(0, 217, 255, .12);
+}
+
+.mapping-page input[type="range"] {
+  padding: 0;
+  accent-color: var(--accent-cyan, #00d9ff);
+  touch-action: none;
+  cursor: ew-resize;
+}
+
+.mapping-page input[type="color"] {
+  padding: 3px;
+}
+
+.mapping-page button,
+.segment-card {
+  border: 1px solid rgba(0, 217, 255, .24);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(0, 217, 255, .13), rgba(0, 217, 255, .045));
+  color: var(--text-main, #eff6ff);
+  min-height: 34px;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.mapping-page button:hover,
+.segment-card:hover {
+  border-color: rgba(0, 217, 255, .62);
+  box-shadow: 0 0 18px rgba(0, 217, 255, .10);
+}
+
+.mapping-page button:active,
+.segment-card:active {
+  transform: translateY(1px);
+}
+
+.mapping-page button.primary {
+  background: linear-gradient(135deg, rgba(43, 140, 255, .34), rgba(0, 217, 255, .20));
+  border-color: rgba(0, 217, 255, .54);
+}
+
+.mapping-page button.wide-btn {
+  width: 100%;
+}
+
+.button-grid {
+  display: grid;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.button-grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.preview-card,
+.segment-list-card {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.preview-header,
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.preview-header p {
+  margin: 4px 0 0;
+  font-size: 12px;
+}
+
+.preview-readout,
+.mapping-status-pill {
+  border: 1px solid rgba(44, 255, 125, .24);
+  border-radius: 999px;
+  padding: 5px 10px;
+  color: var(--accent-green, #2cff7d);
+  background: rgba(44, 255, 125, .06);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.canvas-wrap {
+  min-height: 0;
+  flex: 1;
+  padding: 12px;
+}
+
+#previewCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 217, 255, .20);
+  background: #020406;
+}
+
+.segment-list {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px;
+  display: grid;
+  gap: 9px;
+}
+
+.segment-card {
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  display: grid;
+  gap: 5px;
+}
+
+.segment-card strong {
+  color: var(--text-main, #eff6ff);
+}
+
+.segment-card > span {
+  color: var(--text-muted, rgba(239, 246, 255, .62));
+  font-size: 12px;
+}
+
+.segment-card.selected {
+  border-color: rgba(43, 140, 255, .88);
+  background:
+    linear-gradient(135deg, rgba(43, 140, 255, .22), rgba(0, 217, 255, .10)),
+    rgba(0, 0, 0, .16);
+  box-shadow: 0 0 0 1px rgba(43, 140, 255, .22) inset, 0 0 20px rgba(43, 140, 255, .14);
+}
+
+.segment-card.disabled {
+  opacity: .46;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.chip {
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 11px;
+  color: var(--text-muted, rgba(239, 246, 255, .62));
+  background: rgba(255,255,255,.04);
+}
+
+.segment-editor.empty,
+.validation-box,
+.routes-box {
+  color: var(--text-muted, rgba(239, 246, 255, .62));
+  font-size: 12px;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.switch-row label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.switch-row input[type="checkbox"] {
+  width: auto;
+  min-height: 0;
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.editor-grid .field {
+  margin: 0;
+}
+
+.editor-grid .wide {
+  grid-column: 1 / -1;
+}
+
+.json-box {
+  min-height: 120px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 11px;
+}
+
+.ok-line { color: var(--accent-green, #2cff7d); }
+.warn-line { color: var(--accent-amber, #ffb043); }
+.error-line { color: var(--accent-red, #ff3766); }
+.route-row {
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  padding: 7px 0;
+}
+.route-row:last-child { border-bottom: 0; }
+
+.mini-note {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+@media (max-width: 1180px) {
+  .mapping-diagnostics-grid { grid-template-columns: 1fr; }
+  body.mapping-page { overflow: auto; }
+  .mapping-page .app-shell { height: auto; min-height: 100vh; }
+  .mapping-grid {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+  .mapping-panel,
+  .mapping-center,
+  .segment-list {
+    overflow: visible;
+  }
+  .mapping-center {
+    grid-template-rows: 360px auto;
+  }
+}
+
+/* STEP 9S — original layout + conservative 2D strip placement
+   Keep the earlier Performance-style UI; do not auto-zoom to segment spread.
+   The preview is scaled only from virtual width/height, so moving strips apart
+   does not make them shrink into dots. */
+#previewCanvas {
+  cursor: grab;
+  touch-action: none;
+}
+#previewCanvas.dragging {
+  cursor: grabbing;
+}
+.segment-card .chip:nth-last-child(-n+2) {
+  border-color: rgba(255,43,214,.20);
+  color: rgba(255,180,245,.86);
+}
+
+/* STEP 9T — strip/output mapping reset
+   Spatial placement is intentionally disabled here. The mapping page is a
+   practical strip router: count, pixels, enable, correction and output route. */
+.strip-router-grid .mapping-center {
+  grid-template-rows: minmax(230px, .55fr) minmax(320px, 1fr);
+}
+.strip-router-preview-wrap {
+  min-height: 210px;
+}
+.strip-table-card .segment-list {
+  grid-template-columns: 1fr;
+}
+.strip-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.strip-state {
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+  letter-spacing: .08em;
+  border: 1px solid rgba(255,255,255,.14);
+}
+.strip-state.on {
+  color: var(--accent-green, #2cff7d);
+  border-color: rgba(44,255,125,.28);
+  background: rgba(44,255,125,.07);
+}
+.strip-state.off {
+  color: var(--accent-red, #ff3766);
+  border-color: rgba(255,55,102,.28);
+  background: rgba(255,55,102,.07);
+}
+.strip-card .chip {
+  font-variant-numeric: tabular-nums;
+}
+#previewCanvas {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* STEP 9U — strip cards in columns, inline controls
+   User request: segment/strip settings must live directly on each strip card,
+   not in the right-side inspector. Keep at least four columns on desktop. */
+.strip-router-grid .mapping-center {
+  grid-template-rows: minmax(190px, .42fr) minmax(420px, 1fr);
+}
+.strip-card-grid-panel {
+  min-height: 0;
+}
+.strip-card-grid {
+  grid-template-columns: repeat(4, minmax(230px, 1fr)) !important;
+  align-content: start;
+  gap: 12px;
+}
+.inline-strip-card {
+  padding: 10px;
+  min-height: 0;
+  align-self: start;
+  cursor: default;
+}
+.inline-strip-card:focus-within {
+  border-color: rgba(0, 217, 255, .62);
+  box-shadow: 0 0 0 1px rgba(0,217,255,.18) inset, 0 0 18px rgba(0,217,255,.10);
+}
+.inline-strip-card .strip-card-head {
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.inline-strip-card .strip-card-head strong {
+  display: block;
+  margin-bottom: 3px;
+}
+.inline-strip-card .strip-card-head span {
+  color: var(--text-muted, rgba(239,246,255,.62));
+  font-size: 11px;
+}
+.inline-strip-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+.inline-strip-form .field {
+  margin: 0;
+}
+.inline-strip-form .field span {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+.inline-strip-form .field span b {
+  color: var(--accent-green, #2cff7d);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.inline-strip-form .range-field {
+  grid-column: 1 / -1;
+}
+.inline-strip-form input,
+.inline-strip-form select {
+  min-height: 30px;
+  font-size: 12px;
+}
+.inline-strip-form input[type="range"] {
+  min-height: 26px;
+}
+.mini-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 999px;
+  padding: 4px 7px;
+  background: rgba(0,0,0,.18);
+  color: var(--accent-green, #2cff7d);
+  font-size: 11px;
+  letter-spacing: .08em;
+  user-select: none;
+}
+.mini-switch input {
+  width: auto;
+  min-height: 0;
+  margin: 0;
+}
+.mapping-page .hidden-editor {
+  display: none !important;
+}
+.mapping-right .mapping-card {
+  flex: 0 0 auto;
+}
+@media (max-width: 1540px) {
+  .strip-card-grid { grid-template-columns: repeat(3, minmax(230px, 1fr)) !important; }
+}
+@media (max-width: 1180px) {
+  .mapping-diagnostics-grid { grid-template-columns: 1fr; }
+  .strip-card-grid { grid-template-columns: repeat(2, minmax(220px, 1fr)) !important; }
+}
+@media (max-width: 760px) {
+  .strip-card-grid { grid-template-columns: 1fr !important; }
+}
+
+
+/* STEP 9V — compact inline strip grid, no nested scroll panes
+   User request: narrower columns so 4 strip cards fit, settings directly on
+   each strip, and no tiny internal scroll containers. The whole mapping page
+   may grow naturally, but panels/cards themselves should not create their own
+   scrollbar traps. */
+body.mapping-page {
+  min-height: 100vh;
+  overflow: auto !important;
+}
+.mapping-page .app-shell {
+  min-height: 100vh;
+  height: auto !important;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+.strip-router-grid {
+  height: auto !important;
+  min-height: calc(100vh - 82px);
+  grid-template-columns: minmax(230px, 255px) minmax(760px, 1fr) !important;
+  grid-template-areas: "left center";
+  gap: 12px;
+  padding: 12px;
+  overflow: visible !important;
+  align-items: stretch;
+}
+.strip-router-grid .mapping-left {
+  grid-area: left;
+}
+.strip-router-grid .mapping-center {
+  grid-area: center;
+  min-height: calc(100vh - 106px);
+  grid-template-rows: minmax(135px, 170px) minmax(0, 1fr) !important;
+  overflow: visible !important;
+}
+.strip-router-grid .mapping-right {
+  display: none !important;
+}
+.mapping-panel,
+.mapping-center,
+.preview-card,
+.segment-list-card,
+.segment-list,
+.strip-card-grid-panel {
+  overflow: visible !important;
+  overscroll-behavior: auto !important;
+}
+.mapping-card,
+.preview-card,
+.segment-list-card {
+  border-radius: 16px;
+}
+.mapping-card {
+  padding: 10px;
+}
+.preview-header,
+.section-title-row {
+  padding: 9px 10px;
+}
+.preview-header h1 {
+  font-size: 16px;
+}
+.preview-header p {
+  font-size: 11px;
+  margin: 2px 0 0;
+}
+.canvas-wrap {
+  padding: 8px 10px 10px;
+}
+.strip-router-preview-wrap {
+  min-height: 120px !important;
+}
+#previewCanvas {
+  min-height: 92px;
+}
+.strip-card-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(178px, 1fr)) !important;
+  gap: 9px !important;
+  padding: 10px !important;
+  align-content: start;
+}
+.inline-strip-card {
+  padding: 8px !important;
+  border-radius: 13px !important;
+  gap: 6px !important;
+}
+.inline-strip-card .strip-card-head {
+  margin-bottom: 5px !important;
+  gap: 5px !important;
+}
+.inline-strip-card .strip-card-head strong {
+  font-size: 12px;
+  line-height: 1.1;
+}
+.inline-strip-card .strip-card-head span {
+  font-size: 10px;
+  line-height: 1.15;
+}
+.inline-strip-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px !important;
+}
+.inline-strip-form .field,
+.mapping-card .field {
+  gap: 3px !important;
+  margin: 5px 0 !important;
+}
+.inline-strip-form .field span,
+.mapping-card .field span {
+  font-size: 9.5px !important;
+  letter-spacing: .045em !important;
+}
+.inline-strip-form input,
+.inline-strip-form select,
+.mapping-page input,
+.mapping-page select {
+  min-height: 25px !important;
+  height: 25px;
+  font-size: 11px !important;
+  border-radius: 8px !important;
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+}
+.inline-strip-form input[type="range"] {
+  min-height: 22px !important;
+  height: 22px;
+}
+.inline-strip-form .range-field {
+  grid-column: 1 / -1;
+}
+.mini-switch {
+  padding: 3px 6px !important;
+  font-size: 10px !important;
+  gap: 4px !important;
+  white-space: nowrap;
+}
+.mini-switch input {
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+.button-grid {
+  gap: 6px !important;
+  margin: 6px 0 !important;
+}
+.mapping-page button {
+  min-height: 28px !important;
+  font-size: 11px;
+  border-radius: 9px;
+}
+.json-box {
+  min-height: 76px !important;
+}
+.mini-note {
+  font-size: 10px !important;
+}
+@media (max-width: 1280px) {
+  .strip-router-grid {
+    grid-template-columns: 1fr !important;
+    grid-template-areas: "left" "center";
+  }
+  .strip-card-grid {
+    grid-template-columns: repeat(4, minmax(165px, 1fr)) !important;
+  }
+}
+@media (max-width: 860px) {
+  .strip-card-grid {
+    grid-template-columns: repeat(2, minmax(160px, 1fr)) !important;
+  }
+}
+@media (max-width: 520px) {
+  .strip-card-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Mapping UX polish — clearer workbench, same V2 data model. */
+.mapping-v2-workbench {
+  --map-panel-bg: rgba(7, 14, 24, .92);
+  --map-panel-line: rgba(126, 240, 194, .18);
+  --map-focus: #7ef0c2;
+  grid-template-columns: minmax(250px, 290px) minmax(760px, 1fr) !important;
+  gap: 14px;
+  padding: 14px;
+}
+
+.mapping-v2-workbench .mapping-card,
+.mapping-v2-workbench .preview-card,
+.mapping-v2-workbench .segment-list-card {
+  border-radius: 8px;
+  border-color: var(--map-panel-line);
+  background:
+    linear-gradient(180deg, rgba(10, 18, 29, .96), rgba(4, 8, 15, .98)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 32px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, .28);
+}
+
+.mapping-v2-workbench .mapping-card-primary {
+  border-color: rgba(126, 240, 194, .34);
+}
+
+.mapping-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.mapping-card-title span {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border: 1px solid rgba(126, 240, 194, .25);
+  border-radius: 6px;
+  color: var(--map-focus);
+  font-size: 10px;
+  font-weight: 800;
+  background: rgba(126, 240, 194, .06);
+}
+
+.mapping-v2-workbench .mapping-card h2,
+.mapping-v2-workbench .section-title-row h2 {
+  color: var(--map-focus);
+  letter-spacing: .06em;
+}
+
+.mapping-inline-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.mapping-v2-workbench .preview-header {
+  align-items: flex-start;
+}
+
+.mapping-v2-workbench .preview-header h1 {
+  font-size: 20px;
+  letter-spacing: .03em;
+}
+
+.mapping-v2-workbench .preview-header p {
+  max-width: 680px;
+  line-height: 1.45;
+}
+
+.mapping-v2-workbench .preview-readout {
+  border-radius: 6px;
+  border-color: rgba(126, 240, 194, .32);
+  color: var(--map-focus);
+  background: rgba(126, 240, 194, .08);
+}
+
+.mapping-v2-workbench .strip-card-grid {
+  grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)) !important;
+  gap: 12px !important;
+  padding: 12px !important;
+}
+
+.mapping-v2-workbench .inline-strip-card {
+  border-radius: 8px !important;
+  border-color: rgba(255,255,255,.11);
+  background: rgba(2, 6, 12, .58);
+}
+
+.mapping-v2-workbench .inline-strip-card.selected {
+  border-color: rgba(126, 240, 194, .58);
+  box-shadow: inset 0 0 0 1px rgba(126, 240, 194, .24), 0 0 26px rgba(126, 240, 194, .10);
+}
+
+.mapping-v2-workbench .inline-strip-card.disabled {
+  opacity: .56;
+}
+
+.mapping-v2-workbench .strip-card-head {
+  padding-bottom: 7px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.mapping-v2-workbench .inline-strip-card .strip-card-head strong {
+  font-size: 13px;
+}
+
+.mapping-v2-workbench .inline-strip-card .strip-card-head span {
+  display: block;
+  margin-top: 3px;
+  color: rgba(239,246,255,.58);
+}
+
+.mapping-v2-workbench .inline-strip-form {
+  gap: 7px !important;
+  padding-top: 7px;
+}
+
+.mapping-help-list {
+  display: grid;
+  gap: 8px;
+  color: var(--text-muted, rgba(239, 246, 255, .74));
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.mapping-help-list strong {
+  color: var(--map-focus, #7ef0c2);
+  margin-right: 6px;
+}
+
+.mapping-diagnostics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.mapping-diagnostics-grid .mapping-card-wide {
+  grid-column: 1 / -1;
+}
+
+.mapping-health-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-bottom: 8px;
+}
+
+.mapping-health-kpi {
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  padding: 8px;
+  background: rgba(255,255,255,.035);
+}
+
+.mapping-health-kpi span {
+  display: block;
+  color: var(--text-muted, rgba(239,246,255,.58));
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.mapping-health-kpi strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 15px;
+}
+
+.universe-heatmap {
+  display: grid;
+  gap: 7px;
+}
+
+.universe-heat-row {
+  display: grid;
+  grid-template-columns: 54px 1fr 86px;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.universe-heat-bar {
+  height: 13px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255,255,255,.08);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+.universe-heat-fill {
+  display: block;
+  height: 100%;
+  width: var(--fill, 0%);
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(126,240,194,.95), rgba(43,140,255,.9));
+}
+
+.universe-heat-fill.overfull {
+  background: linear-gradient(90deg, rgba(255,176,67,.95), rgba(255,55,102,.95));
+}
+
+.section-title-row.compact {
+  padding: 0 0 8px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 8px;
+}
+
+.section-title-row.compact span {
+  color: var(--text-muted, rgba(239,246,255,.58));
+  font-size: 11px;
+}
+
+.strip-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 7px;
+}
+
+.strip-chip {
+  font-size: 10px;
+  letter-spacing: .05em;
+  color: rgba(239,246,255,.86);
+}
+
+.strip-route-visual {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.route-part-block {
+  min-width: 0;
+  border: 1px solid rgba(126,240,194,.18);
+  border-radius: 6px;
+  padding: 6px;
+  background: linear-gradient(180deg, rgba(126,240,194,.10), rgba(255,255,255,.03));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+}
+
+.route-part-block strong,
+.route-part-block span {
+  display: block;
+}
+
+.route-part-block strong {
+  color: var(--map-focus, #7ef0c2);
+  font-size: 10px;
+  margin-bottom: 3px;
+}
+
+.route-part-block span {
+  font-size: 10px;
+  color: rgba(239,246,255,.74);
+  line-height: 1.25;
+}
+
+.route-empty,
+.field-help {
+  color: rgba(239,246,255,.56);
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.field-help.wide {
+  grid-column: 1 / -1;
+  margin-top: -2px;
+  margin-bottom: 2px;
+}
+
+.form-section-title {
+  grid-column: 1 / -1;
+  margin-top: 2px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(255,255,255,.07);
+  color: var(--map-focus, #7ef0c2);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.inline-strip-form .wide {
+  grid-column: 1 / -1;
+}
+
+.validation-box,
+.routes-box {
+  display: grid;
+  gap: 8px;
+}
+
+.mapping-v2-workbench .inline-strip-form .range-field {
+  padding-top: 2px;
+}
+
+.mapping-v2-workbench input,
+.mapping-v2-workbench select,
+.mapping-v2-workbench textarea {
+  border-radius: 6px !important;
+}
+
+.mapping-v2-workbench button {
+  border-radius: 6px !important;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+
+.mapping-v2-workbench .primary {
+  background: linear-gradient(135deg, rgba(126, 240, 194, .34), rgba(36, 129, 255, .22));
+  border-color: rgba(126, 240, 194, .45);
+}
+
+@media (max-width: 1280px) {
+  .mapping-v2-workbench {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .mapping-inline-fields {
+    grid-template-columns: 1fr;
+  }
+  .mapping-diagnostics-grid {
+    grid-template-columns: 1fr;
+  }
+  .mapping-v2-workbench .preview-header {
+    display: grid;
+  }
+  .mapping-v2-workbench .strip-card-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Mapping viewport isolation contract. */
+body.mapping-page {
+  overflow: hidden !important;
+}
+
+.mapping-v2-workbench .mapping-left,
+.mapping-v2-workbench .mapping-center,
+.mapping-v2-workbench .mapping-right,
+.classic-side-panel,
+.classic-center-panel,
+.classic-right-panel {
+  position: static !important;
+  overflow-y: auto;
+  scroll-margin: 0 !important;
+}
+
+.mapping-v2-workbench .segment-list {
+  overflow-y: auto !important;
+}
+
+/* STEP 9W — compact cards, restored strip preview size
+   Correction: only the CARD columns are compact. The preview strips/bars keep
+   the earlier readable size. All preview bars use one neutral color until real
+   calibration/test patterns are added later. */
+.strip-router-grid {
+  grid-template-columns: minmax(225px, 250px) minmax(920px, 1fr) !important;
+}
+.strip-router-grid .mapping-center {
+  grid-template-rows: minmax(230px, 270px) minmax(0, 1fr) !important;
+}
+.strip-router-preview-wrap {
+  min-height: 210px !important;
+}
+#previewCanvas {
+  min-height: 190px !important;
+}
+.strip-card-grid {
+  grid-template-columns: repeat(4, minmax(188px, 1fr)) !important;
+  gap: 8px !important;
+}
+.inline-strip-card {
+  padding: 7px !important;
+}
+.inline-strip-form {
+  gap: 5px !important;
+}
+.inline-strip-form input,
+.inline-strip-form select {
+  min-height: 25px !important;
+  height: 25px !important;
+}
+@media (max-width: 1280px) {
+  .strip-router-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .strip-card-grid {
+    grid-template-columns: repeat(4, minmax(180px, 1fr)) !important;
+  }
+}
+@media (max-width: 900px) {
+  .strip-card-grid {
+    grid-template-columns: repeat(2, minmax(180px, 1fr)) !important;
+  }
+}
+@media (max-width: 520px) {
+  .strip-card-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

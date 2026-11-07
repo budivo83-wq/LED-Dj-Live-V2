@@ -1,0 +1,29 @@
+STEP37BT_VIEWPORT_RESIZE_GOVERNOR
+
+Cíl:
+- snížit mikrolagy při přepínání mezi cached iframe stránkami,
+- zabránit tomu, aby skryté shell stránky zbytečně dělaly resize/layout práci,
+- nechat output runner beze změny.
+
+Změny:
+1) public/runtime/input_bindings.js
+   - přidán viewport/resize governor pro shellView stránky,
+   - resize/orientation se dávkuje přes timeout + RAF,
+   - při aktivním output locku se resize více zklidní,
+   - skrytý iframe resize jen označí jako pending,
+   - při návratu na aktivní stránku se provede jeden pending resize.
+
+2) public/runtime/app_preview_canvas_resize.js
+   - preview/shader resize se přeskočí ve skrytém shell iframe,
+   - při návratu na aktivní stránku se provede pending preview/shader resize,
+   - přidána diagnostika skippedInactivePreview/skippedInactiveShader.
+
+Diagnostika:
+- window.__budilightViewportGovernor37BT
+- window.__budilightPreviewResizeGovernor37AU
+
+Test:
+- Performance → Mapping → Performance
+- Performance → Settings → Performance
+- změna velikosti okna / fullscreen / orientace
+- ověřit, že NAV PERF pořád ukazuje CACHED a preview se po návratu správně přepočítá.

@@ -1,0 +1,22 @@
+STEP37DA_STORAGE_WRITE_GUARD_SMOOTHNESS
+
+Cíl:
+- Další bezpečná optimalizace plynulosti z poslední funkční STEP37CZ větve.
+- Nezasahovat do loadingu animací, ArtNet mappingu ani output authority.
+
+Změny:
+1) public/runtime/quick_step_automator.js
+   - Přidán guard proti opakovaným localStorage zápisům stejného sequencer state payloadu.
+   - Přidán guard proti opakovaným localStorage zápisům stejného transport payloadu.
+   - Transport payload je stabilizovaný zaokrouhlením hodnot, aby neukládal mikrorozdíly bez reálné změny.
+
+Proč:
+- localStorage.setItem je synchronní a při častém programování/sequencer změnách může blokovat main thread.
+- Zápis stejného JSONu zbytečně bere čas a může vytvářet mikro-záseky v UI/outputu.
+
+Riziko:
+- Nízké. Nemění se render, output, ArtNet, websocket ani načítání animací.
+- Persistuje se pořád stejný obsah, pouze se neukládá znovu, pokud je identický.
+
+Ověření:
+- npm run check:js

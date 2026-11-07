@@ -1,0 +1,47 @@
+STEP37BK_COMMAND_BUS_LIVE_PATCH
+
+Cil:
+- Dokonceni bodu 6: preklopeni ziveho UI syncu na command bus vrstvu.
+- Zlepsit plynulost pri live ovladani, slidrech, padech a rychlych zmenach bez rozbiti stareho state-sync workflow.
+
+Co je pridano:
+1) Novy websocket typ zpravy:
+   { type: "command", command: { kind: "state-patch", patch, persist, reason } }
+
+2) Klient:
+   - public/runtime/websocket_sync.js umi prijimat command/state-patch stejne jako update patch.
+   - commitStateRuntime umi podle options poslat bud klasicky update, nebo command bus zpravu.
+   - expose diagnostika window.__budilightCommandBus37BK.
+
+3) State sync controller:
+   - public/runtime/state_sync_controller.js predava commit(options).
+   - public/runtime/websocket_bridge.js predava transport/persist/volatile/reason.
+
+4) Performance UI:
+   - public/app.js pri live-output governor flush pouziva command bus transport.
+   - klasicky update zustava fallback pro normalni nebo forced commity.
+   - explicitni commitState({ transport:"command" }) / commitState({ volatile:true }) je pripraveny pro dalsi moduly.
+
+5) Server:
+   - src/server/ws_controller.js prijima update i command.
+   - command/state-patch mergeuje do centralniho stavu.
+   - persist:false / volatile command neuklada na disk.
+   - command se broadcastuje ostatnim klientum jako command, ne jako full update.
+
+Bezpecnost:
+- Stary typ {type:"update", patch/state} zustava plne funkcni.
+- Command bus je kompatibilni fallback vrstva, ne agresivni prepis cele architektury.
+- Output runner/master-frame cesta se nemeni.
+
+Overeni:
+- node --check public/runtime/websocket_sync.js
+- node --check public/runtime/websocket_bridge.js
+- node --check public/runtime/state_sync_controller.js
+- node --check public/app.js
+- node --check src/server/ws_controller.js
+
+Dalsi doporuceny test:
+- Otevrit NAV PERF + Command bus diagnostiku v konzoli:
+  window.__budilightCommandBus37BK
+- Zkouset rychle slidery / pady / prechody Performance <-> Mapping.
+- Sledovat, jestli pri live outputu lastTransport = "command".

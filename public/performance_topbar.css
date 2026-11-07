@@ -1,0 +1,173 @@
+/* Performance page final topbar overrides (single-source, deduplicated). */
+.performance-page .topbar {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+  gap: 8px !important;
+}
+
+.performance-page .top-left-cluster {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  gap: 4px !important;
+}
+
+.performance-page .top-left-controls {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  flex: 0 0 auto !important;
+  width: clamp(176px, 12vw, 212px) !important;
+  min-width: 0 !important;
+  max-width: 212px !important;
+  padding: 0 8px 0 6px !important;
+  border: 0 !important;
+  border-right: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.performance-page .top-left-controls .top-master-strip,
+.performance-page .top-left-controls .top-bpm-strip {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+.performance-page .top-left-controls .top-master-strip {
+  display: grid !important;
+  grid-template-columns: auto 1fr !important;
+  align-items: center !important;
+  column-gap: 8px !important;
+}
+
+.performance-page .top-left-controls .top-master-strip #masterValue {
+  display: none !important;
+}
+
+.performance-page .top-left-controls .top-bpm-strip {
+  display: grid !important;
+  grid-template-columns: auto 1fr auto auto auto !important;
+  align-items: center !important;
+  column-gap: 6px !important;
+}
+
+.performance-page .top-left-controls .top-bpm-strip #bpm {
+  min-width: 0 !important;
+}
+
+.performance-page .workspace-tabs {
+  width: clamp(300px, 24vw, 420px) !important;
+  min-width: 0 !important;
+  max-width: 420px !important;
+}
+
+.performance-page .top-right-cluster {
+  min-width: 0 !important;
+  max-width: none !important;
+  overflow: visible !important;
+}
+
+.performance-page .status-strip.status-strip-inline {
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+.performance-page .status-strip.status-strip-inline .status-card {
+  min-width: 78px !important;
+  flex: 1 1 96px !important;
+}
+
+@media (max-width: 1660px) {
+  .performance-page .topbar {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+  }
+
+  .performance-page .workspace-tabs {
+    width: clamp(280px, 22vw, 360px) !important;
+    min-width: 0 !important;
+    max-width: 360px !important;
+  }
+
+  .performance-page .workspace-tabs .nav {
+    min-width: 76px !important;
+    font-size: 0.78rem !important;
+    letter-spacing: 0.1em !important;
+  }
+
+  .performance-page .top-left-controls {
+    min-width: 0 !important;
+    max-width: 200px !important;
+    width: clamp(160px, 11vw, 200px) !important;
+    padding-right: 8px !important;
+  }
+
+  .performance-page .status-strip.status-strip-inline .status-card {
+    min-width: 72px !important;
+    flex: 1 1 84px !important;
+  }
+
+  .performance-page .status-strip.status-strip-inline .node-card {
+    display: none !important;
+  }
+}
+
+
+/* STEP 13AJ: topbar hardware usage card replacing old NODE info. */
+.performance-page .hardware-card,
+.settings-page .hardware-card,
+body.ui-pro .hardware-card {
+  min-width: 92px;
+}
+
+body.ui-pro .hardware-card strong {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+body.ui-pro .hardware-card small {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+body.ui-pro .hardware-card.is-warn {
+  border-color: rgba(255, 190, 90, 0.52);
+  box-shadow: inset 0 0 0 1px rgba(255, 190, 90, 0.12);
+}
+
+body.ui-pro .hardware-card.is-bad {
+  border-color: rgba(255, 80, 90, 0.68);
+  box-shadow: inset 0 0 0 1px rgba(255, 80, 90, 0.16);
+}
+
+/* STEP 13BU-AN: keep the global menu button as the last item inside the topbar. */
+.performance-page .top-right-cluster {
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: flex-end !important;
+  justify-self: end !important;
+  flex-wrap: nowrap !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+.performance-page .top-right-cluster .status-strip.status-strip-inline {
+  order: 1 !important;
+  display: flex !important;
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+.performance-page .top-right-cluster #menuBtn.menu-btn,
+.performance-page .top-right-cluster .menu-btn {
+  order: 99 !important;
+  flex: 0 0 58px !important;
+  align-self: stretch !important;
+  margin-left: 0 !important;
+}

@@ -1,0 +1,20 @@
+STEP22ME_SMOOTH_FRAME_PACING_OPTIMIZED
+
+Co se změnilo proti STEP22MD:
+- ArtNet live loop má jemnější frame pacing a po UI/page-transition záseku se nesnaží dohánět staré tick-y burstem.
+- Master frame se v serverové hot path nekopíruje zbytečně znovu do last-good cache při každém ticku.
+- buildStep22DqFrame už při explicitně předaném master RGB nedělá druhý dotaz do master frame store.
+- ArtNet patch split používá typed-array subarray/set pro celé RGB úseky místo pixel-by-pixel kopírování.
+- ArtDMX packet builder nekopíruje vstupní payload přes slice navíc.
+- Browser master mirror default FPS zvýšený na 45 a perioda dovolí jemnější event upload bez 16ms tvrdého stropu.
+
+Testovací postup:
+1) Rozbal ZIP.
+2) npm install jen pokud chybí node_modules.
+3) npm start / tvůj běžný start.
+4) Settings -> ArtNet start.
+5) Performance -> počkat na preview.
+6) Sleduj, jestli už preview nezpůsobuje cukání a jestli LED drží rytmus bez burstů.
+
+Poznámka:
+Tahle verze nemění mapping ani single-writer ochranu z MC/MD. Řeší hlavně plynulost a GC/timing jitter.

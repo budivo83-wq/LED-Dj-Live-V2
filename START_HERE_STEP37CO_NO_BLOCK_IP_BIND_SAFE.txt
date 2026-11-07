@@ -1,0 +1,19 @@
+STEP37CO_NO_BLOCK_IP_BIND_SAFE
+
+Změna proti STEP37CN:
+- Zrušeno natvrdo blokování IP 10.0.1.39 v Settings i v sync-live ArtNet senderu.
+- 10.0.1.39 je nyní normálně použitelná, pokud ji uživatel vědomě nastaví jako cílovou IP nebo bind IP.
+- Zachováno bezpečné pravidlo: ArtNet START v UDP armed režimu vyžaduje explicitní bind IP / vybranou síťovku, aby Windows samovolně nevybraly špatné rozhraní.
+- Přidána IPv4 validace místo blacklistu konkrétní adresy.
+- Starší artnet_udp_transport nyní umí bindIp/localAddress a ve statistikách ukazuje bindIp + skutečnou socketAddress.
+- Starší artnet_transport_scheduler_22p předává bindIp do UDP transportu, pokud by byl použit diagnosticky/starou cestou.
+
+Ověřeno:
+- npm run check
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy
+
+Důležité:
+- Pokud necháš bind IP prázdné, ArtNet START se má zastavit s BIND_IP_REQUIRED. To je záměr.
+- Pokud chceš posílat na 10.0.1.39, zadej ji jako target IP ve slotu/mappingu. Už není blokovaná.

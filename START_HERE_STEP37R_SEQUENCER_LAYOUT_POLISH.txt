@@ -1,0 +1,15 @@
+STEP37R — Sequencer layout polish
+
+Built on STEP37Q.
+
+Changes:
+- Added final CSS override layer only; no output/render logic touched.
+- Sequencer grid keeps full available width and uses tighter rows/cells.
+- Transport/length/tools are more compact so they do not steal visual priority from the beat matrix.
+- Heavy hover transitions on sequencer cells are disabled to reduce small UI jank while output is running.
+- Legend is hidden because the row labels and cell symbols already carry the needed meaning.
+- Collapsed mode stays compact while preserving ON/SYNC visibility.
+
+Validation:
+- JS syntax check passed.
+- ArtNet settings/server/source-policy tests passed.

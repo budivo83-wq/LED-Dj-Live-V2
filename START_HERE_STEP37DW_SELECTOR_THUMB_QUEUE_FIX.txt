@@ -1,0 +1,17 @@
+STEP37DW_SELECTOR_THUMB_QUEUE_FIX
+
+Oprava selector thumbnailu:
+- animations.js nově importuje drawGalleryFallbackThumb z gallery_thumb_cache.js.
+- drawPreview() je robustnější: podporuje mod.render, mod.default.render i default funkci.
+- drawPreview() vrací boolean, takže se do cache ukládají jen skutečně vykreslené náhledy.
+- editor animation picker už nevykresluje náhledy přímo přes drawPreview(), ale posílá je přes queueSelectorThumb().
+- horní editor picker button také používá selector thumbnail queue.
+- selector queue kontroluje render funkci přes resolvePreviewRender(), deduplikuje podle canvasu a má bezpečný limit fronty.
+- gallery thumb pump ukládá cache jen po úspěšném renderu.
+
+Cíl:
+- místo fallback diagonálních pruhů v selectoru se mají postupně dorenderovat skutečné shader thumbnails stejnou cestou jako galerie.
+
+Kontrola:
+- node --check public/animations.js OK
+- npm run check:js OK, checked 451 JavaScript files

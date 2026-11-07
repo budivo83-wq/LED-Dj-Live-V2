@@ -1,0 +1,23 @@
+STEP37BS_ACTIVE_VIEW_TELEMETRY_BUDGET
+
+Navazuje na STEP37BR_VOLATILE_COMMAND_FASTPATH.
+
+Co je změněné:
+- shell telemetry relay je nově active-view aware
+- Performance/index.html dostává rychlejší output telemetry relay jako dřív
+- vedlejší cached stránky dostávají pomalejší relay cadence, aby nepřetěžovaly UI postMessage/structured clone cestu
+- topbar FPS DOM zápis se throttluje a nepřepisuje DOM zbytečně, pokud se hodnota nemění
+- debug hook: window.__budilightShellTelemetryBudget37BS
+
+Smysl:
+- output runner dál běží stejně
+- fyzický výstup není zpomalený touto změnou
+- při přechodu Performance -> Mapping/Settings/Show OS by shell neměl cpát aktivní stránce tak rychlou output telemetry jako Performance
+- cached iframe stránky zůstávají uspane podle starší inactive-page logiky
+
+Kontrola v prohlížeči:
+window.__budilightShellTelemetryBudget37BS
+
+Důležité:
+- Neřeší render/output cestu samotnou.
+- Je to odlehčení shell/UI komunikační vrstvy a DOM zápisů.

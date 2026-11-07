@@ -1,0 +1,25 @@
+STEP37AG_OUTPUT_TIMER_PACKET_HOTPATH
+
+Pokračování po STEP37AF.
+
+Cíl:
+- snížit občasné mikro-záseky server/output event loopu,
+- ubrat zbytečné hot-path zápisy při stavbě ArtNet UDP packetů,
+- neměnit mapping, show logiku ani UI.
+
+Změny:
+1) src/server/ws_controller.js
+- Replay timer pro legacy binary output se už vůbec nespouští, pokud legacyOutputEnabled=false.
+- V aktuálním master-frame/ArtNet runtime tento timer dělal 16ms wake-up bez užitečné práce.
+- rememberOutputPacket() teď při legacyOutputEnabled=false rovnou končí.
+
+2) src/server/live_output_packet_builder.js
+- buildReusableArtDmxPacket() už před každým packetem nenuluje celý payload.
+- Pool key odpovídá konkrétní délce packetu, takže aktivní DMX payload je přepsán aktuálním frame.
+- Nuluje se jen případný padding byte u liché DMX délky.
+
+Ověřeno:
+- npm run check:js
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy

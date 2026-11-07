@@ -1,0 +1,14 @@
+STEP38T GENERATOR NODE GRAPH UI V2
+
+1) Otevři Generator.
+2) V panelu Node graph v2 zkus ADD NODE, DUP, SOLO, BYPASS a DEL.
+3) V PREVIEW ověř, že změny reálně ovlivňují obraz.
+4) LIVE MASTER stále používá existující Generator takeover / MASTER mirror / ArtNet sender řetězec.
+5) COPY GRAPH REPORT ti dá rychlý přehled, co je v graphu aktivní.
+
+Doporučený test:
+- ADD NODE: Plasma Field
+- DUP: Psy Tunnel
+- SOLO: Beat Grid
+- CLEAR SOLO / ENABLE ALL
+- zkus Mix/Intensity u Output node jako master fader.

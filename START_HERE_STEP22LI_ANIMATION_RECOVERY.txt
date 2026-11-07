@@ -1,0 +1,5 @@
+STEP22LI ANIMATION RECOVERY
+
+- Preserve this note so migration guards can verify the post-sequencer recovery history.
+- Animation startup should recover through the selected module loader and local module manifest path.
+- If animation boot regresses, inspect `public/runtime/selected_modules_loader.js` and `public/runtime/startup_sequence.js` first.

@@ -1,0 +1,14 @@
+STEP37CY SAFE EVENT LOOP SMOOTHNESS
+
+Built from STEP37CX. CU remains discarded.
+
+Changes:
+- Topbar FPS badge scroll/resize position updates are coalesced through RAF/timer instead of raw per-event layout work.
+- Output route registry prune loop is routed through runtime_loop_registry_37CE and slows down while live output/hidden UI is active.
+- Single writer watchdog timers are routed through runtime_loop_registry_37CE; passive shell snapshots back off harder.
+
+Intentionally untouched:
+- animation loading path
+- animation library JSON
+- app boot/module loader
+- ArtNet frame/mapping payload logic

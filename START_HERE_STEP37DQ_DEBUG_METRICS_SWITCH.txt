@@ -1,0 +1,14 @@
+STEP37DQ_DEBUG_METRICS_SWITCH
+
+Co je upraveno:
+- Debug Output Health metriky jsou defaultně OFF, aby nebrzdily live output.
+- V Debug panelu je tlačítko METRICS ON/OFF.
+- Přidáno PROFILE 10s: zapne metriky jen dočasně a potom je zase vypne.
+- Při odchodu z Debug tabu se metriky automaticky vypnou.
+- Server polling zůstává vypnutý při live outputu kromě ručního Refresh server.
+
+Co zbývá:
+1. Otestovat Debug tab: METRICS OFF -> METRICS ON -> PROFILE 10s.
+2. Zkontrolovat, jestli při METRICS OFF output nelaguje.
+3. Při METRICS ON opsat hodnoty Sequencer max, Thumb queue, UDP hotpath max.
+4. Podle těchto hodnot pokračovat v optimalizaci.

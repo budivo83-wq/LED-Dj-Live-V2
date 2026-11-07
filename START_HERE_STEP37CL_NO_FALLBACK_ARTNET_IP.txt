@@ -1,0 +1,15 @@
+STEP37CL_NO_FALLBACK_ARTNET_IP
+
+Oprava:
+- ArtNet už při START nesmí použít žádnou default/fallback IP ze Settings/localStorage.
+- Server i UI vyžadují explicitní Mapping patch: zapnutý strip + output ArtNet + vyplněná ArtNet IP.
+- Pokud není vyplněný žádný explicitní target, START vrátí NO_EXPLICIT_ARTNET_TARGETS a neodešle žádné UDP pakety.
+- Kompilace patchu filtruje prázdné/default targety, takže se už nepošle na starou .39 jen proto, že někde zůstala uložená stará IP.
+- ArtSync se posílá pouze k existujícím paketovým targetům, ne na fallback IP.
+
+Postup testu:
+1) Mapping: u stripu nastav Output = ArtNet.
+2) Do stejného řádku stripu vyplň ArtNet IP, např. 10.0.1.36.
+3) Save + Apply Patch.
+4) Settings: ARTNET START.
+5) Patch report musí ukazovat explicitní IP. Když IP není vyplněná, START se zablokuje a nic nepošle.

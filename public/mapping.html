@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LED Dj live - Mapping</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="performance.css">
+  <link rel="stylesheet" href="performance_topbar.css">
+  <link rel="stylesheet" href="performance_mix.css">
+  <link rel="stylesheet" href="mapping_layout.css">
+</head>
+<body class="ui-pro performance-page mapping-page">
+  <div class="app-shell" id="mappingApp">
+    <header class="topbar">
+      <div class="top-left-cluster">
+        <div class="brand-block">
+          <button class="power-btn" type="button" data-nav="index.html">LED</button>
+          <div class="brand-mark">■</div>
+          <div class="brand-text">
+            <strong>LED<br>Dj</strong>
+            <span>strip mapping</span>
+          </div>
+        </div>
+      </div>
+      <nav class="workspace-tabs" aria-label="Workspace navigation">
+        <button class="nav" type="button" data-nav="index.html">PERFORMANCE</button>
+        <button class="nav" type="button" data-nav="animations.html">GALLERY</button>
+        <button class="nav" type="button" data-nav="generator.html">GENERATOR</button>
+        <button class="nav" type="button" data-nav="show-os.html">SHOW OS</button>
+        <button class="nav active" type="button">MAPPING</button>
+        <button class="nav" type="button" data-nav="settings.html">SETTINGS</button>
+        <button class="nav" type="button" data-nav="live-input.html">LIVE INPUT</button>
+      </nav>
+      <div class="top-right-cluster">
+        <div class="status-strip status-strip-inline">
+          <div class="status-card mapping-status-card">
+            <span>STATUS</span>
+            <strong id="mappingStatus">READY</strong>
+            <small>mapping</small>
+          </div>
+          <div class="status-card optional-status">
+            <span>OUTPUT</span>
+            <strong>APPLY ON SAVE</strong>
+            <small>server patch</small>
+          </div>
+        </div>
+      <button id="menuBtn" class="menu-btn" type="button">☰</button>
+      </div>
+    </header>
+
+    <section id="centerMenuStrip" class="center-menu-strip" aria-label="Main menu">
+      <button data-href="settings.html" type="button">SETTINGS</button>
+    <button data-href="live-input.html" type="button">LIVE INPUT</button>
+      <button data-href="animations.html" type="button">GALLERY</button>
+      <button data-href="generator.html" type="button">GENERATOR</button>
+      <button data-href="mapping.html" type="button">MAPPING V2</button>
+    <button data-href="show-os.html" type="button">SHOW OS</button>
+      <button data-href="shorts.html" type="button">SHORTS</button>
+      <button id="menuFullscreenBtn" type="button">FULLSCREEN OFF</button>
+      <button data-href="index.html" type="button">PERFORMANCE</button>
+    </section>
+
+    <main class="mapping-grid strip-router-grid mapping-v2-workbench">
+      <aside class="mapping-panel mapping-left" aria-label="Mapping controls">
+        <section class="mapping-card mapping-card-primary">
+          <div class="mapping-card-title"><span>01</span><h2>Map setup</h2></div>
+          <label class="field"><span>Preset</span><select id="presetSelect"><option value="current">Current</option><option value="8x300">8x300 ceiling</option><option value="4x300">4x300</option><option value="2x300">2x300</option><option value="8x144">8x144 test</option></select></label>
+          <div class="button-grid two"><button type="button" id="loadPreset">LOAD</button><button type="button" id="reset8x300">RESET 8x300</button></div>
+          <label class="field"><span>Map label</span><input id="mapLabel" type="text" autocomplete="off" spellcheck="false"></label>
+          <div class="mapping-inline-fields">
+            <label class="field"><span>Strips</span><input id="stripCount" type="number" min="1" max="256" step="1"></label>
+            <label class="field"><span>New strip px</span><input id="defaultPixels" type="number" min="1" max="20000" step="1" value="300"></label>
+          </div>
+          <button type="button" id="applyStripCount" class="wide-btn">APPLY STRIP COUNT</button>
+          <p class="mini-note">`Patch parts` can be simple `150,150` or explicit `U0:0:150 | U1:0:150`. One strip stays one row in preview even when split across universes.</p>
+        </section>
+
+        <section class="mapping-card">
+          <div class="mapping-card-title"><span>01B</span><h2>How To Read It</h2></div>
+          <div class="mapping-help-list">
+            <div><strong>1.</strong> One card = one physical strip.</div>
+            <div><strong>2.</strong> `Patch parts` = how that strip is split into universes.</div>
+            <div><strong>3.</strong> Preview always shows the whole strip in one line.</div>
+            <div><strong>4.</strong> `PART ON/OFF` checks one universe part, `DIR ON/OFF` checks physical start/end, `RGB TEST` checks color order.</div>
+          </div>
+        </section>
+
+        <section class="mapping-card">
+          <div class="mapping-card-title"><span>02</span><h2>Strip tools</h2></div>
+          <div class="button-grid two"><button type="button" id="addSegment">ADD</button><button type="button" id="duplicateSegment">DUPLICATE</button><button type="button" id="removeSegment">REMOVE</button><button type="button" id="renumberSegments">RENUMBER</button></div>
+          <button type="button" id="normalizeAddresses" class="wide-btn secondary">NORMALIZE ADDRESSES / LEGACY</button>
+          <button type="button" id="resetCorrections" class="wide-btn secondary">RESET STRIP INTENSITY / GAMMA / WHITE ALL</button>
+          <button type="button" id="resetGlobalOutput" class="wide-btn secondary">RESET GLOBAL MASTER / GAMMA / CONTRAST</button>
+        </section>
+
+        <section class="mapping-card">
+          <div class="mapping-card-title"><span>02B</span><h2>Probe selected strip</h2></div>
+          <div class="button-grid two">
+            <button type="button" id="probePrevPart">PREV PART</button>
+            <button type="button" id="probeNextPart">NEXT PART</button>
+            <button type="button" id="probeFlashStrip">STRIP ON/OFF</button>
+            <button type="button" id="probeFlashPart">PART ON/OFF</button>
+            <button type="button" id="probeFlashStart">START ON/OFF</button>
+            <button type="button" id="probeFlashMiddle">MIDDLE ON/OFF</button>
+            <button type="button" id="probeFlashEnd">END ON/OFF</button>
+            <button type="button" id="probeFlashBoundaries">BOUNDARY ON/OFF</button>
+            <button type="button" id="probeFlashQuarterMarks">MARKS ON/OFF</button>
+            <button type="button" id="probeFlashEvery10">10PX ON/OFF</button>
+            <button type="button" id="probeFlashDirection">DIR ON/OFF</button>
+            <button type="button" id="probeFlashRgbOrder">RGB TEST</button>
+            <button type="button" id="probeDirForward">DIR OK / FORWARD</button>
+            <button type="button" id="probeDirReverse">FLIP DIRECTION</button>
+            <button type="button" id="probeStripOn">SELECTED ON</button>
+            <button type="button" id="probeStripOff">SELECTED OFF</button>
+            <button type="button" id="probeAllOn">ALL STRIPS ON</button>
+            <button type="button" id="probeAllOff">ALL STRIPS OFF</button>
+            <button type="button" id="probeBlackout">BLACKOUT</button>
+          </div>
+          <label class="field compact-field"><span>Observed RGB order</span><select id="probeRgbObserved"><option value="rgb">RGB</option><option value="grb">GRB</option><option value="brg">BRG</option><option value="rbg">RBG</option><option value="bgr">BGR</option><option value="gbr">GBR</option></select></label>
+          <button type="button" id="probeRgbApply" class="wide-btn secondary">SAVE OBSERVED RGB ORDER</button>
+          <div id="probeStatus" class="mini-note">Select a strip and toggle strip/part visibility.</div>
+        </section>
+
+        <section class="mapping-card">
+          <div class="mapping-card-title"><span>03</span><h2>Auto route</h2></div>
+          <label class="field"><span>Output</span><select id="bulkOutput"><option value="none">none</option><option value="serial">serial</option><option value="blx">blx</option><option value="artnet">artnet</option><option value="sacn">sacn</option><option value="dmx">dmx</option></select></label>
+          <div class="mapping-inline-fields">
+            <label class="field"><span>Universe</span><input id="bulkUniverse" type="number" min="0" max="63999" step="1" value="0"></label>
+            <label class="field"><span>Universe px</span><input id="bulkUniverseSize" type="number" min="1" max="170" step="1" value="170"></label>
+          </div>
+          <button type="button" id="applyAutoRoute" class="wide-btn">AUTO ROUTE ACTIVE</button>
+        </section>
+
+        <section class="mapping-card danger-zone">
+          <div class="mapping-card-title"><span>04</span><h2>Save / JSON</h2></div>
+          <button type="button" id="saveMapping" class="primary wide-btn">SAVE + APPLY PATCH</button>
+          <div class="button-grid two"><button type="button" id="exportMapping">EXPORT</button><button type="button" id="importMapping">IMPORT</button></div>
+          <textarea id="jsonBox" class="json-box" spellcheck="false" placeholder="Export/import JSON"></textarea>
+        </section>
+      </aside>
+
+      <section class="mapping-center" aria-label="Mapping overview and strip list">
+        <section class="preview-card strip-overview-card">
+          <div class="preview-header">
+            <div>
+              <h1>Output map</h1>
+              <p>Each row is one whole strip. Internal dividers show where that strip is split into patch parts or universes.</p>
+            </div>
+            <div class="preview-readout" id="summaryReadout">0 strips</div>
+          </div>
+          <div class="canvas-wrap strip-router-preview-wrap"><canvas id="previewCanvas" width="1200" height="340"></canvas></div>
+        </section>
+
+
+        <section class="segment-list-card strip-table-card strip-card-grid-panel">
+          <!-- Contract marker: Inline edit · 4 sloupce -->
+          <div class="section-title-row"><h2>Strips</h2><span id="selectionReadout">No strip selected</span></div>
+          <div id="segmentList" class="segment-list strip-list strip-card-grid"></div>
+        </section>
+
+        <section class="mapping-diagnostics-grid mapping-diagnostics-bottom" aria-label="Routing diagnostics">
+          <section class="mapping-card">
+            <div class="section-title-row compact"><h2>Validation</h2><span>mapping state</span></div>
+            <div id="validationBox" class="validation-box">Waiting...</div>
+          </section>
+          <section class="mapping-card">
+            <div class="section-title-row compact"><h2>Output Summary</h2><span>per output</span></div>
+            <div id="routesBox" class="routes-box">No routes</div>
+          </section>
+          <section class="mapping-card">
+            <div class="section-title-row compact"><h2>Art-Net Patch</h2><span>strip to universe</span></div>
+            <div id="artnetReportBox" class="routes-box">No Art-Net patch</div>
+          </section>
+          <section class="mapping-card">
+            <div class="section-title-row compact"><h2>Mapping Diagnostics</h2><span>health</span></div>
+            <div id="mappingHealthBox" class="routes-box">Waiting...</div>
+          </section>
+          <section class="mapping-card mapping-card-wide">
+            <div class="section-title-row compact"><h2>Universe Heatmap</h2><span>Art-Net occupancy</span></div>
+            <div id="universeHeatmapBox" class="routes-box">No Art-Net universes</div>
+          </section>
+        </section>
+
+      </section>
+
+      <aside class="mapping-panel mapping-right" aria-label="Diagnostics">
+        <div id="segmentEditor" class="segment-editor empty hidden-editor" aria-hidden="true"></div>
+      </aside>
+    </main>
+  </div>
+  <script type="module" src="runtime/topbar_menu_global.js?v=13bu-am"></script>
+  <script src="runtime/runtime_mode_authority.js?v=13bu-az"></script>
+  <script type="module" src="mapping.js"></script>
+</body>
+</html>

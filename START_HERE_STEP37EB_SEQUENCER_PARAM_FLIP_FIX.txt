@@ -1,0 +1,12 @@
+STEP37EB - Sequencer param/flip call fix
+
+Fixed:
+- Quick Step sequencer Param rows now execute directly on the programmed slot instead of being put in the heavy module queue.
+- Quick Step sequencer Flip rows now require a real fast-API success and otherwise fall back to the same manual checkbox event path.
+- The old optional chaining condition could treat a missing/unready fast API as success and skip the working manual fallback.
+- App fast bridge randomizeParams now captures previous layer state/modules and starts the same transition path used by the manual RAND PARAM button.
+- App fast bridge setFlip keeps the checkbox state in sync while changing the live layer state.
+- Added lightweight runtime diagnostic window.__budilightStepSeqFastActions37EB for last sequencer param/flip call.
+
+Validation:
+- npm run check:js OK.

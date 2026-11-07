@@ -1,0 +1,21 @@
+STEP37AO_DIRECT_FRAMEBUS_MIRROR_FASTPATH
+
+Pokračování po STEP37AN.
+
+Změny:
+- FrameBus má direct-consumer fast path pro živé ArtNet/Serial mirrory.
+- ArtNet master mirror se připojuje přímo na FrameBus packet místo 60 FPS CustomEvent fallbacku.
+- Serial app mirror se umí připojit stejným přímým způsobem.
+- Legacy led-framebus-publish CustomEvent zůstává jako fallback, ale při aktivních direct consumerech se v běžném live režimu přeskočí.
+- getStats už nehledá slowest consumer přes sort/slice, ale jedním průchodem.
+
+Cíl:
+- méně CustomEvent alokací a dispatchů v main-thread hot path,
+- menší GC tlak při 60 FPS,
+- nižší šance mikroškubnutí outputu/UI.
+
+Ověřeno:
+- npm run check:js
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy

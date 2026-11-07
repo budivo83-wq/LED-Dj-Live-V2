@@ -1,0 +1,46 @@
+STEP37DJ_LEGACY_HEALTH_RUNTIME_CLEANUP
+
+CIL:
+- Pokracovani performance/runtime diet passu nad STEP37DI.
+- Uspat stare legacy Output Health panely 37CA/37CB/37CC, aby pri nahodnem importu nespoustely vlastni polling/render intervaly.
+- Dal omezit ne-kriticke health/registry/show-os smycky pri live outputu a skrytych view.
+
+UPRAVENO:
+1) public/runtime/output_health_panel_37ca.js
+   - pridany compatibility no-op stub.
+   - soubor zustava v projektu, ale pri nacteni se hned ukonci.
+
+2) public/runtime/output_health_panel_37cb.js
+   - pridany compatibility no-op stub.
+
+3) public/runtime/output_health_panel_37cc.js
+   - pridany compatibility no-op stub.
+
+4) public/runtime/headless_leader.js
+   - lease heartbeat muze jit pres runtime_loop_registry_37CE.
+   - fallback na puvodni setInterval zustava, pokud registry neni dostupny.
+
+5) public/runtime/output_route_health_37bd.js
+   - health tick vice brzdi pri live outputu / hidden UI.
+
+6) public/runtime/output_route_registry_37bb.js
+   - prune housekeeping zpomalena pri live outputu.
+
+7) public/show-os.js
+   - Show OS tick jeste vice brzdi pri live outputu a hidden view.
+
+8) public/runtime/output_health_panel_37cd.js
+   - aktualni Debug Output Health render poll ma silnejsi live/hidden throttle.
+
+OVERENO:
+- npm run check:js OK
+- npm run test:artnet-settings-boundary OK
+- npm run test:artnet-server-boundary OK
+- npm run test:shell-runner-output-contract OK
+
+CO ZBYVA:
+1) Realny test na PC/RPi: Performance view + live ArtNet, jestli zmizely mikrospicky debug/health timeru.
+2) V Debug tabu zkontrolovat Runtime loops: jestli uz tam nejsou stare 37CA/37CB/37CC polly.
+3) Projit quick_step_automator.js s profilerem pri step lagu.
+4) Projit thumbnail/preload queue pri live outputu.
+5) Az potom jemne ladit ArtNet packet hotpath / UDP send budget.

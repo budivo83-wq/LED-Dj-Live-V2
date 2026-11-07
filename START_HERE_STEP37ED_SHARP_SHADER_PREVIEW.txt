@@ -1,0 +1,16 @@
+STEP37ED_SHARP_SHADER_PREVIEW
+
+Opravy:
+- Shader preview fallback z master LED bufferu uz nepouziva LINEAR filtr, ale NEAREST. Kdyz live/output rezim spadne z full GPU shader preview na 30x10 master frame, obraz se uz nerozmaze pres cele preview.
+- Selector animaci/palet renderuje thumbnaily do vyssiho interniho rozliseni.
+- Gallery a selector v Animation Studiu maji zvysene interni canvas rozliseni.
+- Bump cache namespace pro thumbnaily: ignoruji se stare rozmazane 72x40/180x70 nahledy.
+- Pri kresleni stare mensi cache do vetsiho canvasu se vypina image smoothing, aby se nevytvarel rozmazany obraz.
+- Opravena scalar thumbnail vetev v ui_pickers renderAnimationThumb: kdyby render() vratil cislo misto RGB pole, uz to neshodi thumbnail render.
+
+Poznamka:
+- Interni rozliseni thumbnailu je zvednute rozumne, ne maximalne, aby se nevratil lag pri otevirani selectoru/gallerie.
+- Output / ArtNet / Serial pipeline zustava bez zmen.
+
+Kontrola:
+- npm run check:js OK

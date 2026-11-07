@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LED Dj live - Shadertoy</title>
+  <link rel="stylesheet" href="style.css?v=13bu-ax" />
+  <link rel="stylesheet" href="performance.css?v=13bu-ax" />
+  <link rel="stylesheet" href="performance_topbar.css?v=13bu-ax" />
+  <link rel="stylesheet" href="animations.css?v=13bu-ax" />
+  <link rel="stylesheet" href="animations_gallery.css?v=13bu-ax" />
+  <link rel="stylesheet" href="animations_editor.css?v=13bu-ax" />
+  <link rel="stylesheet" href="shadertoy.css?v=13bu-cl" />
+</head>
+<body class="ui-pro performance-page anim-studio shadertoy-studio shadertoy-page-v2 shadertoy-page-v3">
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="top-left-cluster">
+        <div class="brand-block">
+          <button id="onoff" class="power-btn" type="button">ON</button>
+          <div class="brand-mark">◈</div>
+          <div class="brand-text">
+            <strong>LED<br>Dj</strong>
+            <span>live</span>
+          </div>
+        </div>
+        <div class="top-left-controls">
+          <label class="top-master-strip">
+            <span>MASTER</span>
+            <strong id="masterValue">100%</strong>
+            <input id="master" class="master-range" type="range" min="0" max="1" step="0.01" value="1">
+          </label>
+          <div class="top-bpm-strip">
+            <strong id="bpmValue">120.0</strong>
+            <input id="bpm" type="range" min="40" max="220" step="0.5" value="120" aria-label="BPM">
+            <button id="bpmMinus" type="button">-</button>
+            <button id="bpmPlus" type="button">+</button>
+            <button id="tapBtn" type="button">TAP</button>
+          </div>
+        </div>
+      </div>
+
+      <nav class="workspace-tabs" aria-label="Workspace">
+        <button class="nav" type="button" onclick="location.href='index.html'">PERFORMANCE</button>
+        <button class="nav" type="button" onclick="location.href='animations.html'">GALLERY</button>
+      <button class="nav" type="button" onclick="location.href='generator.html'">GENERATOR</button>
+      <button class="nav" type="button" onclick="location.href='mapping.html'">MAPPING</button>
+      <button class="nav" type="button" onclick="location.href='settings.html'">SETTINGS</button>
+        <div id="topbarCrossSlot" class="topbar-cross-slot" aria-label="Topbar crossfader slot"></div>
+      </nav>
+
+      <div class="top-right-cluster">
+        <div class="status-strip status-strip-inline">
+          <div class="status-card">
+            <span>LIVE FPS</span>
+            <strong id="fpsValue">--</strong>
+            <small>LIVE</small>
+          </div>
+          <div class="status-card">
+            <span>OUTPUT</span>
+            <strong id="outputState">OFF</strong>
+            <small id="outputDetail">preview</small>
+          </div>
+          <div class="status-card hardware-card optional-status" title="Hardware usage">
+            <span>HW</span>
+            <strong id="hardwareMain">CPU --%</strong>
+            <small id="hardwareDetail">ram --% | --</small>
+          </div>
+        </div>
+        <button id="menuBtn" class="menu-btn" type="button">☰</button>
+      </div>
+    </header>
+
+    <section id="centerMenuStrip" class="center-menu-strip" aria-label="Main menu">
+      <button data-href="settings.html" type="button">SETTINGS</button>
+      <button data-href="animations.html" type="button">GALLERY</button>
+      <button data-href="generator.html" type="button">GENERATOR</button>
+      <button data-href="mapping.html" type="button">MAPPING V2</button>
+      <button data-href="shorts.html" type="button">SHORTS</button>
+      <button id="menuFullscreenBtn" type="button">FULLSCREEN OFF</button>
+      <button data-href="index.html" type="button">PERFORMANCE</button>
+    </section>
+
+    <main class="shadertoy-workbench" aria-label="Shadertoy editor workspace">
+      <section class="shadertoy-card shadertoy-tools-panel">
+        <div class="panel-head">
+          <div>
+            <small>ShaderToy V3</small>
+            <h2>GLSL sandbox kompatibilní</h2>
+          </div>
+          <button id="shaderResetBtn" type="button">Reset</button>
+        </div>
+
+        <label class="search-box">
+          <span>Název draftu</span>
+          <input id="shaderNameInput" type="text" placeholder="např. Psy Tunnel" />
+        </label>
+
+        <div class="quick-actions" aria-label="Shader quick actions">
+          <button id="shaderValidateBtn" class="mini-toggle" type="button">Validate</button>
+          <button id="shaderRunBtn" class="mini-toggle is-on" type="button">Preview ON</button>
+          <button id="shaderSaveBtn" class="mini-toggle" type="button">Save</button>
+          <button id="shaderSendEditorBtn" class="mini-toggle" type="button">To editor</button>
+        </div>
+
+        <section class="album-manager" aria-label="Shader draft tools">
+          <div class="album-manager-head">
+            <div>
+              <small>Import / export</small>
+              <strong>GLSL draft</strong>
+            </div>
+            <div class="album-actions">
+              <button id="shaderImportBtn" class="mini-toggle" type="button">Import</button>
+              <button id="shaderExportBtn" class="mini-toggle" type="button">Export</button>
+            </div>
+          </div>
+          <input id="shaderImportFile" type="file" accept=".glsl,.frag,.txt" hidden />
+          <div id="shaderDraftStatus" class="album-status">local draft</div>
+        </section>
+
+        <div class="workflow-hints" aria-label="Shader workflow hints">
+          <strong>Bezpečný sandbox</strong>
+          <span>Náhled běží jen ve WebGL canvasu. Do LED výstupu se shader dostane až přes Editor / import bridge.</span>
+        </div>
+        <div class="library-note compact-note">
+          Používej klasický Shadertoy vstup <strong>mainImage(out vec4 fragColor, in vec2 fragCoord)</strong>. Runtime podporuje WebGL2, <strong>iChannel0–3</strong>, <strong>iChannelResolution</strong>, <strong>iTimeDelta</strong>, <strong>iDate</strong>, <strong>texture()</strong> a <strong>textureLod()</strong>.
+        </div>
+      </section>
+
+      <section class="shadertoy-card shadertoy-editor-main" data-view="editor">
+        <div class="panel-head compact editor-panel-head">
+          <div>
+            <small>GLSL editor</small>
+            <h2>Fragment shader draft</h2>
+          </div>
+          <div class="editor-head-actions">
+            <div id="shaderEditorStatus" class="status-pill">draft ready</div>
+          </div>
+        </div>
+
+        <div class="editor-workspace editor-workspace-mainlike shadertoy-editor-workspace" aria-label="Shadertoy code editor">
+          <div class="editor-form editor-main-form">
+            <label class="editor-label code-editor-label">
+              <span>Shader source</span>
+              <textarea id="shaderSourceInput" class="code-editor" spellcheck="false"></textarea>
+            </label>
+
+            <div class="editor-actions editor-actions-main">
+              <button id="shaderCompileBtn" class="assign-btn is-enabled" type="button">Compile preview</button>
+              <button id="shaderStopBtn" class="assign-btn subtle" type="button">Stop preview</button>
+              <button id="shaderCopyBridgeBtn" class="assign-btn" type="button">Copy bridge JS</button>
+            </div>
+            <div id="shaderErrorPanel" class="library-note compact-note" hidden></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="shadertoy-card shadertoy-inspector">
+        <div class="panel-head compact">
+          <div>
+            <small>Preview</small>
+            <h2 id="shaderPreviewTitle">Sandbox náhled</h2>
+          </div>
+          <div id="shaderPreviewStatus" class="status-pill">stopped</div>
+        </div>
+
+        <canvas id="shaderPreviewCanvas" width="640" height="360" aria-label="Shadertoy sandbox preview"></canvas>
+
+        <div class="preview-runner-row">
+          <button id="shaderPreviewToggleBtn" class="assign-btn is-enabled" type="button">▶ Run preview</button>
+          <span id="shaderRunnerStatus" class="preview-runner-status">sandbox / output safe</span>
+        </div>
+
+        <div class="preview-controls">
+          <label><span>Speed</span><input id="shaderSpeedInput" type="range" min="0" max="3" step="0.05" value="1" /></label>
+          <label><span>Zoom</span><input id="shaderZoomInput" type="range" min="0.5" max="2" step="0.01" value="1" /></label>
+          <label><span>Quality</span><input id="shaderQualityInput" type="range" min="0.35" max="1" step="0.05" value="0.75" /></label>
+        </div>
+
+        <div class="assign-box" aria-label="Shader status">
+          <div class="assign-head">
+            <strong>Stav shaderu</strong>
+            <span id="shaderCompileState">—</span>
+          </div>
+          <dl class="anim-meta">
+            <div><dt>Sandbox</dt><dd>nezapisuje do LED outputu</dd></div>
+            <div><dt>Compile</dt><dd id="shaderCompileInfo">čeká na kód</dd></div>
+            <div><dt>Mouse</dt><dd id="shaderMouseInfo">0 / 0</dd></div>
+            <div><dt>Channels</dt><dd>fallback noise + env cubemap</dd></div>
+            <div><dt>Bridge</dt><dd>Copy bridge JS → Editor</dd></div>
+          </dl>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="runtime/topbar_menu_global.js?v=13bu-ax"></script>
+  <script src="runtime/runtime_mode_authority.js?v=13bu-az"></script>
+  <script src="runtime/telemetry_store.js?v=13bu-bn"></script>
+  <script type="module" src="topbar.js?v=13bu-ax"></script>
+  <script type="module" src="shadertoy_page.js?v=13bu-cl"></script>
+</body>
+</html>

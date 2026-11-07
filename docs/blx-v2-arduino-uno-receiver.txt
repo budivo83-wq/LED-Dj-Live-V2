@@ -1,0 +1,377 @@
+BLX V2 RECEIVER (Arduino UNO, FastLED, outputs D2-D9)
+=====================================================
+
+Poznámky:
+- Arduino UNO má velmi málo RAM (2 KB). Proto je receiver dělaný úsporně:
+  - data se parsují streamově bez velkých dočasných bufferů.
+  - použité limity LED jsou schválně malé.
+- Tento receiver očekává BLX V2 envelope:
+  MAGIC 'B''X' | VER | TYPE | FLAGS | SEQ(LE16) | LEN(LE16) | PAYLOAD | CRC16(LE16)
+- Implementované typy:
+  - 0x01 FRAME_FULL
+  - 0x07 PING -> 0x08 PONG
+  - 0x0C BLACKOUT
+  - 0x0D BRIGHTNESS
+  - ostatní: ACK nebo ERROR
+
+-----------------------------------------------------
+KÓD (zkopíruj do .ino):
+-----------------------------------------------------
+
+#include <FastLED.h>
+
+// ---------------- USER CONFIG ----------------
+#define BAUDRATE              1000000UL
+#define CHIPSET               WS2812B
+#define COLOR_ORDER           GRB
+#define STRIP_COUNT           8
+#define LEDS_PER_STRIP        24   // UNO RAM safe (8*24*3=576 bytes)
+#define DEFAULT_BRIGHTNESS    96
+
+const uint8_t STRIP_PINS[STRIP_COUNT] = {2,3,4,5,6,7,8,9};
+
+// ---------------- BLX V2 ----------------
+#define BLX_MAGIC_0           0x42  // 'B'
+#define BLX_MAGIC_1           0x58  // 'X'
+#define BLX_VERSION           0x02
+
+#define T_FRAME_FULL          0x01
+#define T_FRAME_PARTIAL       0x02
+#define T_FRAME_DELTA         0x03
+#define T_CONFIG_SET          0x04
+#define T_CONFIG_GET          0x05
+#define T_CONFIG_REPLY        0x06
+#define T_PING                0x07
+#define T_PONG                0x08
+#define T_ACK                 0x09
+#define T_ERROR               0x0A
+#define T_SYNC                0x0B
+#define T_BLACKOUT            0x0C
+#define T_BRIGHTNESS          0x0D
+#define T_IDENTIFY            0x0E
+#define T_CAPABILITIES        0x0F
+
+#define ERR_BAD_MAGIC         0x01
+#define ERR_BAD_VERSION       0x02
+#define ERR_BAD_CRC           0x03
+#define ERR_BAD_LENGTH        0x04
+#define ERR_UNSUPPORTED       0x05
+
+#define READ_TIMEOUT_MS       30
+#define SIGNAL_TIMEOUT_MS     1200
+
+CRGB leds[STRIP_COUNT][LEDS_PER_STRIP];
+uint8_t gBrightness = DEFAULT_BRIGHTNESS;
+unsigned long lastFrameAt = 0;
+bool signalActive = false;
+bool blackoutActive = false;
+
+// --------------- IO HELPERS ---------------
+bool readByteTimed(uint8_t &out, uint16_t timeoutMs) {
+  unsigned long start = millis();
+  while (!Serial.available()) {
+    if ((millis() - start) > timeoutMs) return false;
+  }
+  out = (uint8_t)Serial.read();
+  return true;
+}
+
+bool readU16LE(uint16_t &out, uint16_t timeoutMs) {
+  uint8_t lo, hi;
+  if (!readByteTimed(lo, timeoutMs)) return false;
+  if (!readByteTimed(hi, timeoutMs)) return false;
+  out = (uint16_t)lo | ((uint16_t)hi << 8);
+  return true;
+}
+
+bool readU32LE(uint32_t &out, uint16_t timeoutMs) {
+  uint8_t b0, b1, b2, b3;
+  if (!readByteTimed(b0, timeoutMs)) return false;
+  if (!readByteTimed(b1, timeoutMs)) return false;
+  if (!readByteTimed(b2, timeoutMs)) return false;
+  if (!readByteTimed(b3, timeoutMs)) return false;
+  out = (uint32_t)b0 | ((uint32_t)b1 << 8) | ((uint32_t)b2 << 16) | ((uint32_t)b3 << 24);
+  return true;
+}
+
+void flushSerial() {
+  while (Serial.available()) Serial.read();
+}
+
+// CRC-16/CCITT-FALSE
+uint16_t crc16Update(uint16_t crc, uint8_t data) {
+  crc ^= ((uint16_t)data << 8);
+  for (uint8_t i = 0; i < 8; i++) {
+    if (crc & 0x8000) crc = (crc << 1) ^ 0x1021;
+    else crc <<= 1;
+  }
+  return crc;
+}
+
+void writeU16LE(uint16_t v) {
+  Serial.write((uint8_t)(v & 0xFF));
+  Serial.write((uint8_t)((v >> 8) & 0xFF));
+}
+
+void writeU32LE(uint32_t v) {
+  Serial.write((uint8_t)(v & 0xFF));
+  Serial.write((uint8_t)((v >> 8) & 0xFF));
+  Serial.write((uint8_t)((v >> 16) & 0xFF));
+  Serial.write((uint8_t)((v >> 24) & 0xFF));
+}
+
+void sendPacket(uint8_t type, uint8_t flags, uint16_t seq, const uint8_t *payload, uint16_t len) {
+  uint16_t crc = 0xFFFF;
+  Serial.write(BLX_MAGIC_0);
+  Serial.write(BLX_MAGIC_1);
+  Serial.write(BLX_VERSION); crc = crc16Update(crc, BLX_VERSION);
+  Serial.write(type);        crc = crc16Update(crc, type);
+  Serial.write(flags);       crc = crc16Update(crc, flags);
+  writeU16LE(seq);
+  crc = crc16Update(crc, (uint8_t)(seq & 0xFF));
+  crc = crc16Update(crc, (uint8_t)((seq >> 8) & 0xFF));
+  writeU16LE(len);
+  crc = crc16Update(crc, (uint8_t)(len & 0xFF));
+  crc = crc16Update(crc, (uint8_t)((len >> 8) & 0xFF));
+  for (uint16_t i = 0; i < len; i++) {
+    Serial.write(payload[i]);
+    crc = crc16Update(crc, payload[i]);
+  }
+  writeU16LE(crc);
+}
+
+void sendAck(uint16_t seqAck) {
+  uint8_t payload[2] = { (uint8_t)(seqAck & 0xFF), (uint8_t)((seqAck >> 8) & 0xFF) };
+  sendPacket(T_ACK, 0x00, seqAck, payload, 2);
+}
+
+void sendError(uint16_t seqRef, uint8_t code) {
+  uint8_t payload[3] = { (uint8_t)(seqRef & 0xFF), (uint8_t)((seqRef >> 8) & 0xFF), code };
+  sendPacket(T_ERROR, 0x00, seqRef, payload, 3);
+}
+
+void sendPong(uint16_t seq, uint32_t ts) {
+  uint8_t payload[4] = {
+    (uint8_t)(ts & 0xFF),
+    (uint8_t)((ts >> 8) & 0xFF),
+    (uint8_t)((ts >> 16) & 0xFF),
+    (uint8_t)((ts >> 24) & 0xFF)
+  };
+  sendPacket(T_PONG, 0x00, seq, payload, 4);
+}
+
+// ---------- FRAME FULL parser ----------
+bool handleFrameFull(uint16_t len, uint16_t &crc, bool &crcOk) {
+  // payload = frameId(4) + segmentCount(1) + segments...
+  if (len < 5) return false;
+
+  uint32_t frameId;
+  uint8_t segCount;
+
+  uint8_t b;
+  for (uint8_t i = 0; i < 4; i++) {
+    if (!readByteTimed(b, READ_TIMEOUT_MS)) return false;
+    crc = crc16Update(crc, b);
+  }
+  // frameId value we do not need directly here
+  if (!readByteTimed(segCount, READ_TIMEOUT_MS)) return false;
+  crc = crc16Update(crc, segCount);
+
+  uint16_t consumed = 5;
+  for (uint8_t s = 0; s < segCount; s++) {
+    uint8_t segmentId;
+    uint16_t pixelCount;
+    uint8_t lo, hi;
+    if (!readByteTimed(segmentId, READ_TIMEOUT_MS)) return false;
+    crc = crc16Update(crc, segmentId);
+    if (!readByteTimed(lo, READ_TIMEOUT_MS)) return false;
+    crc = crc16Update(crc, lo);
+    if (!readByteTimed(hi, READ_TIMEOUT_MS)) return false;
+    crc = crc16Update(crc, hi);
+    pixelCount = (uint16_t)lo | ((uint16_t)hi << 8);
+    consumed += 3;
+
+    for (uint16_t px = 0; px < pixelCount; px++) {
+      uint8_t r, g, bb;
+      if (!readByteTimed(r, READ_TIMEOUT_MS)) return false;
+      crc = crc16Update(crc, r);
+      if (!readByteTimed(g, READ_TIMEOUT_MS)) return false;
+      crc = crc16Update(crc, g);
+      if (!readByteTimed(bb, READ_TIMEOUT_MS)) return false;
+      crc = crc16Update(crc, bb);
+      consumed += 3;
+
+      if (segmentId < STRIP_COUNT && px < LEDS_PER_STRIP) {
+        leds[segmentId][px] = CRGB(r, g, bb);
+      }
+    }
+  }
+
+  if (consumed != len) {
+    // read remaining bytes if sender sent extra
+    while (consumed < len) {
+      if (!readByteTimed(b, READ_TIMEOUT_MS)) return false;
+      crc = crc16Update(crc, b);
+      consumed++;
+    }
+  }
+
+  uint16_t rxCrc;
+  if (!readU16LE(rxCrc, READ_TIMEOUT_MS)) return false;
+  crcOk = (rxCrc == crc);
+  return true;
+}
+
+bool findMagic() {
+  static uint8_t state = 0;
+  uint8_t b;
+  while (Serial.available()) {
+    b = (uint8_t)Serial.read();
+    if (state == 0) state = (b == BLX_MAGIC_0) ? 1 : 0;
+    else if (state == 1) {
+      if (b == BLX_MAGIC_1) {
+        state = 0;
+        return true;
+      }
+      state = 0;
+    }
+  }
+  return false;
+}
+
+void blackoutNow(bool active) {
+  blackoutActive = active;
+  if (blackoutActive) {
+    FastLED.clear(true);
+  }
+}
+
+void checkSignalTimeout() {
+  if (!signalActive) return;
+  if (millis() - lastFrameAt > SIGNAL_TIMEOUT_MS) {
+    FastLED.clear(true);
+    signalActive = false;
+  }
+}
+
+void setup() {
+  Serial.begin(BAUDRATE);
+  delay(200);
+
+  FastLED.addLeds<CHIPSET, 2, COLOR_ORDER>(leds[0], LEDS_PER_STRIP);
+  FastLED.addLeds<CHIPSET, 3, COLOR_ORDER>(leds[1], LEDS_PER_STRIP);
+  FastLED.addLeds<CHIPSET, 4, COLOR_ORDER>(leds[2], LEDS_PER_STRIP);
+  FastLED.addLeds<CHIPSET, 5, COLOR_ORDER>(leds[3], LEDS_PER_STRIP);
+  FastLED.addLeds<CHIPSET, 6, COLOR_ORDER>(leds[4], LEDS_PER_STRIP);
+  FastLED.addLeds<CHIPSET, 7, COLOR_ORDER>(leds[5], LEDS_PER_STRIP);
+  FastLED.addLeds<CHIPSET, 8, COLOR_ORDER>(leds[6], LEDS_PER_STRIP);
+  FastLED.addLeds<CHIPSET, 9, COLOR_ORDER>(leds[7], LEDS_PER_STRIP);
+
+  FastLED.setBrightness(gBrightness);
+  FastLED.clear(true);
+}
+
+void loop() {
+  if (!findMagic()) {
+    checkSignalTimeout();
+    return;
+  }
+
+  uint8_t ver, type, flags;
+  uint16_t seq, len;
+  if (!readByteTimed(ver, READ_TIMEOUT_MS)) return;
+  if (!readByteTimed(type, READ_TIMEOUT_MS)) return;
+  if (!readByteTimed(flags, READ_TIMEOUT_MS)) return;
+  if (!readU16LE(seq, READ_TIMEOUT_MS)) return;
+  if (!readU16LE(len, READ_TIMEOUT_MS)) return;
+
+  uint16_t crc = 0xFFFF;
+  crc = crc16Update(crc, ver);
+  crc = crc16Update(crc, type);
+  crc = crc16Update(crc, flags);
+  crc = crc16Update(crc, (uint8_t)(seq & 0xFF));
+  crc = crc16Update(crc, (uint8_t)((seq >> 8) & 0xFF));
+  crc = crc16Update(crc, (uint8_t)(len & 0xFF));
+  crc = crc16Update(crc, (uint8_t)((len >> 8) & 0xFF));
+
+  if (ver != BLX_VERSION) {
+    flushSerial();
+    sendError(seq, ERR_BAD_VERSION);
+    return;
+  }
+
+  bool crcOk = false;
+  if (type == T_FRAME_FULL) {
+    if (!handleFrameFull(len, crc, crcOk)) {
+      flushSerial();
+      sendError(seq, ERR_BAD_LENGTH);
+      return;
+    }
+    if (!crcOk) {
+      sendError(seq, ERR_BAD_CRC);
+      return;
+    }
+    if (!blackoutActive) FastLED.show();
+    lastFrameAt = millis();
+    signalActive = true;
+    if (flags & 0x01) sendAck(seq);
+    return;
+  }
+
+  // non-frame packets: read payload bytes + trailing crc
+  uint8_t payload[8];
+  uint16_t readLen = (len > sizeof(payload)) ? sizeof(payload) : len;
+  for (uint16_t i = 0; i < len; i++) {
+    uint8_t b;
+    if (!readByteTimed(b, READ_TIMEOUT_MS)) {
+      flushSerial();
+      sendError(seq, ERR_BAD_LENGTH);
+      return;
+    }
+    if (i < readLen) payload[i] = b;
+    crc = crc16Update(crc, b);
+  }
+
+  uint16_t rxCrc;
+  if (!readU16LE(rxCrc, READ_TIMEOUT_MS)) return;
+  if (rxCrc != crc) {
+    sendError(seq, ERR_BAD_CRC);
+    return;
+  }
+
+  switch (type) {
+    case T_PING: {
+      uint32_t ts = 0;
+      if (len >= 4) ts = (uint32_t)payload[0] | ((uint32_t)payload[1] << 8) | ((uint32_t)payload[2] << 16) | ((uint32_t)payload[3] << 24);
+      sendPong(seq, ts);
+      break;
+    }
+    case T_BLACKOUT: {
+      bool on = (len >= 1 && payload[0] != 0);
+      blackoutNow(on);
+      if (flags & 0x01) sendAck(seq);
+      break;
+    }
+    case T_BRIGHTNESS: {
+      if (len >= 2) {
+        uint16_t v = (uint16_t)payload[0] | ((uint16_t)payload[1] << 8);
+        if (v > 1000) v = 1000;
+        gBrightness = (uint8_t)((uint32_t)v * 255UL / 1000UL);
+        FastLED.setBrightness(gBrightness);
+        if (!blackoutActive) FastLED.show();
+      }
+      if (flags & 0x01) sendAck(seq);
+      break;
+    }
+    default: {
+      // Unsupported type on UNO receiver
+      sendError(seq, ERR_UNSUPPORTED);
+      break;
+    }
+  }
+}
+
+-----------------------------------------------------
+Doporučení:
+- Pokud chceš víc LED na strip nebo pokročilejší typy FRAME_PARTIAL/DELTA,
+  je lepší ESP32/Teensy (UNO RAM je limit).

@@ -1,0 +1,19 @@
+# Local dependencies and tooling
+node_modules/
+.vscode/
+.agents/
+
+# Local secrets and machine-specific state
+.env.local
+auth.json
+engine-state.json
+
+# Runtime-generated state and audit data
+data/live-state.json
+data/live-audit-log.json
+data/runtime-profile-prefs.json
+
+# Local logs and temporary files
+*.log
+*.tmp
+*.bak

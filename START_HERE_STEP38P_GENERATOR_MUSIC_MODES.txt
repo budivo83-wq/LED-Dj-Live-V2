@@ -1,0 +1,11 @@
+STEP38P GENERATOR MUSIC MODES
+
+1) Otevři Generator.
+2) Zapni PREVIEW nebo LIVE MASTER.
+3) V panelu 05 Music Modes vyber režim: Ambient / Build / Groove / Drop / Break / Psy Chaos / Afterhours.
+4) Dej APPLY MODE.
+5) RUNTIME ON nech zapnutý, pokud chceš beat/frázovou modulaci.
+6) BUILD NOW a DROP NOW jsou rychlé přímé akce pro živé hraní.
+
+Důležité: Music Modes nepřidávají nový výstupní writer. V LIVE MASTER pořád platí stejná cesta:
+Generator frame -> LIVE MASTER bridge -> server MASTER mirror -> ArtNet sender -> LED.

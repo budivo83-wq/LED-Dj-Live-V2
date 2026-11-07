@@ -1,0 +1,15 @@
+STEP37EE_ORIGINAL_SHADER_PREVIEW
+
+Fix:
+- Performance -> SHADER tab no longer falls back to the low-resolution LED/pixel frame while live output is active.
+- SHADER tab now always tries to draw the original full-resolution GPU shader scene into shaderPreviewCanvas.
+- The preview draw remains canvas-only and does not publish to FrameBus, ArtNet or Serial.
+- If the original shader is temporarily unavailable during live output, the shader canvas is cleared instead of showing enlarged pixel blocks.
+
+Changed files:
+- public/runtime/render_pipeline.js
+- public/app.js
+- public/index.html
+
+Validation:
+- npm run check:js OK

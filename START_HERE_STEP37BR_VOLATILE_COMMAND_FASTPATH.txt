@@ -1,0 +1,31 @@
+STEP37BR_VOLATILE_COMMAND_FASTPATH
+
+Cíl:
+- Odlehčit websocket/state pipeline pro živé změny po STEP37BQ.
+- Volatile command patche (live-param, sequencer-command, mapping-test apod. s persist:false) se na serveru už jen přeposílají ostatním klientům.
+- Neprovádí se u nich merge do hlavního server state, setState ani scheduleStateSave.
+
+Důležitá oprava:
+- Klient má nově oddělenou live baseline a persisted baseline.
+- Volatile slider/knob drag může posílat malé patche často.
+- Finální persist:true commit po puštění slideru se pořád porovná proti persisted baseline, takže se poslední hodnota opravdu uloží.
+
+Dotčené soubory:
+- public/runtime/websocket_sync.js
+- src/server/ws_controller.js
+
+Diagnostika:
+- client: window.__budilightCommandBus37BK zůstává kompatibilní, lastPersist ukazuje reálný persist flag.
+- server status obsahuje wsCommandBus37BR:
+  - volatileCommandRelayCount
+  - volatileCommandPatchRelayCount
+  - persistentCommandPatchCount
+  - updatePatchCount
+
+Test:
+1. Spustit aplikaci.
+2. Hýbat sliderem na Performance/Mapping.
+3. Ověřit, že hodnota živě reaguje.
+4. Pustit slider.
+5. Reload aplikace: poslední hodnota musí zůstat uložená.
+6. Přepínat Performance <-> Mapping <-> Settings a hlídat NAV PERF / FPS.

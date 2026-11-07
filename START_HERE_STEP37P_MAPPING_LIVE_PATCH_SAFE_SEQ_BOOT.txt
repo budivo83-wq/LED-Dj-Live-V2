@@ -1,0 +1,23 @@
+STEP37P_MAPPING_LIVE_PATCH_SAFE_SEQ_BOOT
+
+Co je upraveno:
+1) public/mapping.js
+   - Inline strip karty pro mapping používají stejnou live patch cestu jako detail editor.
+   - Direction / Color order / Enabled se aplikují rychle.
+   - Intensity / Gamma / Contrast / White limit slidery mají debounce, aby při tažení nezaplavily server.
+   - Label změny už zbytečně neposílají live patch, protože neovlivňují výstup.
+
+2) public/runtime/quick_step_automator.js
+   - Sequencer po načtení stránky/aplikace vždy startuje OFF.
+   - Pattern, view, row mute/lock a transport clock se dál obnovují.
+   - Uložený ON stav už nemůže po restartu převzít output z Performance.
+
+Ověřeno:
+- node -c public/mapping.js
+- node -c public/runtime/quick_step_automator.js
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy
+
+Poznámka:
+- Celý npm run check:js v tomto prostředí nedoběhl do timeoutu, proto byly spuštěny cílené syntax + ArtNet guard testy.

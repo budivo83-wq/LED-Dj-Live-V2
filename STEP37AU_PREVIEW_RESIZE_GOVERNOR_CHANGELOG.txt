@@ -1,0 +1,20 @@
+STEP37AU_PREVIEW_RESIZE_GOVERNOR
+
+Cil:
+- Omezit zaseky pri prepinani preview/panelu a pri resize/fullscreen udalostech.
+- Nenechat shader preview delat layout read + WebGL resize v okamziku fyzickeho outputu.
+
+Zmeny:
+- public/runtime/app_preview_canvas_resize.js
+  - pridana resize governor vrstva, cache poslednich rozmeru a skip identickych resize.
+  - shader preview resize se pri aktivnim ArtNet/Serial output locku coalescuje a omezuje na min. 120 ms gap.
+  - preview canvas resize zustava rychly, ale shader branch se planuje pres requestAnimationFrame.
+  - diagnostika window.__budilightPreviewResizeGovernor37AU.
+
+- public/debug_panel.js
+  - Output Stability doplneno o resize ok/wait + pocet coalesced shader resize udalosti.
+
+Test:
+- Behem ArtNet/Serial outputu rychle prepinat Pixel big / Shader / Debug / Settings.
+- Sleduj Debug -> Output Stability: resize ok/wait/N.
+- Pokud resize wait rychle roste, UI stale generuje resize storm, ale uz by nemel blokovat output frame.

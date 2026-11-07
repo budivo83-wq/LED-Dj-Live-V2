@@ -1,0 +1,22 @@
+STEP22NV_ARTNET_60FPS_PIPELINE_GUARD
+
+Cíl: odstranit zbylý 25 FPS limit/jitter v Performance -> ArtNet live outputu.
+
+Změny:
+1) public/runtime/render_pipeline.js
+   - Když je Output ON a neběží serial pipeline, output clock se tvrdě drží minimálně na 60 FPS.
+   - Síťový/ArtNet output už nemůže zdědit starý preview/safe-profile frameMs kolem 25/30 FPS.
+
+2) src/output/artnet_sync_live_sender_22dq.js
+   - V master-driven režimu se vypíná adaptivní serverové snižování FPS.
+   - Browser Performance framebus už je clock authority; server nesmí kvůli diagnostickému backpressure padat na 25/30 FPS.
+   - Pokud starý stav nechá maxLiveFps pod 60, master-driven event ho zvedne zpět na 60.
+
+3) ArtNet live config/defaulty
+   - adaptiveFrameClock default OFF pro master-driven live režim.
+   - ArtSync default OFF kvůli nižšímu počtu UDP packetů na frame.
+   - maxPendingBatchMs zvýšené na 250 ms, aby staré backpressure měření neškrtalo hladký stream.
+
+Poznámka:
+Pokud UI po update pořád ukazuje stará čísla, v Settings u ArtNet profilu zkontroluj:
+FPS 60, Max Live FPS 60, Packet Pace 0, Callback none, Adaptive Frame Clock OFF, ArtSync OFF.

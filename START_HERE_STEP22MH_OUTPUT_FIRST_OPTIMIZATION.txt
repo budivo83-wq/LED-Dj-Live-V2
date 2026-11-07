@@ -1,0 +1,18 @@
+STEP22MH OUTPUT-FIRST OPTIMIZATION
+
+Cíl: stabilnější ArtNet plynulost po zprovoznění continuous packingu.
+
+Změny:
+- UI/debug/thumbnails jsou ve výchozím režimu podřízené fyzickému výstupu.
+- Preview na Performance je snížené na monitorovací FPS, neřídí výstup.
+- Skryté/neudané DEBUG DOM přestalo přemalovávat celý dashboard pořád dokola.
+- Telemetry store už nedělá těžké JSON deep-clone při každém pollu.
+- Thumbnail render queue je ve live/output režimu defaultně vypnutá.
+
+Testovací postup:
+1) Mapping Apply + Save.
+2) Settings ArtNet Start.
+3) Performance nechat v normálním Stage/Pixel preview; DEBUG otevřít jen při měření.
+4) Sleduj OUT FPS / ArtNet FPS a reálnou plynulost LED.
+
+Tento build nemění ArtNet continuous packing z STEP22MG.

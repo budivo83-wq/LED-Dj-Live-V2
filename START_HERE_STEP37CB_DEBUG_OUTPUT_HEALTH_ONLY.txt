@@ -1,0 +1,23 @@
+STEP37CB_DEBUG_OUTPUT_HEALTH_ONLY
+
+Zmeny proti STEP37CA:
+- Output Health panel byl presunut z plovouciho Performance overlaye do DEBUG tabu v preview panelu.
+- Stare debug metriky/grafy v DEBUG obrazovce byly odstraneny z HTML, aby tam nezustavaly rozbite nebo matouci prvky.
+- DEBUG obrazovka ted ukazuje pouze nove metriky:
+  - verdict OK/WARN/BAD
+  - backend FPS / sync-live status
+  - pipeline scheduler / queue / late / dropped frames
+  - FrameBus source a age
+  - registry owner / trusted owner / watchdog / deep report
+  - frontend writer interlock blocked writes
+  - backend guard allowed/blocked
+  - ArtNet/Serial browser mirror stav
+  - raw snapshot pro kopirovani/logovani
+- Nove API v konzoli:
+  window.__budilightOutputHealth37CB.snapshot()
+  window.__budilightOutputHealth37CB.render()
+  window.__budilightOutputHealth37CB.pollServer(true)
+
+Poznamka:
+- Stary debug_panel.js zustava importovany kvuli kompatibilite s app.js, ale po odstraneni jeho HTML targetu nema co prekreslovat.
+- Novy health panel je pasivni: neposila frame, neprepina writer a nezasahuje do output cesty.

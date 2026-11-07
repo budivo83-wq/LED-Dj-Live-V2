@@ -1,0 +1,76 @@
+/* STEP 13AL: compact RasPi/output-focused debug dashboard. */
+.debug-focus-13al {
+  margin: 12px 0 14px;
+  padding: 14px;
+  border: 1px solid rgba(98, 230, 255, 0.22);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(3, 10, 18, 0.88), rgba(2, 5, 12, 0.92));
+  box-shadow: 0 0 22px rgba(0, 217, 255, 0.08) inset;
+}
+.debug-focus-13al header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+.debug-focus-13al header strong {
+  color: #9ff6ff;
+  letter-spacing: .12em;
+}
+.debug-focus-13al header small {
+  color: rgba(230, 244, 255, .7);
+  text-align: right;
+}
+.debug-focus-grid-13al {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.debug-focus-grid-13al article {
+  min-height: 88px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.25);
+}
+.debug-focus-grid-13al span {
+  display:block;
+  color: rgba(180, 225, 255, .72);
+  font-size: .72rem;
+  letter-spacing: .14em;
+}
+.debug-focus-grid-13al strong {
+  display:block;
+  margin-top: 8px;
+  color: #fff;
+  font-size: clamp(1.05rem, 1.6vw, 1.45rem);
+}
+.debug-focus-grid-13al small {
+  display:block;
+  margin-top: 6px;
+  color: rgba(230,244,255,.62);
+  line-height: 1.25;
+}
+.debug-panel-12m .debug-workflow-13b,
+.debug-panel-12m .debug-snapshot-12o,
+.debug-panel-12m .debug-section-grid-12m > .debug-section-card:nth-child(n+2),
+.debug-panel-12m .debug-advanced-12m:not(.debug-output-tools),
+.debug-panel-12m .debug-telemetry-raw-12m {
+  display: none !important;
+}
+.debug-panel-12m .debug-output-tools {
+  opacity: .72;
+}
+.debug-panel-12m .debug-output-tools:not([open]) {
+  max-height: 38px;
+  overflow: hidden;
+}
+@media (max-width: 980px) {
+  .debug-focus-grid-13al { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .debug-focus-grid-13al { grid-template-columns: 1fr; }
+  .debug-focus-13al header { display:block; }
+  .debug-focus-13al header small { display:block; text-align:left; margin-top:6px; }
+}

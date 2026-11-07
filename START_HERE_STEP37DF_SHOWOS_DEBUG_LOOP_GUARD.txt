@@ -1,0 +1,30 @@
+STEP37DF_SHOWOS_DEBUG_LOOP_GUARD
+
+Built from: STEP37DE_BACKGROUND_UI_GUARD_SMOOTHNESS
+
+Purpose:
+- Continue safe smoothness/runtime optimization without touching animation loading, shell boot, or ArtNet core path.
+
+Changes:
+1) output_writer_deep_report_37bx.js
+   - Passive deep-report snapshots no longer rebuild while the document/iframe is hidden and Debug is not active.
+   - Debug still refreshes on demand.
+
+2) runtime/live_arm_panel.js
+   - Transport auto-refresh loop moved to runtime_loop_registry adaptive interval when available.
+   - During live output/hidden page it backs off more aggressively.
+   - Node discovery remains suppressed during live output.
+
+3) show-os.js
+   - Heavy Show OS render() now renders only visible/related panels instead of repainting all heavy sections on every render.
+   - Initial Show OS boot no longer pre-renders all lab/debug/QA sections before selecting active section.
+
+Validation:
+- npm run check:js
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:shell-runner-output-contract
+
+Notes:
+- CU remains discarded/bad branch.
+- This continues stable line: CT -> CV -> CW -> CX -> CY -> CZ -> DA -> DB -> DC -> DD -> DE -> DF.

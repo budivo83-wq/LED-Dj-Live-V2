@@ -1,0 +1,19 @@
+STEP37CM - NETWORK CARD / BIND IP FIX
+
+Změny:
+- ART-NET LIVE má nově skutečný select NETWORK CARD / BIND IP.
+- Select se plní z /api/artnet/network/interfaces podle reálných IPv4 síťovek PC.
+- Duplicitní starý NET select v router panelu je odstraněn z ovládání.
+- Při výběru síťovky se hodnota zapisuje do bindIp a ukládá do ArtNet live configu.
+- ARTNET START je zablokovaný, pokud není možné určit explicitní bind IP.
+- Pokud není nic vybráno, appka se pokusí vybrat nejlepší síťovku podle stejného /24 subnetu jako Target IP, ale stále ji zapíše explicitně do BIND IP.
+- Solid test a Discovery používají stejný explicitní bind.
+
+Důvod:
+Windows při UDP bez bindIp může vybrat špatný lokální adaptér, takže ArtNet může vypadat, jako by šel přes 10.0.1.39, i když Target IP je nastavená na 10.0.1.36.
+
+Test:
+1) Settings -> ART-NET LIVE -> NETWORK CARD / BIND IP
+2) Vyber síťovku s adresou na ArtNet síti.
+3) Dej SAVE SETTINGS nebo rovnou ARTNET START.
+4) Health musí ukazovat bind = vybraná IP, ne AUTO.

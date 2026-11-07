@@ -1,0 +1,17 @@
+STEP37CC_DEBUG_HEALTH_ONLY_GATE
+
+Navazuje na STEP37CB.
+
+Co se změnilo:
+- Starý public/debug_panel.js je nahrazen lehkým no-op bridge modulem.
+- Staré debug grafy/karty už se nevykreslují a debug_panel.js už nevolá serialOutput.getDebugInfo().
+- Output Health panel je verze 37CC a je aktivní jen při otevřeném DEBUG tabu.
+- Mimo DEBUG tab panel přejde do SLEEP režimu, nepolluje server a nepřepisuje DOM.
+- Konzole/snapshot:
+  window.__budilightOutputHealth37CC.snapshot()
+  window.__budilightOutputHealthSnapshot37CC
+  window.__budilightDebugPanel37CC
+
+Smysl změny:
+Debug obrazovka má být čistá servisní obrazovka pro single-writer/output diagnostiku, ne starý mix grafů,
+serial debugů a rozbitých DOM polí. Mimo Debug nesmí diagnostika brát čas output loopu.

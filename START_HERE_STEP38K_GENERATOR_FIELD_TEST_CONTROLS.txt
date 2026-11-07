@@ -1,0 +1,24 @@
+STEP38K_GENERATOR_FIELD_TEST_CONTROLS
+
+Co je nové:
+- Generator má panel 07 Field Test Controls.
+- Testy: single strip, universe sweep, first/last pixel, RGB order, direction probe.
+- Vše jde přes stejný MASTER/ArtNet řetězec jako Generator LIVE MASTER.
+- Nepřibyl žádný nový UDP writer.
+- PREVIEW TEST je bezpečný jen do náhledu.
+- PUBLISH IF LIVE pošle test ven jen když je už aktivní LIVE MASTER.
+
+Jak testovat:
+1) Otevři GENERATOR.
+2) Vyber test, strip, universe, barvu, intenzitu a délku hold.
+3) PREVIEW TEST ověří obraz v náhledu.
+4) Zapni LIVE MASTER až když chceš testovat fyzické LED.
+5) PUBLISH IF LIVE pošle testovací frame přes MASTER bridge a ArtNet sender.
+6) Sleduj 05 Live Testing Chain a 06 Output Truth.
+
+Ověřeno:
+- npm run check:js
+- npm run check:full
+- npm run check:layers
+- npm run qa:core
+- npm run test:generator-step38e až step38k

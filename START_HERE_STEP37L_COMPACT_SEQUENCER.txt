@@ -1,0 +1,8 @@
+STEP37L - COMPACT SEQUENCER UI
+
+- Step Sequencer is reorganized into a compact layout.
+- Main header now keeps title/status, transport, length buttons and a small sequence preview.
+- Generate / pattern / compare / row-lock tools were moved into a right-side compact tools column.
+- Grid rows/cells and timeline/minimap are smaller to save vertical space.
+- Collapsed sequencer now shows a thin strip with ON/SYNC controls and a mini sequence preview instead of a large settings block.
+- Existing sequencer logic, shortcuts, pattern data and sortable center layout are preserved.

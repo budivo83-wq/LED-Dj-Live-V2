@@ -1,0 +1,25 @@
+STEP37AS_PREVIEW_NAV_FASTPATH
+
+Goal:
+- Keep physical output smooth while the operator clicks PIXEL / SHADER / DEBUG / STAGE preview tabs.
+
+Changes:
+1) public/ui_bindings.js
+   - Preview tab switching now uses a UI-only fast path while ArtNet/Serial output lock is active.
+   - Preview tab state no longer forces commitState() during live output.
+   - Preview control sync is coalesced through requestAnimationFrame.
+   - Added window.__budilightPreviewNavFastPath37AS diagnostics:
+     skippedCommits, lastAt, reason.
+
+Why:
+- The previous preview tab click path changed only small UI state, but still called commitState().
+- During live output this can wake the websocket / state persistence pipeline and steal main-thread time.
+- This version keeps tab switching responsive without touching the physical output pipeline.
+
+Test focus:
+- Start ArtNet output.
+- Open Performance.
+- Repeatedly click PIXEL BIG/SMALL, SHADER BIG/SMALL, DEBUG, STAGE.
+- Watch whether physical LED output remains smooth.
+- In browser console you can inspect:
+  window.__budilightPreviewNavFastPath37AS

@@ -1,0 +1,18 @@
+STEP22OD - DIAGNOSTICS RESTORED + REAL 60 FPS CHECK
+
+Co jsem vrátila zpět:
+- debug/diagnostické eventy a output tick telemetry jsou zpět jako v předchozí verzi OB,
+- runtime profile už nemá extra utlumené debug/UI/telemetry intervaly z OC,
+- diagnostic sampling už se netváří jako optimalizace výkonu.
+
+Důležité zjištění:
+- Podle screenshotu běží OUTPUT přes serial-output-pipeline.
+- Pokud jede RAW serial na 1 000 000 baud, fyzicky to nemůže dát 60 FPS pro velký počet LED.
+- Výpočet: bytes_per_frame = LED * 3 + hlavička, serial běžně ~10 bitů na byte.
+- 4x300 RGB = cca 3600 B/frame -> 60 FPS potřebuje cca 2.16 Mbaud čistě datově, reálně spíš 3 Mbaud.
+- 8x300 RGB = cca 7200 B/frame -> 60 FPS potřebuje cca 4.32 Mbaud, tedy nad současným limitem 3 Mbaud.
+
+Co testovat dál:
+1) Pokud chceš 60 FPS na serial pro 4x300, nastav serial/BLX baud na 3 000 000 a receiver musí být taky zkompilovaný/nastavený na 3M.
+2) Pokud chceš 60 FPS na 8x300, RAW serial není vhodná cesta. Použij ArtNet/UDP/W5500/Teensy paralelní výstup.
+3) Pro další servis je potřeba oddělit render/output od hlavního UI ještě tvrději, ale nejdřív ověřit, zda nejsme na fyzickém serial baud limitu.

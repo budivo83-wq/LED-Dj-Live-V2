@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LED Dj live - Shell</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #06080d;
+      --login-bg-image: url("login.png");
+      --panel: rgba(15, 19, 28, 0.94);
+      --line: rgba(255, 255, 255, 0.08);
+      --text: #eef2ff;
+      --muted: rgba(238, 242, 255, 0.62);
+      --accent: #7ef0c2;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.42)),
+        var(--login-bg-image) center center / cover fixed no-repeat,
+        var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .shell {
+      display: grid;
+      grid-template-rows: 1fr;
+      width: 100%;
+      height: 100%;
+      opacity: 1;
+      transition: opacity 260ms ease;
+      position: relative;
+    }
+    body.is-loading .shell {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .runner {
+      /* STEP22OB: keep the output runner in the visible viewport.
+         Chromium/Electron may throttle timers in large off-screen iframes;
+         the runner owns the physical 60 FPS clock, so it must not live at
+         -10000px. A tiny transparent on-screen iframe stays active without
+         affecting the UI. */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 2px;
+      height: 2px;
+      opacity: 0.001;
+      pointer-events: none;
+      border: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .ui-stack {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .ui {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: transparent;
+    }
+    .ui.is-hidden {
+      display: none;
+      pointer-events: none;
+    }
+    .status {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(0,0,0,0.45);
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+    .boot {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(126, 240, 194, 0.12), transparent 34%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0.48)),
+        var(--login-bg-image) center center / cover fixed no-repeat,
+        var(--bg);
+      z-index: 5;
+      transition: opacity 260ms ease, visibility 260ms ease;
+    }
+    body:not(.is-loading) .boot {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .boot-card {
+      width: min(520px, 92vw);
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      padding: 24px;
+      background: rgba(8, 12, 20, 0.70);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 24px 90px rgba(0, 0, 0, 0.38);
+      position: relative;
+      overflow: hidden;
+    }
+    .boot-card::before {
+      content: "";
+      position: absolute;
+      inset: -35%;
+      background:
+        linear-gradient(115deg, transparent 42%, rgba(126, 240, 194, 0.18) 50%, transparent 58%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 28px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 22px);
+      animation: boot-scan 2.4s linear infinite;
+      pointer-events: none;
+    }
+    .boot-card > * {
+      position: relative;
+      z-index: 1;
+    }
+    .boot-visual {
+      height: 96px;
+      margin-bottom: 18px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at center, rgba(126, 240, 194, 0.12), transparent 54%),
+        rgba(0, 0, 0, 0.18);
+      overflow: hidden;
+    }
+    .boot-core {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      background:
+        linear-gradient(135deg, rgba(126, 240, 194, 0.95), rgba(124, 175, 255, 0.78)),
+        #7ef0c2;
+      box-shadow:
+        0 0 30px rgba(126, 240, 194, 0.44),
+        0 0 80px rgba(124, 175, 255, 0.22);
+      animation: boot-core 1.15s ease-in-out infinite alternate;
+      position: relative;
+    }
+    .boot-core::before,
+    .boot-core::after {
+      content: "";
+      position: absolute;
+      inset: -18px;
+      border: 1px solid rgba(126, 240, 194, 0.42);
+      border-radius: 24px;
+      animation: boot-orbit 2.2s linear infinite;
+    }
+    .boot-core::after {
+      inset: -31px;
+      border-color: rgba(124, 175, 255, 0.28);
+      animation-duration: 3.4s;
+      animation-direction: reverse;
+    }
+    .boot-kicker {
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .boot-title {
+      margin-top: 10px;
+      font-size: clamp(24px, 4vw, 38px);
+      line-height: 1;
+      font-weight: 800;
+    }
+    .boot-label {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .boot-dots::after {
+      content: "";
+      display: inline-block;
+      width: 1.6em;
+      text-align: left;
+      animation: boot-dots 1.1s steps(4, end) infinite;
+    }
+    .boot-bar {
+      height: 10px;
+      margin-top: 22px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .boot-fill {
+      width: 4%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), #7cafff);
+      transition: width 180ms ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .boot-fill::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.42), transparent);
+      animation: boot-bar-shine 1.05s linear infinite;
+    }
+    @keyframes boot-scan {
+      from { transform: translateX(-12%) translateY(0); }
+      to { transform: translateX(12%) translateY(0); }
+    }
+    @keyframes boot-core {
+      from { transform: scale(0.92) rotate(-4deg); filter: saturate(1); }
+      to { transform: scale(1.08) rotate(4deg); filter: saturate(1.25); }
+    }
+    @keyframes boot-orbit {
+      from { transform: rotate(0deg) scale(0.94); opacity: 0.65; }
+      50% { opacity: 1; }
+      to { transform: rotate(360deg) scale(1.04); opacity: 0.65; }
+    }
+    @keyframes boot-dots {
+      0% { content: ""; }
+      25% { content: "."; }
+      50% { content: ".."; }
+      75%, 100% { content: "..."; }
+    }
+    @keyframes boot-bar-shine {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(100%); }
+    }
+
+    .boot-diag {
+      margin-top: 16px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      background: rgba(0,0,0,0.22);
+      overflow: hidden;
+      font-size: 11px;
+      color: rgba(238,242,255,0.7);
+    }
+    .boot-diag-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      color: rgba(126,240,194,0.92);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .boot-diag-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.05);
+    }
+    .boot-diag-cell {
+      padding: 8px 10px;
+      background: rgba(8,12,20,0.7);
+      min-width: 0;
+    }
+    .boot-diag-name {
+      display: block;
+      color: rgba(238,242,255,0.48);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .boot-diag-value {
+      display: block;
+      margin-top: 4px;
+      color: rgba(238,242,255,0.88);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav-perf {
+      position: fixed;
+      left: 12px;
+      bottom: 12px;
+      min-width: 210px;
+      max-width: min(360px, calc(100vw - 24px));
+      padding: 9px 10px;
+      border: 1px solid rgba(126, 240, 194, 0.18);
+      border-radius: 14px;
+      background: rgba(0,0,0,0.48);
+      color: rgba(238,242,255,0.82);
+      font-size: 10px;
+      line-height: 1.35;
+      letter-spacing: 0.03em;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 160ms ease, transform 160ms ease;
+      z-index: 4;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    }
+    .nav-perf.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .nav-perf-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: rgba(126,240,194,0.95);
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+      margin-bottom: 5px;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .nav-perf-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 2px 10px;
+    }
+    .nav-perf-label {
+      color: rgba(238,242,255,0.48);
+      text-transform: uppercase;
+    }
+    .nav-perf-value {
+      color: rgba(238,242,255,0.88);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .boot-diag-log {
+      max-height: 72px;
+      overflow: hidden;
+      padding: 7px 10px 9px;
+      line-height: 1.45;
+      color: rgba(238,242,255,0.56);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+  </style>
+</head>
+<body class="is-loading">
+  <div class="shell">
+    <div id="uiFrameStack" class="ui-stack">
+      <iframe id="uiFrame" class="ui" title="LED UI shell" data-view="index.html"></iframe>
+    </div>
+    <iframe id="runnerFrame" class="runner" title="LED output runner" aria-hidden="true"></iframe>
+  </div>
+  <div id="bootOverlay" class="boot" aria-live="polite">
+    <div class="boot-card">
+      <div class="boot-visual"><div class="boot-core"></div></div>
+      <div class="boot-kicker">LED Dj live</div>
+      <div class="boot-title">Compiling WebGL</div>
+      <div id="bootLabel" class="boot-label boot-dots">Starting runner</div>
+      <div class="boot-bar"><div id="bootFill" class="boot-fill"></div></div>
+      <div id="bootDiag" class="boot-diag" aria-label="Startup diagnostics">
+        <div class="boot-diag-head">
+          <span>Startup contract</span>
+          <span id="bootDiagElapsed">0 ms</span>
+        </div>
+        <div class="boot-diag-grid">
+          <div class="boot-diag-cell"><span class="boot-diag-name">Shell</span><span id="bootDiagShell" class="boot-diag-value">booting</span></div>
+          <div class="boot-diag-cell"><span class="boot-diag-name">UI</span><span id="bootDiagUi" class="boot-diag-value">pending</span></div>
+          <div class="boot-diag-cell"><span class="boot-diag-name">Runner</span><span id="bootDiagRunner" class="boot-diag-value">pending</span></div>
+        </div>
+        <div id="bootDiagLog" class="boot-diag-log">shell boot</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="shellNavPerf" class="nav-perf" aria-live="polite">
+    <div class="nav-perf-title"><span>NAV PERF</span><span id="shellNavPerfState">IDLE</span></div>
+    <div class="nav-perf-grid">
+      <span class="nav-perf-label">route</span><span id="shellNavPerfRoute" class="nav-perf-value">—</span>
+      <span class="nav-perf-label">elapsed</span><span id="shellNavPerfElapsed" class="nav-perf-value">—</span>
+      <span class="nav-perf-label">ui load</span><span id="shellNavPerfLoad" class="nav-perf-value">—</span>
+      <span class="nav-perf-label">ui ready</span><span id="shellNavPerfReady" class="nav-perf-value">—</span>
+      <span class="nav-perf-label">output</span><span id="shellNavPerfOutput" class="nav-perf-value">—</span>
+      <span class="nav-perf-label">preview</span><span id="shellNavPerfPreview" class="nav-perf-value">—</span>
+    </div>
+  </div>
+  <div id="shellStatus" class="status">SHELL BOOT</div>
+  <script type="module" src="shell.js"></script>
+</body>
+</html>

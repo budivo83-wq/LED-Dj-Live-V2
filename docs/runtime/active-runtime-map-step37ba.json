@@ -1,0 +1,2349 @@
+{
+  "generatedAt": "2026-07-05T20:13:12.340Z",
+  "summary": {
+    "htmlRoots": 12,
+    "livePublicJs": 303,
+    "unreachedPublicJs": 7,
+    "stagedSrcJs": 179
+  },
+  "roots": [
+    "public/shell.html",
+    "public/index.html",
+    "public/animations.html",
+    "public/login.html",
+    "public/mapping.html",
+    "public/settings.html",
+    "public/shorts.html",
+    "public/shadertoy.html",
+    "public/output-runner.html",
+    "public/live-input.html",
+    "public/show-os.html",
+    "public/control-authority-pro.html"
+  ],
+  "primaryRuntime": [
+    "public/runtime/frame_bus.js",
+    "public/runtime/artnet_master_framebus_mirror_22ej.js",
+    "public/runtime/live_serial_app_mirror_22cr.js",
+    "public/runtime/quick_step_automator.js",
+    "public/runtime/render_pipeline.js",
+    "public/runtime/ui_state_sync.js",
+    "public/app.js",
+    "src/server/ws_controller.js",
+    "src/output/artnet_sync_live_sender_22dq.js",
+    "src/output/artnet_master_frame_store_22ej.js",
+    "server.js"
+  ],
+  "outputTouched": [
+    {
+      "rel": "public/animations.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "WebSocket",
+        "fetch("
+      ],
+      "hotHits": [
+        "requestAnimationFrame",
+        "setTimeout",
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/app.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "FrameBus",
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial",
+        "WebSocket",
+        "fetch("
+      ],
+      "hotHits": [
+        "setTimeout",
+        "localStorage",
+        "addEventListener",
+        "commitState",
+        "broadcastStateSync",
+        "saveLocalState"
+      ]
+    },
+    {
+      "rel": "public/appearance.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/bpm_engine.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/control-authority-pro.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "fetch("
+      ],
+      "hotHits": [
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/core/constants.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/core/defaults.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/core/module_loader.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/core/startup_overlay.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/debug_panel.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/fullscreen.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/gpu_renderer.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/layer_runtime.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/live-input.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "fetch(",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/login.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "fetch("
+      ],
+      "hotHits": [
+        "setTimeout",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/mapping.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "WebSocket",
+        "fetch(",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "requestAnimationFrame",
+        "setTimeout",
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/output_runner.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": [
+        "setInterval",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime_boot.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/adaptive_fps_governor_13bu.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "FrameBus",
+        "serial"
+      ],
+      "hotHits": [
+        "setInterval",
+        "localStorage",
+        "dispatchEvent",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/app_control_binder.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "addEventListener",
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/runtime/app_core_delegate_facade.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "Serial"
+      ],
+      "hotHits": [
+        "saveLocalState"
+      ]
+    },
+    {
+      "rel": "public/runtime/app_dom_refs.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/app_gpu_prewarm.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/app_init_bootstrap.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "FrameBus",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/runtime/app_init_runtime_assembly.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/runtime/app_preview_canvas_resize.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "requestAnimationFrame",
+        "setTimeout",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/app_runtime_constants.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/app_runtime_context.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/app_runtime_delegates.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "FrameBus",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/app_runtime_trace.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "frameBus",
+        "FrameBus",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "dispatchEvent",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/app_startup_flow.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/app_startup_safe_helpers.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/artnet_master_framebus_mirror_22ej.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "FrameBus",
+        "led-framebus-publish",
+        "ArtNet",
+        "artnet",
+        "WebSocket",
+        "fetch(",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout",
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/blend_transition_controls.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "addEventListener",
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/runtime/bootstrap_services.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "FrameBus",
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/runtime/center_block_sorter.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "requestAnimationFrame",
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/center_menu_controls.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/collapse_toggles.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/cross_control.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "requestAnimationFrame",
+        "addEventListener",
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/runtime/direct_range_control.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "dispatchEvent",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/fps_governor.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": [
+        "requestAnimationFrame",
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/fps_state_rescue_13bu_cj.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/frame_authority.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "frameBus",
+        "FrameBus",
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial",
+        "fetch(",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "localStorage",
+        "dispatchEvent"
+      ]
+    },
+    {
+      "rel": "public/runtime/frame_bus.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "frameBus",
+        "FrameBus",
+        "led-framebus-publish",
+        "ArtNet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "dispatchEvent"
+      ]
+    },
+    {
+      "rel": "public/runtime/global_controls.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "requestAnimationFrame",
+        "setTimeout",
+        "addEventListener",
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/runtime/global_sync.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial",
+        "Serial",
+        "fetch("
+      ],
+      "hotHits": [
+        "dispatchEvent",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/gpu_warmup_queue.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/headless_leader.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setInterval",
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/checkbox_control.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "addEventListener",
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/runtime/input_bindings.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "requestAnimationFrame",
+        "setTimeout",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/keyboard_controls.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout",
+        "localStorage",
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/runtime/layer_module_navigation.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/layer_module_switcher.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet"
+      ],
+      "hotHits": [
+        "requestAnimationFrame",
+        "setTimeout",
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/runtime/layer_param_randomizer.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/runtime/layer_switching.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/runtime/live_actions.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/runtime/live_arm_panel.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "setInterval",
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/live_controlled_arm_phase.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/live_executor_diagnostics.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/live_executor_preflight.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/live_executor_skeleton.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/live_frame_mirror_validation.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/live_guard_controls.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/live_output_gate_37bw.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/live_output_workflow.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/live_panel_bootstrap.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/live_panel_diagnostics.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/live_panel_helpers.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/live_panel_refs.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/live_serial_app_mirror_22cr.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "FrameBus",
+        "led-framebus-publish",
+        "ArtNet",
+        "serial",
+        "Serial",
+        "fetch("
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout",
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/live_state_machine.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/live_transport_debug.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/mapping_transform.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/mapping_v2_store.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/mapping_v2_test_output.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/mapping_v2.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/module_select_controls.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/module_warmup_orchestrator.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/module_warmup.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/multi_output_router.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/next_engine_adapter.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/next_output_writer.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/output_autostart.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/output_bus.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/output_health_panel_37cd.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "frameBus",
+        "FrameBus",
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial",
+        "fetch(",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "setTimeout",
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/output_pipeline.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "setTimeout",
+        "dispatchEvent"
+      ]
+    },
+    {
+      "rel": "public/runtime/output_route_health_37bd.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "fetch("
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout",
+        "dispatchEvent"
+      ]
+    },
+    {
+      "rel": "public/runtime/output_route_registry_37bb.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": [
+        "setInterval"
+      ]
+    },
+    {
+      "rel": "public/runtime/output_single_writer_watchdog_37be.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "ddp",
+        "serial"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/output_writer_deep_report_37bx.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "frameBus",
+        "FrameBus",
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial",
+        "fetch(",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/output_writer_interlock_37by.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "ddp",
+        "serial"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/preview3d_frame_bridge.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/quick_step_automator.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "requestAnimationFrame",
+        "setTimeout",
+        "localStorage",
+        "dispatchEvent",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/refresh_loops.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout",
+        "dispatchEvent",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/render_pipeline.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "frameBus",
+        "FrameBus",
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "setTimeout",
+        "localStorage",
+        "dispatchEvent",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/runtime_loop_registry_37ce.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/runtime_mode_authority.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/selected_modules_loader.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/shader_preload_manager.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/shell_child_navigation.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/shell_navigation_scheduler.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout",
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/startup_sequence.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "requestAnimationFrame",
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/startup_warmup.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/state_sync_controller.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "commitState",
+        "saveLocalState"
+      ]
+    },
+    {
+      "rel": "public/runtime/telemetry_bus.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "frameBus",
+        "serial"
+      ],
+      "hotHits": [
+        "dispatchEvent"
+      ]
+    },
+    {
+      "rel": "public/runtime/telemetry_store.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet"
+      ],
+      "hotHits": [
+        "setTimeout",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/thumb_queue.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "serial"
+      ],
+      "hotHits": [
+        "setTimeout",
+        "dispatchEvent",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/topbar_menu_global.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/topbar_mix_layout.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/transport_registry.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/ui_state_sync.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/websocket_bridge.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "commitState",
+        "saveLocalState"
+      ]
+    },
+    {
+      "rel": "public/runtime/websocket_sync.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "WebSocket"
+      ],
+      "hotHits": [
+        "setTimeout",
+        "dispatchEvent",
+        "addEventListener",
+        "commitState",
+        "saveLocalState"
+      ]
+    },
+    {
+      "rel": "public/serial_output_worker.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial",
+        "Serial",
+        "WebSocket"
+      ],
+      "hotHits": [
+        "setTimeout",
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/serial_output.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial",
+        "WebSocket",
+        "fetch(",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/settings_clean_operator_22bu.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "setInterval",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/settings.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial",
+        "fetch(",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout",
+        "localStorage",
+        "dispatchEvent",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/shadertoy_page.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "requestAnimationFrame",
+        "setTimeout",
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/shell.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout",
+        "dispatchEvent",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/shorts.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "fetch("
+      ],
+      "hotHits": [
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/show-os.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout",
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/state.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "setTimeout",
+        "localStorage",
+        "saveLocalState"
+      ]
+    },
+    {
+      "rel": "public/topbar.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "fetch("
+      ],
+      "hotHits": [
+        "requestAnimationFrame",
+        "setInterval",
+        "setTimeout",
+        "localStorage",
+        "dispatchEvent",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/ui_bindings.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "FrameBus",
+        "artnet",
+        "serial",
+        "Serial",
+        "fetch(",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "requestAnimationFrame",
+        "setTimeout",
+        "dispatchEvent",
+        "addEventListener",
+        "commitState"
+      ]
+    },
+    {
+      "rel": "public/ui_pickers.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "src/mapping/model/constants.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/migration/runtime_switch.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "src/output/adapters/artnet/index.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/adapters/blx/index.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/adapters/index.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/adapters/serial/index.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_core.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_frame_sync_monitor_22t.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_live_input_22gn.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet"
+      ],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "src/output/artnet_live_tx_22do.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_marker_pattern_22af.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_marker_sequence_22ah.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_master_frame_store_22ej.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_pixel_probe_22ae.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_preflight_22dr.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_sender_engine.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_sync_live_sender_22dq.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet"
+      ],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "src/output/artnet_transport_scheduler_22p.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_udp_transport.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_universe_map_report_22ad.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_wiring_fault_detector_22aj.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/artnet_wiring_quick_fix_22ak.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/blx_benchmark.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/blx/blx_serial_transport.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/blx/index.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/frame_inspector_22e.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/full_pipeline_validator_22ac.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/index.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/multi_transport_output_manager_22u.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial"
+      ],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "src/output/output_debug_snapshot.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/output_manager_22b.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/output_manager_22c.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/output_manager.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/output_profiles_22c.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/output_profiles.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/output_router_22f.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/raw_serial_contract_22cb.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/raw_serial_stabilizer_22dm.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/output/sync_clock_22dp.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial"
+      ],
+      "hotHits": [
+        "setInterval"
+      ]
+    },
+    {
+      "rel": "src/pipeline/orchestrator.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [],
+      "hotHits": [
+        "requestAnimationFrame"
+      ]
+    },
+    {
+      "rel": "src/server/animation_library_routes.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "WebSocket"
+      ],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "src/server/artnet_control_service.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet"
+      ],
+      "hotHits": [
+        "setInterval"
+      ]
+    },
+    {
+      "rel": "src/server/artnet_debug_routes_22dz.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/artnet_live_config_routes_22dx.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/artnet_live_input_routes_22gn.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/artnet_live_tx_routes_22do.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/artnet_master_frame_routes_22ej.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/artnet_network_routes_22dv.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "src/server/artnet_operator_routes_22dr.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/artnet_scheduler_routes_22p.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/artnet_sync_live_routes_22dq.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/blx_control_service.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [],
+      "hotHits": [
+        "setInterval"
+      ]
+    },
+    {
+      "rel": "src/server/live_artnet_target_diagnostics_13d.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_emergency_interlock.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_full_enable_token.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_guarded_hardware_test_output.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_hardware_test_mode.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_output_core_diagnostics.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_output_driver_bridge.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_output_minimal_frame_12x.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_output_multiframe_stream_12y.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_output_packet_builder.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_output_physical_arm_gate.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_output_send_history.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_output_smoke_test.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_output_target_config.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_output_test_run_flow.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_output_verification.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_physical_release_preflight.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_readiness_summary.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_routes.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_runtime_sync.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_serial_artnet_probe.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_serial_direct_test_13f.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "src/server/live_serial_port_diagnostics_13c.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_serial_writer.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_services_factory.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_transport_boundary.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/live_udp_writer.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/main_routes_registry.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/ops_routes.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "src/server/output_diagnostics_routes_22e.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/output_profile_routes_22d.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/output_runtime_options.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/raw_serial_routes.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": [
+        "setInterval"
+      ]
+    },
+    {
+      "rel": "src/server/runtime_profile_routes.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "frameBus"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/runtime_profile.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "frameBus",
+        "ArtNet",
+        "serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/serial_controller.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial",
+        "Serial",
+        "WebSocket"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "src/server/serial_routes.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/shutdown_controller.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [],
+      "hotHits": [
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "src/server/transport_factory.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "WebSocket"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "src/server/ws_controller.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial",
+        "WebSocket"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout"
+      ]
+    },
+    {
+      "rel": "public/runtime/animation_library_prewarm_plan.js",
+      "status": "UNREACHED_PUBLIC",
+      "outputHits": [
+        "fetch("
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/output_health_panel_37ca.js",
+      "status": "UNREACHED_PUBLIC",
+      "outputHits": [
+        "frameBus",
+        "FrameBus",
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial",
+        "fetch(",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/output_health_panel_37cb.js",
+      "status": "UNREACHED_PUBLIC",
+      "outputHits": [
+        "frameBus",
+        "FrameBus",
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial",
+        "fetch(",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/output_health_panel_37cc.js",
+      "status": "UNREACHED_PUBLIC",
+      "outputHits": [
+        "frameBus",
+        "FrameBus",
+        "ArtNet",
+        "artnet",
+        "serial",
+        "Serial",
+        "fetch(",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "setInterval",
+        "setTimeout",
+        "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/telemetry_debug_panel.js",
+      "status": "UNREACHED_PUBLIC",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
+    }
+  ]
+}

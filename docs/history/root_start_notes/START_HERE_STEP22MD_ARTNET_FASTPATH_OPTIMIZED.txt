@@ -1,0 +1,21 @@
+STEP22MD_ARTNET_FASTPATH_OPTIMIZED
+
+Cíl: stabilizovat a zrychlit ArtNet výstup po opravě preview/output konfliktu.
+
+Změny:
+1) Browser ArtNet master mirror je čistě event-driven. Starý 125ms poll loop byl odstraněn úplně.
+2) Performance preview je při aktivním fyzickém výstupu jen monitor/consumer a má FPS cap default 24 FPS. Výstupový render / ArtNet FPS tím není omezen.
+   Volitelně lze v konzoli změnit: localStorage.setItem("budilightLivePreviewFpsCap", "15" / "24" / "30")
+3) Server ArtNet sender má lightweight UDP fast-path: při packetPaceMs=0 a callbackMode=lightweight/none nečeká na callback každého UDP packetu, aby si uměle neblokoval další frame.
+4) Zachována single-writer politika: preview nesmí být druhý ArtNet producent.
+
+Doporučené testování:
+- Settings → ArtNet START
+- Performance → počkat na preview
+- sledovat /api/artnet/sync-live/status:
+  actualFps, skippedFrameCount, lastSendResult.reason, backpressure.lastSkipReason, frameClock.effectiveFps
+
+Když bude hardware stále posekaný:
+- zkus v Settings FAST preset: packetPaceMs=0, packetsPerBurst=1, callbackMode/lightweight
+- pokud síť/node nestíhá, nastav artnetMirrorFps 40 nebo 30
+- preview lze stáhnout: localStorage.setItem("budilightLivePreviewFpsCap", "12")

@@ -1,0 +1,10 @@
+STEP22OB 60FPS OUTPUT OPTIMIZE
+
+Cíl: dostat ArtNet/live output zpět k 60 FPS po pádu na ~39-41 FPS.
+
+Změny:
+1) shell.html: output-runner iframe už není mimo viewport (-10000px). Chromium/Electron umí offscreen iframy/timery přiškrtit. Runner je teď 2×2 px transparentně v aktivním viewportu.
+2) render_pipeline.js: headless output runner neblituje žádný skrytý preview canvas a preview loop má jen 2 FPS bookkeeping, zatímco output loop dál jede na 60 FPS.
+3) artnet_sync_live_sender_22dq.js: hot path WS -> ArtNet fastpath omezuje per-frame diagnostické alokace/reduce/buildMasterFrameInfo; summary se obnovuje cca 4×/s.
+
+Po nahrání dej hard refresh / clear site data. Pokud bude stále pod 55 FPS, zkontroluj v debug statusu hlavně WS bufferedAmount / backpressure / server masterDriven actualFps.

@@ -1,0 +1,27 @@
+STEP37AD_OUTPUT_FPS_LAG_OPTIMIZE
+
+Cíl:
+- snížit mikro-záseky a GC tlak v live Performance -> ArtNet výstupní cestě
+- neměnit mapping logiku, show logiku ani UI layout
+
+Hlavní změny:
+1) src/output/artnet_core.js
+- gamma/contrast/brightness/whiteLimit korekce se už nepočítá přes Math.pow() pro každý pixel a každý frame
+- při kompilaci ArtNet patch plánu se vytvoří 256hodnotová LUT tabulka pro každou route
+- live frame pak používá rychlé Uint8Array lookupy
+- největší přínos při 8x300 a aktivních mapping korekcích/gamma/sliderech
+
+2) public/runtime/artnet_master_framebus_mirror_22ej.js
+- localStorage/runtime FPS/config se už nečte na každém frame, ale cacheuje se cca 500 ms
+- WebSocket packet envelope používá cacheované DataView objekty místo nové DataView alokace každý frame
+- duplicate-frame guard už nestaví string podpis z pixelů každého frame; používá frameId guard
+
+Ověřeno:
+- npm run check:js
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy
+
+Poznámka:
+- Output/ArtNet cesta zůstává event-driven.
+- Mapping patch, universes a RGB korekce zůstávají funkčně stejné.

@@ -1,0 +1,20 @@
+STEP37BH - Shell Keep-Alive Cache
+
+Goal:
+- Make page transitions smoother by avoiding full iframe reloads after a view has been opened once.
+
+Changes:
+- shell.html now wraps UI iframes in #uiFrameStack.
+- shell.js now keeps one iframe per shell view in uiFramesByView.
+- Returning to a cached view only hides/shows frames instead of reassigning iframe.src.
+- Navigation performance panel marks cached transitions as CACHED.
+- Active UI frame receives runner output telemetry; hidden cached frames do not send commands to runner.
+- Shell sends led-shell-view-active messages to cached UI frames for the next optimization pass.
+
+Expected benefit:
+- Performance -> Mapping -> Performance should avoid a full Performance UI boot after the first load.
+- Settings/Mapping/Gallery state should feel more stable when jumping around.
+- Output runner remains unchanged and still owns physical output timing.
+
+Next recommended step:
+- Add listeners inside UI/runtime modules for led-shell-view-active so hidden pages pause DOM refresh, debug refresh, preview work and resize/layout loops.

@@ -1,0 +1,34 @@
+STEP37CP_EXPLICIT_SLOT_TARGETS_UDP_TRUTH
+
+Cíl úpravy:
+- Nezakazovat žádnou konkrétní IP adresu včetně 10.0.1.39.
+- Zabránit nechtěnému fallback posílání na default IP, když není nastavený explicitní Mapping/MultiOut target.
+- Přidat UDP truth diagnostiku: reálný bind, socket address, targety a poslední odeslané pakety.
+
+Změny:
+1) src/output/artnet_sync_live_sender_22dq.js
+   - Přidán guard requireExplicitPacketTargets37CP().
+   - V live udp-armed režimu se neposílají ArtDmx pakety bez explicitního packet.targetIp/host.
+   - Pokud packet vznikne bez cílové IP, start/send se zastaví s reason:
+     ARTNET_PACKET_TARGET_MISSING_EXPLICIT_SLOT_IP
+   - Přidán udpTruth37CP do statusu senderu:
+     last/recent bindIp, socketAddress, targetIp, targetPort, packetTargets, bytes, packetCount.
+   - Guard se aplikuje jen na fyzický live udp-armed režim, neblokuje dry-run testy.
+
+2) src/output/artnet_udp_transport.js
+   - Přidán recentSends log do UDP transportu.
+   - Status teď ukazuje autoBindWarning, pokud socket běží bez bindIp a používá OS routing.
+   - Nic se neblokuje podle konkrétní IP adresy.
+
+3) src/output/artnet_transport_scheduler_22p.js
+   - Starší scheduler odmítne armLiveWrite bez bindIp.
+   - Cíl: aby ani starší cesta nemohla živě vysílat přes náhodně vybranou Windows síťovku.
+
+Ověření:
+- npm run check
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy
+
+Poznámka:
+10.0.1.39 není blokovaná. Když ji zadáš do zapnutého slotu, může být použita. Když ji nikde nezadáš, nemá se na ni co posílat, protože live režim nyní vyžaduje explicitní target u každého ArtDmx packetu.

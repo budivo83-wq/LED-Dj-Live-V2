@@ -1,0 +1,21 @@
+STEP37CA_OUTPUT_HEALTH_PANEL
+
+Navazuje na STEP37BZ/BY/BX. Přidává jednotný, pasivní Output Health panel do Performance stránky.
+
+Co kontroluje:
+- frontend output scheduler/pipeline metriky,
+- OutputRouteRegistry owner/lock,
+- single-writer watchdog 37BE,
+- deep report 37BX,
+- hard writer interlock 37BY,
+- FrameBus master frame stav,
+- browser ArtNet/Serial mirror,
+- backend /api/artnet/sync-live/status včetně backendWriterGuard37BZ,
+- /api/artnet/master-mirror/status.
+
+Použití v konzoli:
+window.__budilightOutputHealth37CA.snapshot()
+window.__budilightOutputHealth37CA.show()
+window.__budilightOutputHealth37CA.hide()
+
+Panel je pouze diagnostický. Nic neposílá do LED, nic neclaimuje a nemění output ownera.

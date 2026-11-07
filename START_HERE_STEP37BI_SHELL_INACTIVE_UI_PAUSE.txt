@@ -1,0 +1,40 @@
+STEP37BI - SHELL INACTIVE UI PAUSE
+
+Cíl:
+- navázat na STEP37BH keep-alive cache
+- cached/hidden stránky už nemají dál dělat zbytečný DOM refresh, debug refresh a preview render
+- output runner zůstává nezměněný a dál vlastní fyzický output
+
+Změny:
+1) public/runtime/refresh_loops.js
+- přidán shell-view activity receiver pro zprávu:
+  { type: "led-shell-view-active", active, view, currentView }
+- v shellView=1 režimu se při active=false přeskočí celý kosmetický UI refresh tick
+- hidden frame tedy nepřepisuje output cards, shader inspector ani debug panel
+- debug force/focus refresh se ignoruje, pokud je iframe v shellu neaktivní
+- stav je dostupný v window.__ledShellViewActivity
+
+2) public/runtime/render_pipeline.js
+- přidán stejný shell-view activity receiver
+- při active=false se preview draw loop uspí na pomalý heartbeat místo běžného preview FPS
+- hidden Performance iframe tak nespotřebovává čas na canvas/raw preview kreslení
+- při návratu na stránku se preview probudí okamžitě přes scheduleNextDraw()
+- stav počítá skippedPreviewFrames v window.__ledShellViewActivity
+
+Očekávaný efekt:
+- plynulejší přechody mezi stránkami
+- méně práce v pozadí u cached iframe stránek
+- menší riziko, že skrytá Performance stránka bude dál dělat preview/debug DOM práci
+- output runner a ArtNet/Serial pipeline tím nejsou vypnuté
+
+Test:
+- node --check public/runtime/refresh_loops.js
+- node --check public/runtime/render_pipeline.js
+
+Doporučené ruční ověření:
+1) Spustit shell.html.
+2) Přepnout Performance -> Mapping -> Settings -> Performance.
+3) V konzoli cached Performance zkontrolovat:
+   window.__ledShellViewActivity
+4) U skryté stránky má active=false a rostou skippedUiTicks/skippedPreviewFrames.
+5) Po návratu na stránku active=true a preview/debug UI se probudí.

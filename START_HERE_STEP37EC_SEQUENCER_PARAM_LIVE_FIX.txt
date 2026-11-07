@@ -1,0 +1,17 @@
+STEP37EC - Sequencer RAND PARAM live-output fix
+
+Opraveno:
+- Step sequencer PARAM row uz neposila jen lokalni zmenu + pozdni persist flush.
+- PARAM row ted posila okamzity maly volatile state patch pres command bus: commandKind stepseq-param-live.
+- Hidden/headless output runner tak dostane nove L1/L2 params hned a nemusi cekat na pozdni ulozeni.
+- PARAM random ma trochu vetsi minimalni odchylku, aby byl na LED vystupu opravdu videt.
+- Po PARAM random se vynuti dalsi draw tick hlavniho rendereru.
+- Pridan clientId guard pro sequencer command bus, aby vlastni echo step-triggeru nespustilo PARAM podruhe.
+- Cache-busting query v index.html zvednuto na 37EC.
+
+Kontrola:
+- npm run check:js OK
+
+Debug:
+- window.__budilightStepSeqFastActions37EB ukazuje posledni param/flip akci, before/after params a liveCommit.
+- window.__budilightStepSequencerProfiler37AP.lastParamLayer / lastParamAt / lastParamFastApi ukazuje posledni PARAM row trigger.

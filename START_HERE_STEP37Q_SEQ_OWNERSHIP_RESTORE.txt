@@ -1,0 +1,16 @@
+STEP37Q - Sequencer FX/FLIP ownership restore
+
+Base: STEP37P_MAPPING_LIVE_PATCH_SAFE_SEQ_BOOT
+
+Changes:
+- Quick step sequencer now remembers previous manual FX hold/mode before it applies a sequencer FX cell.
+- When the sequencer FX cell ends, the previous manual FX state is restored instead of forcing FX off.
+- Quick step sequencer now remembers previous manual layer flip state before it applies a sequencer FLIP cell.
+- When the sequencer FLIP cell ends, the previous manual flip state is restored instead of forcing reverse off.
+- Turning the sequencer OFF now releases only sequencer-owned momentary FX/FLIP states through the same restore path.
+
+Validation:
+- node --check public/runtime/quick_step_automator.js
+- npm run test:artnet-settings-boundary -- --runInBand
+- npm run test:artnet-server-boundary -- --runInBand
+- npm run test:artnet-live-source-policy -- --runInBand

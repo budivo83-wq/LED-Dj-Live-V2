@@ -1,0 +1,27 @@
+STEP22MC_PREVIEW_OUTPUT_FIGHT_FIX
+
+Co bylo opraveno:
+- Performance preview uz pri aktivnim live vystupu nesmi byt druhy producent framebusu.
+- Preview se pri aktivnim vystupu chova jako konzument authoritative output-clock framu.
+- ArtNet browser master mirror potlaci frame se zdrojem preview-render, kdyz je output aktivni nebo nedavno bezel output-owned render.
+- Tim se odstrani stav, kdy se po nabehnuti preview zacaly do stejne ArtNet cesty posilat dva rozdilne casovane framy.
+
+Zmenene soubory:
+- public/runtime/render_pipeline.js
+- public/runtime/artnet_master_framebus_mirror_22ej.js
+- public/index.html
+- src/server/live_routes.js
+
+Otestovano:
+- node scripts/check-js.mjs
+- node scripts/test-artnet-live-source-policy.mjs
+- node scripts/test-artnet-server-boundary.mjs
+- node scripts/test-artnet-settings-boundary.mjs
+
+Test postup:
+1) rozbal ZIP
+2) spust server
+3) Settings -> ArtNet start
+4) otevri Performance
+5) sleduj, jestli LED zustanou stabilni pres moment, kdy se objevi preview
+6) v konzoli muzes zkontrolovat window.__budilightArtNetMasterMirror22EJ.previewSuppressed; pri aktivnim vystupu muze rust, coz je spravne

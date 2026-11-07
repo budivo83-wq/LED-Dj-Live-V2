@@ -1,0 +1,64 @@
+LED_Dj_live — ArtNet + Mapping CLEAN path
+=========================================
+
+Tahle verze zjednodušuje ArtNet cestu a opravuje 300px strip mapping.
+
+JEDINÁ PLATNÁ CESTA PRO ArtNet OUTPUT:
+
+1) Performance / Sequencer vyrenderuje master frame
+   - frame = virtual layout, typicky width = pixelsPerStrip, height = stripCount
+   - pro 1 strip 300 px je řádek 0 = pixely 0–299
+
+2) Mapping V2 vytvoří ArtNet patch
+   - každý fyzický strip má output = artnet
+   - pixelCount = počet pixelů pásku, např. 300
+   - universeSize = 150 doporučeno
+   - startAddress je LOKÁLNÍ adresa v universe, ne globální adresa celého systému
+   - pokud se do startAddress dostane stará hodnota 300/600/900, kód ji automaticky přepočítá:
+     A300 při universeSize 150 => +2 universy, A0
+
+3) ArtNet sender posílá jen routes z patchu
+   - 300 px strip se rozdělí na 2 ArtDmx packety:
+     U0 A0 150px
+     U1 A0 150px
+   - další strip začíná až na dalším universe:
+     U2 A0 150px
+     U3 A0 150px
+
+CO BYLO OPRAVENO:
+
+- Starý chaos mezi globálním startAddress a lokálním ArtNet startAddress.
+- Vadné route části typu U0 A300, které mohly způsobit blikání od špatného místa nebo přesah do dalšího pásku.
+- buildAutoRouteSegments teď normalizuje startAddress přes universeSize.
+- Mapping V2 compile normalizuje i explicitní routeSegments.
+- ArtNet packet splitter normalizuje route adresy ještě jednou na serverové straně jako pojistku.
+
+DOPORUČENÉ NASTAVENÍ PRO TEST 1×300 px:
+
+Mapping:
+- pouze jeden aktivní strip, nebo ostatní output = none
+- selected strip:
+  output = artnet
+  universe = 0
+  startAddress = 0
+  pixelCount = 300
+  universeSize = 150
+  patch parts prázdné / auto
+
+Očekávaný výsledek:
+- při testu celého stripu bliká přesně pixel 0–299 daného pásku
+- nesmí začít uprostřed
+- nesmí bliknout kus dalšího pásku
+
+Když chceš 4 stripy po 300 px:
+- použij Auto route active segments
+- universe start = 0
+- pixels per universe = 150
+- výsledek má být:
+  STRIP 1: U0 + U1
+  STRIP 2: U2 + U3
+  STRIP 3: U4 + U5
+  STRIP 4: U6 + U7
+
+Root projektu je schválně očištěný od starých START_HERE/STEP poznámek. Staré poznámky nejsou smazané, jen přesunuté do:
+archive/old_root_notes_artnet_cleanup_2026-06-07/

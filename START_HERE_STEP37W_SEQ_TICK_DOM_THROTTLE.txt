@@ -1,0 +1,19 @@
+STEP37W - SEQUENCER TICK DOM THROTTLE
+
+Navazuje na STEP37V.
+
+Zmeny:
+- quick_step_automator.js v21-step-change-dom-throttle.
+- Tick sequenceru uz nesahe na highlight/window DOM pri kazdem 40ms intervalu.
+- Highlight, follow window a status se tvrde updatuji hlavne pri skutecne zmene slotu/stepu.
+- Status text ma throttle, aby se zbytecne neprepisoval DOM mnohokrat za sekundu.
+- ArtNet/output cesta zustala beze zmen.
+
+Overeno:
+- node --check public/runtime/quick_step_automator.js
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy
+
+Poznamka:
+- npm run check:js stale timeoutuje, stejne jako v predchozich krocich.

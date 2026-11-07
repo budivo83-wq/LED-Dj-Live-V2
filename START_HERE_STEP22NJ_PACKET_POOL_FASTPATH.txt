@@ -1,0 +1,27 @@
+STEP22NJ PACKET POOL FASTPATH
+
+Goal:
+- Reduce remaining output jitter after STEP22NI direct WS master-frame path.
+- Remove per-frame ArtNet packet buffer/object allocation pressure from the 60 FPS live path.
+
+Changes:
+1) WebSocket master-frame handler now uses the just-arrived binary frame as a zero-copy Buffer subarray for the immediate ArtNet trigger.
+   - It no longer calls masterFrameStore.getLatest() just to re-normalize the frame before sending.
+   - The store is still updated for status/fallback.
+
+2) ArtNet fastPath now uses a small reusable ArtDMX packet pool.
+   - Packet headers/buffers are reused in 4 rotating slots per universe/length.
+   - Each frame only updates sequence byte and DMX payload.
+   - This reduces GC spikes from repeatedly allocating 16+ UDP packet buffers every frame.
+
+Expected effect:
+- Less micro-stutter under 8x300 @ 60 FPS.
+- Lower Node event-loop/GC pressure during live ArtNet output.
+
+Validated:
+- npm run check:js
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy
+
+Notes:
+- qa:core still may fail on the pre-existing migration-flags START_HERE archive expectation; this is unrelated to live output.

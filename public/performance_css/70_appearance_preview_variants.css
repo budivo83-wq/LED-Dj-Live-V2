@@ -1,0 +1,192 @@
+/* Appearance image background, unified theme pass and preview pixel size variants.
+   Source: split from public/performance.css. Keep import order in ../performance.css. */
+
+/* Global appearance image background (applies to all non-login pages). */
+body.has-image-bg:not(.login-page):not(.startup-pending) {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.36)),
+    var(--image-bg, none) center center / cover no-repeat fixed,
+    #02050a !important;
+}
+
+/* Unified theme pass based on main performance screen tokens. */
+:root {
+  --ui-panel-bg: var(--bg-elev-2);
+  --ui-panel-bg-strong: var(--bg-elev-3);
+  --ui-panel-border: var(--line-soft);
+  --ui-accent: var(--accent-cyan);
+  --ui-accent-2: var(--accent-magenta);
+  --ui-gap: var(--space-3);
+  --ui-radius: var(--radius-md);
+}
+
+body.ui-pro .topbar,
+body.ui-pro .status-strip,
+body.ui-pro .workspace-tabs,
+body.ui-pro .panel,
+body.ui-pro .settings-card,
+body.ui-pro .preview-shell,
+body.ui-pro .mix,
+body.ui-pro .fx-panel {
+  border-color: var(--ui-panel-border) !important;
+}
+
+body.ui-pro .panel,
+body.ui-pro .settings-card,
+body.ui-pro .preview-shell,
+body.ui-pro .mix,
+body.ui-pro .fx-panel,
+body.ui-pro .status-card {
+  background: var(--ui-panel-bg) !important;
+  border-radius: var(--ui-radius) !important;
+}
+
+body.ui-pro .topbar,
+body.ui-pro .status-strip,
+body.ui-pro .workspace-tabs {
+  gap: var(--ui-gap) !important;
+}
+
+body.ui-pro button.active,
+body.ui-pro .nav.active,
+body.ui-pro .status-action.active {
+  border-color: var(--ui-accent) !important;
+  color: var(--ui-accent) !important;
+  box-shadow: var(--glow-cyan) !important;
+}
+
+body.ui-pro input[type="range"]::-webkit-slider-thumb {
+  background: var(--ui-accent) !important;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), var(--glow-cyan) !important;
+}
+
+body.ui-pro input[type="range"]::-moz-range-thumb {
+  background: var(--ui-accent) !important;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), var(--glow-cyan) !important;
+}
+
+/* Pixel preview size variants for PREW PIXEL tab. */
+body.performance-page[data-preview-mode="pixel-small"] .preview-box,
+body.performance-page[data-preview-mode="pixel-small"] #ledCanvas,
+body.performance-page[data-preview-mode="pixel-small"] #shaderPreviewCanvas {
+  min-height: 3cm;
+  max-height: 3cm;
+}
+
+body.performance-page[data-preview-mode="pixel-small"] .preview-shell {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+body.theme-light:not(.login-page):not(.startup-pending) {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(228, 238, 255, 0.82)),
+    #e9f1ff !important;
+}
+
+body.theme-light::before,
+body.theme-light::after {
+  opacity: 0.08;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+html[data-theme="light"] body {
+  background:
+    radial-gradient(circle at 18% 10%, rgba(130, 187, 255, 0.22), transparent 36%),
+    radial-gradient(circle at 84% 92%, rgba(120, 214, 255, 0.2), transparent 34%),
+    linear-gradient(180deg, #f6faff 0%, #eaf2ff 100%) !important;
+  color: #10243e;
+}
+
+html[data-theme="light"] body::before {
+  opacity: 0.22;
+  background:
+    linear-gradient(90deg, rgba(48, 112, 190, 0.06), transparent 18%, transparent 82%, rgba(44, 162, 202, 0.08)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 12%, transparent 88%, rgba(120, 170, 220, 0.08));
+}
+
+html[data-theme="light"] body::after {
+  opacity: 0.12;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(87, 164, 233, 0.2), transparent 28%),
+    radial-gradient(circle at 50% 92%, rgba(56, 128, 206, 0.12), transparent 28%);
+}
+
+html[data-theme="light"] .topbar,
+html[data-theme="light"] .panel,
+html[data-theme="light"] .preview-shell,
+html[data-theme="light"] .performance-strip,
+html[data-theme="light"] .seq-dock,
+html[data-theme="light"] .bottom-status,
+html[data-theme="light"] .mobile-nav,
+html[data-theme="light"] .manual-palette,
+html[data-theme="light"] .fx-panel,
+html[data-theme="light"] .mix,
+html[data-theme="light"] .anim-picker,
+html[data-theme="light"] .settings-card,
+html[data-theme="light"] .status-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(241, 248, 255, 0.92)) !important;
+  border-color: rgba(56, 116, 182, 0.2) !important;
+  box-shadow: 0 8px 28px rgba(21, 64, 120, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.65) inset !important;
+}
+
+html[data-theme="light"] button,
+html[data-theme="light"] select,
+html[data-theme="light"] input[type="number"],
+html[data-theme="light"] input[type="text"],
+html[data-theme="light"] input[type="password"] {
+  color: #15314f;
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(58, 122, 194, 0.26);
+}
+
+html[data-theme="light"] .workspace-tabs button,
+html[data-theme="light"] .preview-tabs button {
+  background: rgba(248, 252, 255, 0.95);
+}
+
+html[data-theme="light"] button.active,
+html[data-theme="light"] .nav.active {
+  color: #0c5fad;
+  border-color: rgba(15, 108, 199, 0.55);
+  box-shadow: 0 0 0 1px rgba(36, 133, 224, 0.25), 0 8px 18px rgba(45, 132, 214, 0.22);
+}
+
+html[data-theme="light"] .status-card span,
+html[data-theme="light"] .param span,
+html[data-theme="light"] .field span {
+  color: rgba(20, 49, 82, 0.66);
+}
+
+html[data-theme="light"] .status-card strong,
+html[data-theme="light"] .panel-head h2,
+html[data-theme="light"] .preview-head h3 {
+  color: #102742;
+}
+
+html[data-theme="light"] .preview-box {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(34, 137, 225, 0.08), transparent 56%),
+    #f5faff;
+  border-color: rgba(40, 115, 190, 0.25);
+}
+
+body.performance-page[data-preview-mode="pixel-small"] .preview-head {
+  padding-inline: 10px;
+}
+
+body.performance-page[data-preview-mode="pixel-small"] .preview-box {
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+}
+
+body.layer-preview-disabled .layer-raw-preview {
+  display: none !important;
+}
+
+
+

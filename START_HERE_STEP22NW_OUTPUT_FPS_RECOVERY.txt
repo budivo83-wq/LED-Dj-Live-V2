@@ -1,0 +1,12 @@
+STEP22NW OUTPUT FPS RECOVERY
+
+Oprava propadu LIVE/OUTPUT FPS po zásahu do loadingu a práce s animacemi.
+
+Změny:
+1) Gallery thumbnails jsou tvrdě přiškrcené: batch 1, malý časový budget, delší pauzy mezi chunkama.
+2) Výběr animace už nespouští kompletní render celé galerie, jen přepne selected class.
+3) Startup strict prewarm je defaultně vypnutý; zapnout jde jen přes ?strictPrewarm=1.
+4) Startup warmupy běží později a už nespouští full preload.
+5) Loading CSS má output-safe guard: žádné fullscreen sweep/card shine/bar scan/dot animace, background bez fixed attachment.
+
+Cíl: loading a galerie nesmí žrát main-thread/compositor tak, aby output padal na 3 FPS.

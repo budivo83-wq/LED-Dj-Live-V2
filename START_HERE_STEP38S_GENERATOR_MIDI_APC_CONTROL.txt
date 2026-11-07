@@ -1,0 +1,21 @@
+STEP38S — Generator MIDI / APC Control
+
+Start here:
+1. Open Generator.
+2. Open panel "08 MIDI / APC Control".
+3. Click CONNECT MIDI.
+4. Select your APC/Oxygen/generic MIDI input, or leave AUTO.
+5. Click MIDI ON.
+6. Move CC 16–23 or CC 48–55 for Macro 1–8.
+7. Press pads/notes 36–42 for music modes, 52 for blackout, 53 for panic release, 54 for LIVE toggle.
+
+Learn mode:
+- Pick an action in Learn action.
+- Click LEARN NEXT.
+- Move a knob or press a pad.
+- Mapping is saved in localStorage.
+
+Safety:
+- MIDI does not create any new UDP/ArtNet writer.
+- LIVE toggle still uses the existing Generator LIVE MASTER takeover/crossfade path.
+- Blackout publishes physically only when Generator is already LIVE MASTER.

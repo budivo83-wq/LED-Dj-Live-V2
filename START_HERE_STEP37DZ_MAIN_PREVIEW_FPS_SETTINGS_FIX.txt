@@ -1,0 +1,16 @@
+STEP37DZ_MAIN_PREVIEW_FPS_SETTINGS_FIX
+
+Co je opraveno:
+- Settings > Runtime > MAIN PREVIEW FPS znovu řídí velký Performance preview canvas.
+- Odstraněn starý live-output hard cap, který během ArtNet/Serial outputu ořezával hlavní preview na max. 15 FPS.
+- Nastavení neovlivňuje LED/ArtNet/Serial output ani malé layer náhledy.
+- Doplněno persistentní previewFps do hlavních default/settings cest.
+- Přidán jasnější popis v Settings a preset hodnoty 5/10/15/20/25/30/40/50/60.
+
+Doporučení:
+- Pro plynulý output: Output FPS 60, Main Preview FPS 20–30.
+- Pro slabší PC/RPi: Main Preview FPS 10–20.
+- Pro vizuální kontrolu na PC: Main Preview FPS 30–60.
+
+Kontrola:
+- npm run check:js OK.

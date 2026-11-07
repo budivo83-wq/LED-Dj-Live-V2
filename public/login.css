@@ -1,0 +1,145 @@
+﻿body.login-page {
+  margin: 0;
+  min-height: 100vh;
+  color: #ecf2ff;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  overflow: hidden;
+}
+
+.login-page .auth-shell {
+  position: fixed !important;
+  inset: 0 !important;
+  min-height: 100vh !important;
+  display: grid !important;
+  place-items: center !important;
+  padding: 24px !important;
+  z-index: 2;
+}
+
+.login-page .auth-panel {
+  width: min(460px, 90vw) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin-top: 130px;
+}
+
+.login-page .auth-form {
+  display: grid;
+  gap: 10px;
+}
+
+.login-page .field {
+  position: relative;
+}
+
+.login-page input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(80, 236, 255, 0.72);
+  background: rgba(2, 7, 15, 0.84);
+  color: #eaf6ff;
+  border-radius: 12px;
+  padding: 0 16px 0 54px;
+  height: 56px;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  outline: none;
+  text-transform: uppercase;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 0, 145, 0.28),
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    0 0 16px rgba(0, 220, 255, 0.08);
+}
+
+.login-page input:focus {
+  border-color: rgba(71, 236, 255, 0.95);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 0, 145, 0.26),
+    0 0 0 3px rgba(0, 215, 255, 0.2),
+    0 0 30px rgba(0, 215, 255, 0.18);
+}
+
+.login-page button[type="submit"] {
+  margin-top: 14px;
+  border: 1px solid rgba(80, 236, 255, 0.82);
+  border-radius: 12px;
+  background: rgba(2, 7, 15, 0.84);
+  color: #f4fbff;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  padding: 0 14px;
+  height: 56px;
+  font-size: 20px;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 0, 145, 0.2),
+    0 8px 24px rgba(0, 0, 0, 0.5),
+    0 0 16px rgba(0, 220, 255, 0.08);
+}
+
+.login-page button[type="submit"]:hover {
+  border-color: rgba(84, 238, 255, 1);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 0, 145, 0.26),
+    0 0 30px rgba(0, 220, 255, 0.2);
+}
+
+.login-page .auth-message {
+  min-height: 18px;
+  margin: 0;
+  color: #ff9dbf;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.login-page .field-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(192, 211, 236, 0.65);
+  font-size: 18px;
+  pointer-events: none;
+}
+
+.login-page input::placeholder {
+  color: rgba(198, 206, 223, 0.55);
+}
+
+.login-page .forgot-link {
+  justify-self: end;
+  margin-top: 0;
+  color: rgba(67, 230, 255, 0.9);
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.login-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(245, 247, 250, 0.72) 0%, rgba(245, 247, 250, 0.2) 20%, rgba(0, 0, 0, 0) 34%, rgba(0, 0, 0, 0) 66%, rgba(245, 247, 250, 0.2) 80%, rgba(245, 247, 250, 0.72) 100%);
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .login-page .auth-panel {
+    width: min(560px, 94vw) !important;
+    margin-top: 140px;
+  }
+  .login-page input,
+  .login-page button[type="submit"] {
+    height: 70px;
+    font-size: 30px;
+  }
+  .login-page .field-icon {
+    font-size: 26px;
+  }
+}

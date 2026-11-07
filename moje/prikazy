@@ -1,0 +1,8 @@
+git staus 
+git add .
+git commit -m "Popis změn"
+git push
+git checkout ... 
+git pull
+git log --oneline      - historie
+git checkout HASH  - okamzity navrat

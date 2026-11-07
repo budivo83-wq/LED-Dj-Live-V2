@@ -1,0 +1,37 @@
+STEP37BV – MONOTONIC OUTPUT SCHEDULER + LOW-HOTPATH METRICS
+
+Cil:
+- stabilizovat fyzicky output frame loop,
+- omezit mikro-jitter z opakovaneho armovani setTimeout,
+- nebudit debug/UI metriky v enqueue hot path.
+
+Upraveno:
+- public/runtime/output_pipeline.js
+
+Zmeny:
+1) Single monotonic scheduler
+   - pridan schedulerActive + nextWakeAt,
+   - planovani je centralizovane pres scheduleNextWake(),
+   - timeout se pocita vzdy proti performance.now()/getNow,
+   - po pause/overload se scheduler sam preplanuje bez zbytecneho re-arm chaosu.
+
+2) Enqueue bez metrickeho wake-upu
+   - pri kazdem prichozim frame se uz hned nepousti emitMetrics(),
+   - frame se jen ulozi do single-slot fronty a probudi scheduler,
+   - dropped/disabled/error udalosti zustavaji reportovane.
+
+3) Idle path bez zbytecnych metrics eventu
+   - drain() bez queuedFrame uz nepali metrics event,
+   - metriky zustavaji dostupne pres getMetrics() a throttlovany emit po skutecne praci.
+
+4) Diagnostika
+   - metrics.version = 37BV-monotonic-scheduler,
+   - pridano schedulerActive a schedulerDelayMs.
+
+Ocekavany efekt:
+- mene mikro-zaseku ve fyzickem outputu,
+- mensi main-thread tlak pri 60 FPS,
+- mene CustomEvent/telemetry prace mimo skutecne potrebne snapshoty.
+
+Kontrola:
+- node --check probehl na 477 JS/MJS souborech bez chyby.

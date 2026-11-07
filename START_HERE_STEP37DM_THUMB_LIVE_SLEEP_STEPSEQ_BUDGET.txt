@@ -1,0 +1,18 @@
+STEP37DM_THUMB_LIVE_SLEEP_STEPSEQ_BUDGET
+
+Změny:
+- Runtime thumbnail render má při skutečně zapnutém live outputu hard-sleep režim.
+- Cache/session thumbnails se pořád použijí okamžitě, ale drahé canvas renderování se při outputu parkuje.
+- Thumb queue má nižší live limit a počítá live overflow/drop statistiky.
+- Debug Output Health zobrazuje Hard sleep / Sleep skips.
+- Sequencer profiler má 8ms/12ms hitch counter a mírně delší deferred commit okno, aby se step netrefoval do UI commitu.
+
+Cíl:
+- Ověřit, jestli zmizí micro-lagy při běžícím live outputu a otevřeném Performance/Gallery pickeru.
+- V Debugu sledovat Thumb queue: pokud Hard sleep YES a output je plynulejší, byl problém v runtime thumbnail/preload práci.
+
+Co dál:
+1. Otestovat live ArtNet s Debug tabem.
+2. Pokud Sequencer last/max step stále přesahuje 8–12 ms, rozdělit heavy row action budget ještě tvrději.
+3. Pokud Thumb queue i při hard-sleepu roste příliš, vypnout runtime thumbs úplně v live režimu.
+4. Potom pokračovat ArtNet UDP hotpath.

@@ -1,0 +1,15 @@
+STEP22NX_SWITCH_FPS_FIX
+
+Opravy proti STEP22NW:
+1) Serial / live output FPS default zvednut z 30 na 60 v runtime defaults i restore fallbacku.
+2) Starý live-serial app mirror už nemá tvrdý cap 18 FPS ani periodu min. 55 ms; umí 60 FPS.
+3) Bootstrap output serial fallback už nepoužívá Math.min(targetFps, 25), který mohl držet transport okolo 25-30 FPS.
+4) Přepnutí animace už nespouští warmupCurrentShaderScene synchronně v cestě přepnutí. Shader warmup běží odloženě, aby UI/output hned pokračoval.
+5) Načítání L1/L2 animací a palet při změně je paralelizované přes Promise.all místo sekvenčního čekání.
+6) Selector thumbnails už nepoužívají hromadné synchronní drawPreview pro všechny karty. Nejdřív se zkusí cache, chybějící skutečné thumbnails se kreslí po jednom v nízkém budgetu.
+7) Thumbnail cache prefix změněn na led-gallery-thumb-v22nx, aby se ignorovaly staré obecné/placeholder náhledy.
+
+Doporučení pro test:
+- Po nahrání otevři aplikaci a případně dej v prohlížeči hard refresh / smaž site data, aby zmizely staré localStorage/sessionStorage hodnoty FPS.
+- Ve Settings ověř serial/live FPS = 60.
+- Přepínej animace v Performance a sleduj, jestli už nedochází k viditelnému záseku.

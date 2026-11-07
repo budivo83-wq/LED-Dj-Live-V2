@@ -1,0 +1,29 @@
+STEP37AE_OUTPUT_HOTPATH_SMOOTHNESS
+
+Navazuje na STEP37AD.
+
+Cíl:
+- další snížení mikrozáseků outputu a UI bez změny mappingu/show logiky.
+
+Změny:
+1) src/output/artnet_core.js
+- compiled ArtNet patch plan teď ví, jestli universe buffer opravdu potřebuje clear/fill.
+- u plně pokrytých universe se vynechá dst.fill(0), takže se při 8x300 neprovádí zbytečné nulování celého ArtDMX payloadu každý frame.
+- pokud route používá forward + RGB + bez korekcí + valid span, kopíruje se blok přes dst.set(subarray) místo pixel-by-pixel loopu.
+- korekční LUT se staví jen pro route, kde je brightness/gamma/contrast/whiteLimit mimo default.
+
+2) public/runtime/frame_bus.js
+- frame meta se v hot path už zbytečně znovu neklonuje, pokud není zapnuté RUNTIME_PROFILE.frameBusCloneMeta.
+- frame bus listener dispatch už nevytváří [...listeners] kopii při každém frame.
+
+3) public/runtime/frame_authority.js
+- stats.lastMeta se neukládá při každém frame, ale max cca 4x/s.
+
+Ověření:
+- npm run check:js OK
+- npm run test:artnet-settings-boundary OK
+- npm run test:artnet-server-boundary OK
+- npm run test:artnet-live-source-policy OK
+
+Poznámka:
+ArtNet/output cesta a mapping významově beze změny. Optimalizace se týká hot path alokací a per-frame práce.

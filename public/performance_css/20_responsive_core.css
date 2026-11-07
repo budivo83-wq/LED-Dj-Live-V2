@@ -1,0 +1,238 @@
+/* Original responsive rules before the UI refresh override layer.
+   Source: split from public/performance.css. Keep import order in ../performance.css. */
+
+@media (min-width: 1101px) {
+  .performance-grid {
+    grid-template-columns: minmax(300px, 340px) minmax(540px, 1fr) minmax(300px, 340px);
+  }
+
+  .top-seq-panel {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 1500px) {
+  .performance-grid {
+    grid-template-columns: minmax(290px, 310px) minmax(0, 1fr) minmax(290px, 310px);
+  }
+
+  .compact-mix {
+    grid-template-columns: minmax(180px, 1fr) minmax(200px, 1fr);
+  }
+
+  .master-fx {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1180px) {
+  .topbar {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .brand-block {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .status-strip {
+    border-top: 1px solid var(--line);
+  }
+
+  .performance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .center-stage {
+    order: -1;
+  }
+
+  .preview-box,
+  #ledCanvas {
+    min-height: 34vh;
+  }
+
+  .seq-dock {
+    max-height: none;
+  }
+
+  .bottom-status {
+    display: none;
+  }
+
+  .mobile-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    height: 78px;
+    padding: 0 10px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    border-radius: 18px 18px 0 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    background: rgba(4, 8, 15, 0.96);
+    backdrop-filter: blur(18px);
+  }
+
+  .mobile-nav button {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .mobile-nav button:hover,
+  .mobile-nav button:first-child {
+    color: var(--mag);
+    box-shadow: none;
+    transform: none;
+  }
+
+  .app-shell {
+    padding-bottom: 96px;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    padding: 8px 8px 96px;
+  }
+
+  .topbar {
+    top: 8px;
+  }
+
+  .brand-block {
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .brand-mark {
+    font-size: 30px;
+  }
+
+  .brand-text strong {
+    font-size: 20px;
+  }
+
+  .workspace-tabs button {
+    min-width: 102px;
+  }
+
+  .status-card {
+    min-width: 108px;
+  }
+
+  .panel,
+  .preview-shell,
+  .performance-strip,
+  .seq-dock,
+  .manual-palette,
+  .fx-panel {
+    border-radius: 14px;
+  }
+
+  .performance-pads {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .compact-mix,
+  .layer-tools,
+  .layer-actions,
+  .master-fx,
+  .knob-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .transition-control {
+    grid-template-columns: 1fr;
+  }
+
+  .picker-row {
+    grid-template-columns: 1fr 34px 34px 34px;
+  }
+
+  .preview-tabs button {
+    min-width: 76px;
+  }
+
+  .preview-box,
+  #ledCanvas {
+    min-height: 30vh;
+  }
+
+  .performance-pads button {
+    height: 64px;
+  }
+
+  .seq-grid,
+  .top-seq-grid {
+    grid-template-columns: 120px repeat(64, minmax(8px, 1fr));
+  }
+
+  .top-seq-panel {
+    max-height: 220px;
+  }
+}
+
+@media (max-width: 560px) {
+  .workspace-tabs {
+    justify-content: flex-start;
+  }
+
+  .workspace-tabs button {
+    min-width: 96px;
+    height: 44px;
+  }
+
+  .status-card {
+    min-width: 100px;
+  }
+
+  .preview-head,
+  .seq-dock-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .preview-tabs {
+    width: 100%;
+  }
+
+  .performance-pads {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .compact-mix {
+    grid-template-columns: 1fr;
+  }
+
+  .manual-palette-slots {
+    grid-template-columns: 1fr;
+  }
+
+  .manual-palette-picker {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .layer-tools {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .layer-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .bottom-status {
+    display: none;
+  }
+}
+

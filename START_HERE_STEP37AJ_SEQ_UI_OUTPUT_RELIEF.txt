@@ -1,0 +1,24 @@
+STEP37AJ - SEQUENCER UI / TRANSPORT OUTPUT RELIEF
+
+Base: STEP37AI
+
+Goal:
+- Reduce small UI/output hitches caused by sequencer-side DOM/status work and synchronous localStorage transport saves.
+- Do not change ArtNet/output mapping or show logic.
+
+Changes:
+- QuickStep transport localStorage save reduced from every 1s to every 5s and only when the playhead actually moved.
+- Sequencer tick still runs for enabled step playback, but DOM highlight/status work is skipped when the panel is not visible.
+- Non-step status refresh is throttled to 250ms instead of checking/updating on every 40ms tick.
+- Sequencer version marker updated to quick-step-v22-output-relief-transport-ui-throttle.
+
+Why:
+- localStorage writes are synchronous on the browser main thread and can cause micro-hitches.
+- DOM reads/writes in a 40ms sequencer timer are unnecessary when the panel is hidden/offscreen.
+- Position persistence across normal navigation remains handled by the beat clock; this only affects emergency reload persistence granularity.
+
+Verification:
+- npm run check:js passed.
+- npm run test:artnet-settings-boundary passed.
+- npm run test:artnet-server-boundary passed.
+- npm run test:artnet-live-source-policy passed.

@@ -1,0 +1,26 @@
+STEP37AV_RUNTIME_FLAG_CACHE
+
+Cíl:
+- snížit mikrozáseky v live output scheduleru tím, že se z hot-path odstraní opakované localStorage čtení pro preview/output runtime flagy.
+
+Upraveno:
+- public/runtime/render_pipeline.js
+
+Změny:
+- budilightOutputPriorityPreviewFps37AR se ukládá do 2s preview settings cache.
+- budilightOutputPriorityPreview37AR se ukládá do stejné cache.
+- budilightArtNetMasterMirror22EJ se ukládá do stejné cache.
+- storage event invaliduje cache i pro tyto konkrétní klíče.
+- isNetworkOutputClockRoute() už v hot scheduler path nečte localStorage přímo.
+- outputPriorityPreviewActive() už v hot scheduler path nečte localStorage přímo.
+
+Proč:
+- tyto funkce jsou volané velmi často během output/preview plánování.
+- localStorage je synchronní API a v browseru může způsobit malé, ale viditelné hitches.
+- změny hodnot zůstávají funkční přes storage event + krátkou TTL cache.
+
+Test:
+1. Spustit fyzický output.
+2. Přepínat Performance / Debug / Settings / Pixel / Shader.
+3. Sledovat, jestli se zmenší drobné mikrolagy i když FPS counter vypadá dobře.
+4. Ověřit, že změna budilightOutputPriorityPreviewFps37AR nebo vypnutí budilightOutputPriorityPreview37AR stále zabere nejpozději do cca 2 s.

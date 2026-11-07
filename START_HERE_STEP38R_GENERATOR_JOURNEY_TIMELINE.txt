@@ -1,0 +1,12 @@
+STEP38R_GENERATOR_JOURNEY_TIMELINE
+
+Doporučený start:
+1) Otevři Generator.
+2) Vyber Journey Timeline -> Safe Demo · Preview Friendly.
+3) Nech Auto PREVIEW z OFF zapnuté.
+4) Klikni START JOURNEY.
+5) Zkontroluj preview a Scene Morph progress.
+6) Teprve potom zapni LIVE MASTER, pokud chceš poslat Journey na LED výstup.
+
+Poznámka:
+Journey Timeline nepřidává další UDP writer. Používá existující Scene Morph a Generator LIVE MASTER bridge.

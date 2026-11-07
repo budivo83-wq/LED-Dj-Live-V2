@@ -1,0 +1,20 @@
+STEP37CT_GLOBAL_OUTPUT_SLIDERS_RESTORED
+
+- Restored the original global output correction controls at the top of Settings.
+- Uses the same storage/settings keys as the original runtime path:
+  - brightnessLimit
+  - gamma
+  - contrast
+  stored in led-engine-settings-v1.
+- Moved these controls out of the Runtime card to avoid duplicate IDs.
+- Added live readouts and a reset button for neutral output testing:
+  - brightnessLimit = 1
+  - gamma = 1
+  - contrast = 1
+- No hardcoded IP block added. ArtNet explicit slot/bind behavior remains from previous step.
+
+Verified:
+- npm run check
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy

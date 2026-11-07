@@ -1,0 +1,20 @@
+STEP37AH_OUTPUT_WS_MASTER_ALLOC_TRIM
+
+Navazuje na STEP37AG.
+
+Cil:
+- dalsi odlehceni 60 FPS WS -> ArtNet master hot path,
+- mene kratkodobych objektu pri kazdem frame,
+- bez zmeny mappingu, UI a show logiky.
+
+Zmeny:
+- ws_controller.js znovu pouziva jeden master-frame latest envelope objekt pro primou WS->ArtNet cestu,
+- artnet_master_frame_store_22ej.js publishFast znovu pouziva latest metadata objekt misto nove alokace kazdy frame,
+- sjednoceny Date.now() v master WS route,
+- ArtNet/output chovani zustava stejne.
+
+Overeni:
+- npm run -s check:js
+- npm run -s test:artnet-settings-boundary
+- npm run -s test:artnet-server-boundary
+- npm run -s test:artnet-live-source-policy

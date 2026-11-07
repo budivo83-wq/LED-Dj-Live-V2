@@ -1,0 +1,44 @@
+STEP37DT – Animation Library v2 + Gallery Save Prep + 10 Music Shader Animations
+
+Co je změněno:
+1) Animation library manifest je povýšen na schema animation-library-v2.
+   - každá položka má nově stabilní pole prewarm a gallery.
+   - prewarm: priority, mode, samplePoints, warmOnSelect, warmNeighbors.
+   - gallery: savable, favoriteable, thumbnail, albumIds.
+
+2) Serverové API pro animace je připravené na další rozšiřování galerie:
+   - /api/animations/save-from-gallery
+     Vytvoří manifestovou kopii galerie bez fyzického kopírování JS souboru.
+     Hodí se pro budoucí “uložit z galerie jako vlastní preset/kolekci”.
+   - /api/animations/prewarm-hint
+     Umožní měnit prewarm metadata animace bez zásahu do shader souboru.
+   - update-metadata nově umí přijmout prewarm/gallery objekty.
+   - duplicate kopíruje prewarm/gallery metadata do nové user animace.
+
+3) Přidáno 10 nových hudebních shader animací:
+   - Bass Pressure
+   - Kick Vortex
+   - HiHat Sparks
+   - Sub Ripple
+   - Psy Flux
+   - Gate Stutter
+   - Orbital Bassline
+   - Neuro Pulse
+   - Spectrum Tunnel
+   - Trance Lattice
+
+4) Nové animace jsou zapsané do data/animation-library.json pro L1 i L2.
+   Tagy: builtin, cpu, shader, music, prewarm, l1, l2.
+   Prewarm priorita je 72 a warmOnSelect/warmNeighbors jsou zapnuté.
+
+Testy provedené:
+- node --check public/shader_anim_engine.js
+- node --check public/l1_anims/shader_bass_pressure.js
+- node --check public/animations.js
+- node --check src/server/animation_library_routes.js
+- runtime import test renderByName() pro všech 10 nových shaderů, rozsah 0..1 OK.
+
+Další doporučený krok:
+- Napojit UI tlačítko v galerii “SAVE TO SET / SAVE PRESET” přímo na /api/animations/save-from-gallery.
+- V runtime module_warmup použít item.prewarm.priority pro chytřejší pořadí prewarm fronty.
+- Přidat malý debug box “Anim prewarm queue” do Debug DEEP režimu.

@@ -1,0 +1,16 @@
+STEP37BB_OUTPUT_ROUTE_REGISTRY
+
+Co testovat:
+1) Spusť ArtNet output a otevři Debug → Output Stability.
+2) Sleduj řádek s route registry:
+   route artnet-master-framebus-mirror c0/d0
+3) Přepínej Pixel / Shader / Debug / Settings a sleduj, jestli se route owner nemění.
+4) Pokud omylem zapneš Serial mirror současně s ArtNetem, fyzický output má držet ArtNet a Serial má být potlačen.
+
+Nová diagnostika v konzoli:
+window.__budilightOutputRouteRegistrySnapshot37BB()
+window.__budilightArtNetMasterMirror22EJ.routeRegistryAllowed
+window.__budilightLiveSerialMirror22CR.routeRegistryAllowed
+
+Další doporučený krok:
+STEP37BC_SERVER_OUTPUT_ROUTE_REGISTRY – udělat stejný registry i na serveru, aby se fyzické UDP/serial write cesty hlídaly nejen v browseru, ale i backendu.

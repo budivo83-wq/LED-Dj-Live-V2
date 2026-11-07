@@ -1,0 +1,20 @@
+STEP38Q GENERATOR SCENE MORPH
+
+Co testovat:
+1. Otevři Generator.
+2. Zapni PREVIEW.
+3. V panelu 06 Scene Morph vyber např. Mode · Build nebo Mode · Drop.
+4. Nastav Duration 16 beats, Curve smooth.
+5. Klikni MORPH TO TARGET.
+6. Sleduj, že se obraz vyvíjí plynule místo tvrdého přepnutí.
+7. Pak zkus LIVE MASTER — morph musí jít přes stejný LIVE MASTER bridge, ne přes další UDP writer.
+
+Doporučený live test:
+- Performance běží.
+- Generator PREVIEW připravený.
+- Takeover fade 0.9s.
+- Generator LIVE MASTER.
+- Scene Morph → Drop / 16 beats / smooth.
+
+Ověřovací příkaz:
+npm run test:generator-step38q

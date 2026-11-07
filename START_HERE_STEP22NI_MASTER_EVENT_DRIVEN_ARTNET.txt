@@ -1,0 +1,27 @@
+STEP22NI MASTER-EVENT-DRIVEN ARTNET
+
+Cíl:
+- Odstranit druhý serverový ArtNet časovač v režimu Performance master-framebus.
+- Každý nový Performance MASTER frame přijatý přes WebSocket teď přímo triggeruje jeden ArtNet send.
+- Server už v tomto režimu neposílá 60 FPS opakováním posledního stale frame vlastním tickem.
+
+Proč:
+- UI/status mohl ukazovat 54–60 FPS, ale fyzicky šly na pásek nepravidelné/duplicitní snímky.
+- Příčina nebyla jen HTTP/WS transport, ale dvě nezávislé hodiny: browser render clock + server ArtNet clock.
+
+Změny:
+- src/output/artnet_sync_live_sender_22dq.js
+  - přidán masterDriven režim
+  - přidána metoda sendLatestMasterEvent()
+  - v master-framebus UDP režimu start čeká na příchozí master frame místo vlastního timer loopu
+- src/server/ws_controller.js
+  - po přijetí MF22 WebSocket frame triggeruje liveSender22DQ.sendLatestMasterEvent()
+- src/server/artnet_master_frame_routes_22ej.js
+  - HTTP fallback frame-bin také umí triggernout master-driven send
+- server.js
+  - předává WS master-frame trigger do ArtNet live senderu
+
+Testy:
+- npm run check:js
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy

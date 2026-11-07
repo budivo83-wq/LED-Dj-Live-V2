@@ -1,0 +1,19 @@
+STEP37AF_OUTPUT_UDP_FASTPATH
+
+Cíl:
+- snížit mikrolagy ve výstupní ArtNet hot path bez změny mappingu, UI ani show logiky.
+
+Změna:
+- v src/output/artnet_sync_live_sender_22dq.js byla přidána přímá UDP hot path pro callbackMode none/lightweight bez paceru.
+- běžný live režim teď neposílá frame přes zbytečné per-packet callback bookkeeping/closures.
+- batch se po odeslání označí jako hotový okamžitě a skutečné chyby dál chytá socket-level error handler.
+
+Ověřeno:
+- npm run check:js
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy
+
+Poznámka:
+- ArtNet mapping/output protokol se nemění.
+- Změna je čistě výkonová pro běžný fire-and-forget ArtNet live send.

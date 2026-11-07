@@ -1,0 +1,30 @@
+STEP22MA — ArtNet single-writer / preview flicker fix
+
+Symptom:
+- ArtNet from Settings looks OK.
+- After switching to Performance, LEDs behave until the main preview starts drawing.
+- Then LEDs blink/glitch like two sources are fighting for the same universes.
+
+Fix in this ZIP:
+1) Browser master-frame mirror now has a single-writer guard.
+   The DOM event path is primary. The old safety poll is only used when no event
+   has arrived for 1.5 s.
+
+2) Duplicate uploads of the same frameId/source are suppressed in the browser and
+   again in the server master-frame store.
+
+3) The actual ArtNet UDP sender remains one path only:
+   Performance framebus -> server master mirror -> sync-live ArtNet sender -> UDP.
+
+Recommended test:
+1. Open Settings, set ArtNet 8x300, start ArtNet.
+2. Open Performance.
+3. Wait until preview appears.
+4. Check /api/artnet/master-mirror/status:
+   - duplicateCount may increase slightly, that is OK.
+   - publishCount should not explode at double rate.
+5. Check /api/artnet/sync-live/status:
+   - source/visualPattern should stay master-framebus.
+   - only one sender should be running.
+
+If it still flickers, next target is disabling remaining legacy /api/live/artnet/* manual routes completely from runtime registration.

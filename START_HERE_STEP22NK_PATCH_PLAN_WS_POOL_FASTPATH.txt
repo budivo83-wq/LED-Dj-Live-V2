@@ -1,0 +1,22 @@
+STEP22NK PATCH PLAN + WS POOL FASTPATH
+
+Cíl: pokračování optimalizace po STEP22NJ/38, kde bylo potvrzeno, že direct WS master -> ArtNet je správná cesta.
+
+Změny:
+- ArtNet patch split už nepřepočítává a nealokuje Map/universe buffery každý frame.
+- Patch routes se kompilují do cache podle patch objektu + rozměrů.
+- Universe DMX pracovní buffery se recyklují a pouze přepisují.
+- getLatestPatch() už nevrací novou kopii patch objektu každý frame, takže cache může reálně fungovat.
+- FastPath ArtSync nepoužívá spread kopii packet array.
+- Browser WS master envelope má malý ring buffer místo nové 24+B payload alokace každý frame.
+
+Očekávaný efekt:
+- méně GC špiček v browseru i serveru,
+- méně per-frame objektů,
+- stabilnější časování u 8x300 / 16+ universů,
+- hlavně při vlastním ArtNet patch mappingu ze Settings.
+
+Testy:
+- npm run check:js
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy

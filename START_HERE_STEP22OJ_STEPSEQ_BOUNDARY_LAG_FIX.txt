@@ -1,0 +1,19 @@
+STEP22OJ – STEP SEQUENCER BOUNDARY LAG FIX
+
+Cíl:
+- odstranit malé cuknutí UI/outputu při každém přechodu step sequenceru na další slot.
+
+Změny:
+1) quick_step_automator.js
+   - playhead/highlight už nepoužívá querySelectorAll na všechny buňky při každém kroku,
+   - při renderu gridu se vytvoří cache buněk podle slotu,
+   - při běhu se přepíná jen minulý a aktuální sloupec,
+   - status text se aktualizuje jen když se skutečně změnil,
+   - tick už nevolá celé updateControls() každých 40 ms,
+   - momentary FX/FLIP se vypíná jen když ho sequencer předtím sám zapnul,
+     ne na každém prázdném slotu.
+
+Poznámka:
+- Output/ArtNet runner zůstává oddělený.
+- Preview FPS setting z verze STEP22OI zůstává zachovaný.
+- Opravy FX/FLIP/RAND PARAM ze step sequenceru zůstávají zachované.

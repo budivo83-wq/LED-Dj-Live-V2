@@ -1,0 +1,29 @@
+STEP37BN - Step sequencer idle-save + render queue
+
+Navazuje na STEP37BM.
+
+Cil:
+- zmensit zaskuby pri editaci sequenceru a prechodech zpet na Performance
+- nedelat synchronni localStorage zapis pri kazdem malem gestu
+- neskladat cely sequencer grid okamzite vicekrat za sebou
+
+Zmeny:
+1) quick_step_automator.js
+   - pridan scheduleRenderAll(): slucuje tezke renderAll(true) do jednoho requestAnimationFrame/timeout cyklu.
+   - hromadne akce patternu (random, mutate, clear, load slot, load compare, undo/restore, cycle length) uz nevolaji renderAll(true) natvrdo hned, ale pres frontu.
+   - scheduleStateSave() ma delsi idle okno: bezici sequencer odklada localStorage zapis vic, aby se neblokoval live UI/output thread.
+   - pattern library save je oddelen pres schedulePatternLibrarySave(), tedy tlacitko save slotu neudela synchronni localStorage zapis primo v klik eventu.
+   - pointerup po erase/minimap drag uz nedela okamzity flushStateSave(); ulozeni se odlozi.
+   - pagehide/beforeunload stale flushuje rozpracovane zmeny, aby se pri zavreni neztratily.
+
+Ocekavany efekt:
+- mensi micro-hitch pri rychlem kresleni/mazani step bunek
+- mensi hitch pri random/mutate/load patternu
+- hladsi UI po navratu na cached Performance
+- mene synchronnich localStorage blokaci behem live prehravani
+
+Kontrola:
+- node --check public/runtime/quick_step_automator.js OK
+
+Dalsi doporuceny krok:
+- pridat realny profiler DOM renderu sequenceru: pocet renderGrid, cas renderGrid, pocet saveState, cas saveState.

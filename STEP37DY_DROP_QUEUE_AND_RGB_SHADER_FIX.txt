@@ -1,0 +1,18 @@
+STEP37DY_DROP_QUEUE_AND_RGB_SHADER_FIX
+
+Opravy:
+1) DROP opakovaně za sebou už nesmí skládat dlouhou frontu shader importů.
+   - public/runtime/layer_module_navigation.js: přidána volba dropIfBusy.
+   - public/ui_bindings.js: DROP je non-stackable, cooldown 1150 ms, L1/L2 switch ignoruje extra klik během aktivního importu.
+
+2) DROP už nespouští těžký randomizeLayerParams(), protože ten uvnitř dělal syncControls() + commitState() pro každý layer.
+   - Přidán live-safe param randomizer přímo pro DROP.
+   - Commit je pouze jeden opožděný zápis bez full UI syncu.
+
+3) Poslední nové hudební RGB shadery se už nepřevádí přes Number(array) -> NaN/black.
+   - public/layer_runtime.js: render umí přímý RGB výstup [r,g,b].
+   - public/ui_pickers.js: selector thumbnail umí přímý RGB výstup [r,g,b].
+   - public/ui_layers.js: normalizeValue umí z RGB pole udělat jas, když ho používá starší cesta.
+
+Kontrola:
+- npm run check:js OK, 451 JS files.

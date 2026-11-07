@@ -1,0 +1,20 @@
+STEP38U GENERATOR SHADER MODULES
+
+1) Otevři Generator.
+2) Nejdřív testuj v PREVIEW.
+3) V Node graph v2 přidej nebo zapni nové moduly:
+   - Liquid Glass
+   - Electric Veins
+   - Fractal Snake
+   - Solar Wind
+   - Digital Rain
+   - Magnetic Particles
+   - Neon Organism
+   - Audio Pulse Field
+4) Nebo v Presets zkus factory presety:
+   - Liquid Glass Organism
+   - Electric Veins Drop
+   - Solar Magnetic Snake
+5) Teprve potom zapni LIVE MASTER.
+
+Výstupová cesta zůstává stejná: Generator → LIVE MASTER bridge → MASTER mirror → ArtNet sender.

@@ -1,0 +1,21 @@
+STEP37BA_ACTIVE_RUNTIME_MAP
+
+Tahle verze nedělá riskantní mazání legacy souborů. Přidává bezpečný auditní krok:
+
+1) npm run audit:active-runtime
+   - vytvoří docs/runtime/ACTIVE_RUNTIME_MAP_STEP37BA.md
+   - vytvoří docs/runtime/active-runtime-map-step37ba.json
+
+2) Report ukáže:
+   - HTML root stránky,
+   - staticky dosažitelné public JS soubory,
+   - public JS soubory mimo statický import graph,
+   - server/staged src soubory,
+   - soubory s output/hot-path markery.
+
+3) Důležité:
+   - Tohle NENÍ seznam pro mazání.
+   - Cílem je bezpečně připravit další krok: Output Route Registry.
+   - Legacy writer se má vypínat vždy jen jeden a ideálně za flagem.
+
+Doporučený další krok: STEP37BB_OUTPUT_ROUTE_REGISTRY.

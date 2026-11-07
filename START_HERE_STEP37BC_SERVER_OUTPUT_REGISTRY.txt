@@ -1,0 +1,15 @@
+STEP37BC_SERVER_OUTPUT_REGISTRY
+
+Navazuje na STEP37BB_OUTPUT_ROUTE_REGISTRY.
+
+Novinka:
+- backendový server output registry
+- ArtNet live sender drží server lock pro artnet-udp
+- safe AA serial WS write je odmítnutý, pokud ArtNet drží fyzickou cestu
+- status endpoint: /api/output/server-route-registry
+
+Test:
+1) Zapni ArtNet live output.
+2) Otevři /api/output/server-route-registry.
+3) Očekávej owner artnet-sync-live-sender-22dq / kind artnet-udp.
+4) Pokud by jiná cesta zkusila zapisovat fyzicky, deniedCount/conflictCount poroste.

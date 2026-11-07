@@ -1,0 +1,18 @@
+STEP37AR_OUTPUT_PRIORITY_PREVIEW_CLEANUP
+
+Změny:
+- Přidán output-priority preview cap při aktivním fyzickém output locku.
+- Viditelné preview při ArtNet/Serial outputu defaultně max 12 FPS, shader max 8 FPS.
+- Raw L1/L2 preview při live outputu defaultně max 4 FPS.
+- Opraven shell canvas monitor: i když je povolený, respektuje gap/FPS a neblituje každý frame.
+- Odstraněn duplicitní readFrameBusStats ve render_pipeline finally bloku.
+- Debug metrics doplněny o previewOutputPriority/previewOutputPriorityFps.
+
+Test:
+1) Zapni ArtNet output.
+2) V Debug sleduj preview-priority, render ms, output FPS a step hitch.
+3) Přepínej Pixel big / Shader / Debug / Settings a sleduj, jestli fyzický output neztrácí plynulost.
+
+LocalStorage přepínače:
+- budilightOutputPriorityPreview37AR = 0 vypne nový preview cap.
+- budilightOutputPriorityPreviewFps37AR = 2..15 nastaví cap preview FPS.

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LED Dj live - Animations</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="performance.css" />
+  <link rel="stylesheet" href="performance_topbar.css" />
+  <link rel="stylesheet" href="animations.css" />
+  <link rel="stylesheet" href="animations_gallery.css" />
+  <link rel="stylesheet" href="animations_editor.css" />
+</head>
+<body class="ui-pro performance-page animations-page">
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="top-left-cluster">
+        <div class="brand-block">
+          <button id="onoff" class="power-btn" type="button">ON</button>
+          <div class="brand-mark">◈</div>
+          <div class="brand-text"><strong>LED<br>Dj</strong><span>live</span></div>
+        </div>
+      </div>
+
+      <nav class="workspace-tabs" aria-label="Workspace">
+        <button class="nav" type="button" data-nav-href="index.html" data-main-return-fast="1">PERFORMANCE</button>
+        <button class="nav active" type="button" data-nav-href="animations.html">GALLERY</button>
+        <button class="nav" type="button" data-nav-href="generator.html">GENERATOR</button>
+        <button class="nav" type="button" data-nav-href="show-os.html">SHOW OS</button>
+        <button class="nav" type="button" data-nav-href="mapping.html">MAPPING</button>
+        <button class="nav" type="button" data-nav-href="settings.html">SETTINGS</button>
+      <button class="nav" type="button" onclick="location.href='live-input.html'">LIVE INPUT</button>
+      </nav>
+
+      <div class="top-right-cluster">
+        <div class="status-strip status-strip-inline">
+          <div class="status-card"><span>PAGE</span><strong>GALLERY</strong><small>library</small></div>
+          <div class="status-card"><span>ITEMS</span><strong id="animCount">--</strong><small>loaded</small></div>
+          <div class="status-card"><span>FOCUS</span><strong id="selectedName">NONE</strong><small>preview</small></div>
+        </div>
+      <button id="menuBtn" class="menu-btn" type="button">☰</button>
+      </div>
+    </header>
+
+    <section id="centerMenuStrip" class="center-menu-strip" aria-label="Main menu">
+      <button data-href="settings.html" type="button">SETTINGS</button>
+    <button data-href="live-input.html" type="button">LIVE INPUT</button>
+      <button data-href="animations.html" type="button">GALLERY</button>
+      <button data-href="generator.html" type="button">GENERATOR</button>
+      <button data-href="mapping.html" type="button">MAPPING V2</button>
+    <button data-href="show-os.html" type="button">SHOW OS</button>
+      <button data-href="shorts.html" type="button">SHORTS</button>
+      <button id="menuFullscreenBtn" type="button">FULLSCREEN OFF</button>
+      <button data-href="index.html" type="button">PERFORMANCE</button>
+    </section>
+
+    <main class="anim-studio" aria-label="Animation studio read only gallery">
+      <section class="anim-panel anim-sidebar">
+        <div class="panel-head">
+          <div>
+            <small>STEP 7N · STEP 7L</small>
+            <button id="libraryMenuToggle" class="library-title-toggle" type="button" aria-expanded="false">Animation Library ▾</button>
+          </div>
+          <button id="reloadBtn" type="button">Reload</button>
+        </div>
+
+        <div id="libraryMenuPanel" class="library-menu-panel" hidden>
+          <button class="library-menu-item is-active" data-library-view="gallery" type="button">Animation gallery</button>
+          <button class="library-menu-item" data-library-view="palettes" type="button">Palette gallery</button>
+          <button class="library-menu-item is-planned" type="button" disabled>Effect gallery · planned</button>
+          <button class="library-menu-item is-planned" type="button" disabled>Geometry gallery · planned</button>
+        </div>
+
+        <label class="search-box">
+          <span>Search</span>
+          <input id="searchInput" type="search" placeholder="plasma, shader, tunnel..." />
+        </label>
+        <div class="quick-actions" aria-label="Quick workflow actions">
+          <button id="quickPrevBtn" class="mini-toggle" type="button" title="Previous animation (K)">Prev</button>
+          <button id="quickNextBtn" class="mini-toggle" type="button" title="Next animation (J)">Next</button>
+          <button id="quickFocusSearchBtn" class="mini-toggle" type="button" title="Focus search (/)">Search</button>
+          <button id="quickEditorTabBtn" class="mini-toggle" type="button" title="Open editor tab (E)">Editor</button>
+        </div>
+        <div class="workflow-hints" aria-label="Keyboard workflow hints">
+          <strong>Workflow keys</strong>
+          <span>/ search, J/K next-prev, E editor, Enter run-stop, Ctrl+S save, Ctrl+Enter preview</span>
+        </div>
+
+        <div class="studio-tabs" role="tablist" aria-label="Animation studio tabs">
+          <button class="studio-tab is-active" data-tab="gallery" type="button">Gallery</button>
+          <button class="studio-tab" data-tab="editor" type="button">Editor</button>
+          <button class="studio-tab" data-tab="shadertoy" type="button">ShaderToy</button>
+        </div>
+
+        <div class="filter-row" id="filterRow" role="group" aria-label="Animation filters">
+          <button class="filter" data-filter="archived" type="button" hidden>Archived</button>
+        </div>
+
+        <section class="album-manager" aria-label="Animation albums and collections">
+          <div class="album-manager-head">
+            <div>
+              <small>Albums / collections</small>
+              <strong>Organizace galerie</strong>
+            </div>
+            <div class="album-actions">
+              <button id="newAlbumBtn" class="mini-toggle" type="button">+ Album</button>
+              <button id="saveAlbumsBtn" class="mini-toggle" type="button">Save</button>
+            </div>
+          </div>
+          <div id="albumStatus" class="album-status">local draft</div>
+          <div id="albumList" class="album-list" aria-live="polite"></div>
+        </section>
+
+        <div class="library-note compact-note">
+Animation Library je rozbalovací vstup do více galerií. Prostor Albums bude sloužit pro složky/kolekce, pořadí a přesouvání animací do vlastních skupin.
+        </div>
+      </section>
+
+      <section class="anim-panel anim-gallery-wrap studio-view is-active" data-view="gallery">
+        <div class="panel-head compact">
+          <div>
+            <small>Library source</small>
+            <h2>data/animation-library.json</h2>
+          </div>
+          <div class="library-source-actions">
+            <button id="librarySourceToggle" class="mini-toggle library-source-toggle" type="button" aria-expanded="false">Source ▾</button>
+            <button id="thumbMotionToggle" class="mini-toggle thumb-motion-toggle" type="button" aria-pressed="false">Thumb motion OFF</button>
+            <button id="cardDetailsToggle" class="mini-toggle card-details-toggle" type="button" aria-pressed="true">Details ON</button>
+            <button id="selectorViewBtn" class="selector-open-btn" type="button">Selector grid</button>
+            <div id="statusText" class="status-pill">Loading…</div>
+          </div>
+        </div>
+        <div id="librarySourcePanel" class="library-source-panel" hidden>
+          <div><strong>Manifest</strong><span>data/animation-library.json</span></div>
+          <div><strong>User anims</strong><span>public/user_anims/</span></div>
+          <div><strong>Built-in fallback</strong><span>public/l1_anims/</span></div>
+        </div>
+        <div id="galleryGrid" class="gallery-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="anim-panel anim-editor-wrap studio-view" data-view="editor">
+        <div class="panel-head compact editor-panel-head">
+          <div>
+            <small>Animation editor</small>
+            <h2>Code editor / import</h2>
+          </div>
+          <div class="editor-head-actions">
+            <button id="editorSourceToggle" class="mini-toggle library-source-toggle" type="button" aria-expanded="false" hidden>Source ▾</button>
+            <div id="editorStatus" class="status-pill">idle</div>
+          </div>
+        </div>
+        <div id="editorSourcePanel" class="library-source-panel editor-source-panel" hidden aria-hidden="true">
+          <div><strong>Aktivní kolekce</strong><span id="editorActiveCollectionLabel">current filtered collection</span></div>
+          <div><strong>Load source</strong><span>načte zdroj vybrané animace do editoru</span></div>
+          <div><strong>Save</strong><span>Create new vytvoří kopii, Overwrite přepíše jen user animace</span></div>
+        </div>
+        <div class="editor-workspace editor-workspace-mainlike" aria-label="Animation code editor">
+          <div class="editor-form editor-main-form">
+            <div class="editor-toolbar">
+              <div class="editor-label editor-select-label editor-current-select editor-picker-field">
+                <span>Editovaná animace z aktivní kolekce</span>
+                <select id="editorAnimSelect" class="editor-hidden-select" aria-label="Select animation to edit" tabindex="-1">
+                  <option value="">Vyber animaci…</option>
+                </select>
+                <button id="editorAnimPickerBtn" class="editor-picker-btn" type="button" aria-haspopup="listbox" aria-expanded="false">
+                  <canvas id="editorAnimPickerThumb" width="96" height="42" aria-hidden="true"></canvas>
+                  <span class="editor-picker-text">Vyber animaci…</span>
+                  <strong>▾</strong>
+                </button>
+                <div id="editorAnimPickerPanel" class="editor-picker-panel" role="listbox" hidden></div>
+              </div>
+              <button id="loadSelectedSourceBtn" class="assign-btn subtle editor-load-btn" type="button">Load into editor</button>
+            </div>
+
+            <div class="editor-meta-row editor-save-row">
+              <label class="editor-label">
+                <span>Name / new save name</span>
+                <input id="editorName" type="text" placeholder="může zůstat prázdné" />
+              </label>
+              <label class="editor-label">
+                <span>Tag</span>
+                <input id="editorTag" type="text" placeholder="psy, tunnel, warm" />
+              </label>
+              <label class="editor-label">
+                <span>Save mode</span>
+                <select id="editorSaveMode">
+                  <option value="new">Create new</option>
+                  <option value="overwrite">Overwrite selected</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="editor-import-row">
+              <label class="editor-label editor-file-label">
+                <span>Load .js file</span>
+                <input id="fileInput" type="file" accept=".js,text/javascript" />
+              </label>
+              <div class="editor-hint">Preview a fadery jsou vpravo stejně jako v galerii. Náhled je izolovaný a nejde do outputu.</div>
+            </div>
+
+            <textarea id="codeEditor" spellcheck="false" rows="24" placeholder="export function render(x, y, t, p) {&#10;  return [255*x, 80, 255*y];&#10;}"></textarea>
+            <div class="editor-actions editor-actions-wide">
+              <button id="validateCodeBtn" class="assign-btn subtle" type="button">Validate</button>
+              <button id="previewCodeBtn" class="assign-btn" type="button">Preview code</button>
+              <button id="saveCodeBtn" class="assign-btn is-enabled" type="button">Save</button>
+            </div>
+            <div id="validationReport" class="validation-report" aria-live="polite">Validation report: idle</div>
+          </div>
+          <div id="editorResizeHandle" class="editor-resize-handle" role="separator" aria-orientation="vertical" aria-label="Resize editor and preview"></div>
+          <aside class="editor-preview-pane" aria-label="Large editor preview">
+            <div class="editor-preview-head">
+              <small>Large editor preview</small>
+              <strong>Editor Preview</strong>
+            </div>
+            <canvas id="editorPreview" class="editor-preview-canvas" width="480" height="180" aria-label="Large editor isolated preview"></canvas>
+            <p class="editor-hint">Izolovaný náhled editoru. Nezasahuje do performance outputu.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="anim-panel studio-view" data-view="shadertoy">
+        <div class="panel-head compact">
+          <div>
+            <small>Prepared workspace</small>
+            <h2>Shadertoy workspace</h2>
+          </div>
+          <div class="status-pill">reserved</div>
+        </div>
+        <div class="library-note compact-note shadertoy-placeholder">
+          Tato zalozka je rezervovana pro Shadertoy workflow uvnitr galerie.
+          V tomto kroku plati zadny live apply.
+        </div>
+      </section>
+
+
+      <section class="anim-panel anim-selectors-wrap studio-view" data-view="selectors">
+        <div class="panel-head compact">
+          <div>
+            <small>Selector source</small>
+            <h2>Layer selector menu manager</h2>
+          </div>
+          <div class="selector-head-actions">
+            <button id="backToGalleryBtn" class="mini-toggle" type="button">← Back to gallery</button>
+            <select id="selectorLayerSelect" aria-label="Selector layer">
+              <option value="l1">L1 selector</option>
+              <option value="l2">L2 selector</option>
+            </select>
+            <button id="resetSelectorDraftBtn" class="mini-toggle" type="button">Reset draft</button>
+            <button id="saveSelectorBtn" class="assign-btn is-enabled selector-save-btn" type="button">Save selector</button>
+          </div>
+        </div>
+        <div class="library-note compact-note">
+Tady uvidíš položky 1:1 jako v layer selectoru. Pořadí měníš přetažením: přetažení na jinou animaci je mezi sebou prohodí. Změny se drží jako draft a zapíšou se až tlačítkem Save selector.
+        </div>
+        <div id="selectorStatus" class="status-pill selector-status">not loaded</div>
+        <div id="selectorList" class="selector-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="anim-panel anim-palettes-wrap studio-view" data-view="palettes">
+        <div class="panel-head compact">
+          <div>
+            <small>Prepared workspace</small>
+            <h2>Palette Gallery</h2>
+          </div>
+          <div class="status-pill">prepared</div>
+        </div>
+        <div class="palette-placeholder">
+          <h3>Správa barevných palet</h3>
+          <p>Tahle záložka je připravené místo pro další krok: vlastní palety, import/export, tagy, favority a přiřazování palet pro L1/L2/FX.</p>
+          <div class="palette-feature-grid">
+            <div><strong>Custom palettes</strong><span>tvorba vlastních gradientů a barevných stop</span></div>
+            <div><strong>Palette presets</strong><span>vestavěné + user palety odděleně</span></div>
+            <div><strong>Assign to layer</strong><span>povolit paletu pro L1, L2 nebo FX</span></div>
+            <div><strong>Features</strong><span>mirror, rotate hue, contrast, warmth, black clamp</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="anim-panel anim-inspector">
+        <div class="panel-head compact">
+          <div>
+            <small>Preview</small>
+            <h2 id="inspectTitle">Vyber animaci</h2>
+          </div>
+          <div id="inspectType" class="status-pill">idle</div>
+        </div>
+
+        <canvas id="bigPreview" width="480" height="180" aria-label="Selected animation preview"></canvas>
+
+        <div class="preview-runner-row">
+          <button id="runSelectedPreviewBtn" class="assign-btn is-enabled" type="button">▶ Run animation preview</button>
+          <span id="previewRunnerStatus" class="preview-runner-status">isolated / output safe</span>
+        </div>
+
+        <div class="preview-controls">
+          <label><span>Speed</span><input id="speedInput" type="range" min="0.1" max="4" step="0.1" value="1" /></label>
+          <label><span id="param1Label">P1</span><input id="param1" type="range" min="0" max="1" step="0.01" value="0.5" /></label>
+          <label><span id="param2Label">P2</span><input id="param2" type="range" min="0" max="1" step="0.01" value="0.5" /></label>
+          <label><span id="param3Label">P3</span><input id="param3" type="range" min="0" max="1" step="0.01" value="0.5" /></label>
+        </div>
+
+        <div class="assign-box" aria-label="Layer menu assignment">
+          <div class="assign-head">
+            <strong>Layer menu assignment</strong>
+            <span id="assignStatus">—</span>
+          </div>
+          <div class="assign-row">
+            <button id="toggleL1Btn" class="assign-btn" type="button">L1 menu</button>
+            <button id="toggleL2Btn" class="assign-btn" type="button">L2 menu</button>
+          </div>
+          <label class="order-target">
+            <span>Order target</span>
+            <select id="orderLayerSelect">
+              <option value="">Global gallery</option>
+              <option value="l1">L1 menu</option>
+              <option value="l2">L2 menu</option>
+            </select>
+          </label>
+          <div class="assign-row">
+            <button id="moveUpBtn" class="assign-btn subtle" type="button">↑ Move up</button>
+            <button id="moveDownBtn" class="assign-btn subtle" type="button">↓ Move down</button>
+          </div>
+          <div class="batch-box" aria-label="Batch assignment">
+            <div class="assign-head">
+              <strong>Batch assign</strong>
+              <span id="batchStatus">none selected</span>
+            </div>
+            <div class="assign-row">
+              <button id="batchSelectVisibleBtn" class="assign-btn subtle" type="button">Select visible</button>
+              <button id="batchClearBtn" class="assign-btn subtle" type="button">Clear</button>
+            </div>
+            <div class="assign-row">
+              <button id="batchEnableL1Btn" class="assign-btn" type="button">Enable L1</button>
+              <button id="batchEnableL2Btn" class="assign-btn" type="button">Enable L2</button>
+            </div>
+            <div class="assign-row">
+              <button id="batchDisableL1Btn" class="assign-btn subtle" type="button">Disable L1</button>
+              <button id="batchDisableL2Btn" class="assign-btn subtle" type="button">Disable L2</button>
+            </div>
+            <div class="assign-row">
+              <button id="batchArchiveBtn" class="assign-btn subtle danger" type="button">Archive selected</button>
+              <button id="batchRestoreBtn" class="assign-btn subtle" type="button">Restore selected</button>
+            </div>
+            <div class="assign-row">
+              <button id="batchMoveUpBtn" class="assign-btn subtle" type="button">Move up</button>
+              <button id="batchMoveDownBtn" class="assign-btn subtle" type="button">Move down</button>
+            </div>
+          </div>
+          <div class="assign-row library-management-row">
+            <button id="duplicateAnimBtn" class="assign-btn subtle" type="button">Duplicate</button>
+            <button id="archiveAnimBtn" class="assign-btn subtle danger" type="button">Archive</button>
+          </div>
+        </div>
+
+        <div class="metadata-box" aria-label="Animation metadata editor">
+          <div class="assign-head">
+            <strong>Metadata editor</strong>
+            <span id="metadataStatus">select animation</span>
+          </div>
+          <label class="editor-label"><span>Name</span><input id="metaNameInput" type="text" maxlength="80" placeholder="Animation name" /></label>
+          <label class="editor-label"><span>Description</span><textarea id="metaDescriptionInput" rows="3" maxlength="500" placeholder="Short note for future you"></textarea></label>
+          <div class="metadata-grid">
+            <label class="editor-label"><span>Kind</span><input id="metaKindInput" type="text" placeholder="module / shader / fx" /></label>
+            <label class="editor-label"><span>Origin</span><input id="metaOriginInput" type="text" placeholder="builtin / user / shadertoy" /></label>
+          </div>
+          <label class="editor-label"><span>Tags</span><input id="metaTagsInput" type="text" placeholder="psy, tunnel, warm, gpu" /></label>
+          <label class="editor-label"><span>Params</span><input id="metaParamsInput" type="text" placeholder="scale, speed, color" /></label>
+          <div class="assign-row">
+            <button id="resetMetadataBtn" class="assign-btn subtle" type="button">Reset</button>
+            <button id="saveMetadataBtn" class="assign-btn is-enabled" type="button">Save metadata</button>
+          </div>
+        </div>
+
+        <dl class="anim-meta">
+          <div><dt>File</dt><dd id="metaFile">—</dd></div>
+          <div><dt>Export</dt><dd id="metaExports">—</dd></div>
+          <div><dt>Description</dt><dd id="metaDescription">—</dd></div>
+          <div><dt>Params</dt><dd id="metaParams">—</dd></div>
+          <div><dt>Layer menu</dt><dd id="metaLayers">—</dd></div>
+          <div><dt>Menu order</dt><dd id="metaOrder">—</dd></div>
+          <div><dt>Další krok</dt><dd>Dále Shadertoy tab s velkým GLSL editorem a náhledem</dd></div>
+        </dl>
+      </section>
+    </main>
+  </div>
+
+  <div id="leaveGuardModal" class="leave-guard-modal" hidden role="dialog" aria-modal="true" aria-labelledby="leaveGuardTitle">
+    <div class="leave-guard-card">
+      <small>Unsaved changes</small>
+      <h2 id="leaveGuardTitle">Máš neuložené změny v galerii</h2>
+      <p id="leaveGuardText">Uložit změny, nebo odejít bez uložení?</p>
+      <div class="leave-guard-actions">
+        <button id="leaveGuardCancelBtn" class="mini-toggle" type="button">Zůstat</button>
+        <button id="leaveGuardDiscardBtn" class="assign-btn subtle" type="button">Odejít bez uložení</button>
+        <button id="leaveGuardSaveBtn" class="assign-btn is-enabled" type="button">Save & leave</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="runtime/topbar_menu_global.js?v=13bu-am"></script>
+  <script src="runtime/runtime_mode_authority.js?v=13bu-az"></script>
+  <script type="module" src="animations.js?v=37ed-sharp-preview"></script>
+</body>
+</html>

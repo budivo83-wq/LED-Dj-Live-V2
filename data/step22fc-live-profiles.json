@@ -1,0 +1,39 @@
+{
+  "ok": true,
+  "version": "STEP22FC_LIVE_PROFILE_MANAGER",
+  "file": "data\\step22fc-live-profiles.json",
+  "updatedAt": "2026-05-28T22:00:41.593Z",
+  "activeProfile": "club-safe-15fps",
+  "profiles": {
+    "club-safe-15fps": {
+      "name": "club-safe-15fps",
+      "savedAt": "2026-05-28T22:00:41.593Z",
+      "note": "prvni",
+      "source": "safe-live-ui-step22fc",
+      "settings": {
+        "outputIp": "2.1.1.50",
+        "targetMode": "unicast",
+        "bindIp": "2.1.1.10",
+        "port": "6454",
+        "fps": "10",
+        "stripCount": "8",
+        "pixelsPerStrip": "300",
+        "universeStart": "0",
+        "pixelsPerUniverse": "150",
+        "packetPaceMs": "2",
+        "packetsPerBurst": "1",
+        "packetOrder": "sequential",
+        "artSyncMode": "every-frame",
+        "artSyncEveryN": "4",
+        "backpressure": "on",
+        "lastGoodHoldMs": "5000",
+        "adaptiveFrameClock": "on",
+        "adaptiveFloorFps": "10",
+        "blackoutAfterHold": "off",
+        "maxPendingBatchMs": "350",
+        "visualPattern": "visible-chase",
+        "longRunMinutes": "5"
+      }
+    }
+  }
+}

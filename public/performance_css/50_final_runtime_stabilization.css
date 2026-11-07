@@ -1,0 +1,340 @@
+/* Final overrides, runtime stabilization and restored top panel layout.
+   Source: split from public/performance.css. Keep import order in ../performance.css. */
+
+/* Final overrides */
+.performance-page .brand-block {
+  padding: 4px 8px;
+}
+
+.performance-page .status-card {
+  padding: 4px 6px;
+}
+
+.performance-page .status-card strong {
+  font-size: 0.82rem;
+}
+
+.performance-page .status-card span,
+.performance-page .status-card small {
+  font-size: 0.52rem;
+}
+
+.performance-page .top-bpm-strip,
+.performance-page .top-master-strip {
+  gap: 5px;
+  padding: 4px 6px;
+}
+
+.performance-page .top-bpm-strip {
+  grid-template-columns: 38px 44px minmax(0, 1fr) 22px 22px;
+}
+
+.performance-page .top-bpm-strip button {
+  height: 20px;
+  font-size: 0.58rem;
+}
+
+.performance-page .top-bpm-strip strong {
+  font-size: 0.82rem;
+}
+
+.performance-page .top-master-strip {
+  grid-template-columns: auto 36px minmax(0, 1fr);
+}
+
+.performance-page .top-master-strip span,
+.performance-page .top-master-strip strong {
+  font-size: 0.56rem;
+}
+
+.performance-page .menu-btn {
+  width: 46px;
+}
+
+/* Runtime layout stabilization */
+.performance-page .app-shell {
+  width: 100%;
+  max-width: 1680px;
+  margin-inline: auto;
+}
+
+.performance-page .topbar,
+.performance-page .performance-grid,
+.performance-page .bottom-status {
+  width: 100%;
+  max-width: 1680px;
+  margin-inline: auto;
+}
+
+.performance-page .top-bpm-strip {
+  grid-template-columns: 38px 50px minmax(80px, 1fr) 24px 24px;
+}
+
+.performance-page .top-master-strip {
+  grid-template-columns: auto 42px minmax(90px, 1fr);
+}
+
+.performance-page .status-card {
+  min-width: 0;
+}
+
+.performance-page .performance-grid {
+  grid-template-columns: clamp(220px, 14vw, 290px) minmax(0, 1fr) clamp(220px, 14vw, 290px);
+  justify-content: center;
+  align-items: start;
+  gap: 14px;
+}
+
+/* v3.0 mixer alignment: equal decks left/right, transport and crossfader in the center. */
+.performance-page .layer-panel {
+  min-height: 100%;
+}
+
+.performance-page .l1-zone,
+.performance-page .l2-zone {
+  display: flex;
+  flex-direction: column;
+}
+
+.performance-page .center-stage {
+  display: grid;
+  gap: 14px;
+  justify-items: stretch;
+}
+
+.performance-page .preview-box,
+.performance-page #ledCanvas,
+.performance-page #shaderPreviewCanvas {
+  min-height: clamp(36vh, 52vh, 74vh);
+}
+
+.performance-page .performance-pads {
+  max-width: 620px;
+  margin-inline: auto;
+}
+
+@media (max-width: 1500px) {
+  .performance-page .topbar {
+    grid-template-columns: 176px minmax(420px, 1fr) minmax(740px, 860px);
+  }
+  .performance-page .status-strip {
+    grid-template-columns: minmax(180px, 230px) repeat(5, minmax(64px, 84px)) minmax(160px, 210px) 42px;
+  }
+  .performance-page .performance-grid {
+    grid-template-columns: clamp(210px, 14vw, 280px) minmax(0, 1fr) clamp(210px, 14vw, 280px);
+  }
+  .performance-page .compact-mix {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "cross cross"
+      "blend transition"
+      "mfx mfx";
+  }
+}
+
+@media (max-width: 1180px) {
+  .performance-page .topbar {
+    grid-template-columns: 1fr;
+  }
+  .performance-page .status-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+  }
+  .performance-page .performance-grid {
+    grid-template-columns: minmax(250px, 320px) minmax(250px, 320px);
+    grid-template-areas:
+      "center center"
+      "left right";
+  }
+  .performance-page .compact-mix {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "cross"
+      "blend"
+      "transition"
+      "mfx";
+  }
+  .performance-page .crossfader-wide {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+  .performance-page .master-fx {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Loading mode: show background only; reveal UI by 0.5s fade when ready */
+body.startup-pending .app-shell {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.startup-ready .app-shell {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.startup-overlay {
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/* Symmetric center scaling without element hiding */
+:root {
+  --ui-scale: 1;
+  --ui-offset-y: 0px;
+}
+
+body.ui-pro {
+  overflow: hidden;
+}
+
+/* Allow page scrolling + touchpad two-finger gestures on tools pages. */
+body.ui-pro.settings-page,
+body.ui-pro.mapping-page,
+body.ui-pro.stepseq-page,
+body.ui-pro.performance-page,
+body.ui-pro.serial-page {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+body.ui-pro .app-shell {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  transform: none !important;
+  transform-origin: center top;
+  margin: 0 auto;
+  padding-top: 12px !important;
+}
+
+body.ui-pro {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 0 !important;
+}
+
+body.ui-pro .topbar,
+body.ui-pro .performance-grid,
+body.ui-pro .bottom-status,
+body.ui-pro .page-shell {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+body.ui-pro .topbar {
+  overflow: visible !important;
+}
+
+body.ui-pro .performance-grid {
+  grid-template-columns: clamp(220px, 16vw, 320px) minmax(0, 1fr) clamp(220px, 16vw, 320px) !important;
+  gap: 10px !important;
+}
+
+body.ui-pro .status-strip,
+body.ui-pro .workspace-tabs {
+  overflow: visible !important;
+}
+
+body.ui-pro #menuBtn,
+body.ui-pro .menu-btn,
+body.ui-pro .top-master-strip,
+body.ui-pro .top-bpm-strip,
+body.ui-pro input[type="range"] {
+  flex-shrink: 0 !important;
+}body.ui-pro .status-card {
+  display: flex !important;
+}
+
+/* Minimal top gap and BPM block under MASTER on the right */
+body.ui-pro .app-shell {
+  padding-top: 2px !important;
+}
+
+body.ui-pro .topbar {
+  top: 12px !important;
+  margin-bottom: 12px !important;
+}
+
+.performance-page .top-bpm-strip,
+.performance-page .top-master-strip {
+  flex: 0 0 auto !important;
+  min-width: 190px;
+}
+
+.performance-page .optional-status {
+  display: none;
+}
+
+@media (max-width: 1200px) {
+  .performance-page .node-card {
+    display: none !important;
+  }
+}
+
+/* Restored top panel layout:
+   left = brand/power/bpm
+   center = PERF/MAP buttons centered
+   right = status cards + master + menu
+*/
+.performance-page .brand-block {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  gap: 10px;
+  min-width: max-content;
+}
+
+.center-menu-strip {
+  width: min(980px, 96%);
+  margin: 4px auto 0;
+  padding: 10px;
+  display: none;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 8px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(9, 16, 28, 0.96), rgba(4, 8, 15, 0.95));
+  box-shadow: var(--shadow);
+}
+
+.center-menu-strip.open {
+  display: grid;
+}
+
+@media (max-width: 1480px) {
+  .performance-page .status-strip .status-card {
+    min-width: 68px;
+    flex-basis: 78px;
+  }
+  .performance-page .status-strip .status-card strong {
+    font-size: 0.76rem;
+  }
+  .performance-page .status-strip .status-card span,
+  .performance-page .status-strip .status-card small {
+    font-size: 0.5rem;
+  }
+}
+
+@media (max-width: 1320px) {
+  .performance-page .status-strip .node-card {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1020px) {
+  .performance-page .workspace-tabs .nav {
+    min-width: 112px;
+    font-size: 0.78rem;
+  }
+  .performance-page .status-strip .status-card {
+    min-width: 60px;
+    flex-basis: 66px;
+  }
+}
+

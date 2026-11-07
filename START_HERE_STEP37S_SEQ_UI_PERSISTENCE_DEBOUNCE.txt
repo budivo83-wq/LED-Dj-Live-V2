@@ -1,0 +1,19 @@
+STEP37S - Sequencer UI persistence debounce
+
+Changes:
+- Quick Step sequencer no longer writes full localStorage state immediately on every small UI/programming interaction.
+- Added debounced sequencer state persistence with beforeunload flush.
+- Cell edits, mute/lock/humanize/length/window changes are coalesced to reduce UI jank while programming or dragging.
+- Pointer release/cancel flushes pending saves so erase-drag editing is preserved.
+- Sequencer still starts safely OFF, while pattern/view/transport data remain restorable.
+- No ArtNet/output route logic changed in this step.
+
+Verification:
+- node -c public/runtime/quick_step_automator.js
+- node -c public/mapping.js
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy
+
+Note:
+- npm run check:js was attempted but the project-wide checker timed out in this environment before returning a result.

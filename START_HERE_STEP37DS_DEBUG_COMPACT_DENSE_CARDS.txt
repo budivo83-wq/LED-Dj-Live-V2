@@ -1,0 +1,26 @@
+STEP37DS_DEBUG_COMPACT_DENSE_CARDS
+
+Purpose:
+- Compact the Debug / Output Health panel after STEP37DR.
+- Remove large empty visual areas caused by stretched cards and empty metric rows.
+- Keep metrics ON/OFF and PROFILE 10s behavior unchanged.
+
+Changes:
+- Output Health cards now align to their content height instead of stretching to the tallest card in the row.
+- Dense 3-column grid on wide layouts, 2-column below 1200px, 1-column on narrow screens.
+- Smaller KPI cards, smaller padding, smaller action buttons.
+- Empty metric rows such as -- / -- are hidden.
+- Runtime loop list has max height and internal scroll.
+- Cache bust updated from v=37dr to v=37ds.
+
+Validation:
+- npm run check:js OK
+- npm run test:artnet-settings-boundary OK
+- npm run test:artnet-server-boundary OK
+- npm run test:shell-runner-output-contract OK
+
+Remaining:
+1. Test Debug tab visually in the app.
+2. Run PROFILE 10s while live output is ON.
+3. Send screenshot of values if output still lags.
+4. Next optimization should target the specific reported hotspot, not the UI layout.

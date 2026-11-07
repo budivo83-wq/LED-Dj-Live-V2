@@ -1,0 +1,770 @@
+﻿<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LED Dj live</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="performance.css">
+<link rel="stylesheet" href="performance_topbar.css">
+<link rel="stylesheet" href="performance_mix.css">
+  <link rel="stylesheet" href="operator_cleanup.css" />
+</head>
+
+<body class="ui-pro performance-page">
+<div class="app-shell">
+  <header class="topbar">
+    <div class="top-left-cluster">
+      <div class="brand-block">
+        <button id="onoff" class="power-btn" type="button">ON</button>
+        <div class="brand-mark">â—</div>
+        <div class="brand-text">
+          <strong>LED<br>Dj</strong>
+          <span>live</span>
+        </div>
+      </div>
+      <div class="top-left-controls">
+        <label class="top-master-strip">
+          <span>MASTER</span>
+          <strong id="masterValue">100%</strong>
+          <input id="master" class="master-range" type="range" min="0" max="1" step="0.01" value="1">
+        </label>
+        <div class="top-bpm-strip">
+          <strong id="bpmValue">120.0</strong>
+          <input id="bpm" type="range" min="40" max="220" step="0.5" value="120" aria-label="BPM">
+          <button id="bpmMinus" type="button">-</button>
+          <button id="bpmPlus" type="button">+</button>
+          <button id="tapBtn" type="button">TAP</button>
+        </div>
+      </div>
+    </div>
+
+    <nav class="workspace-tabs" aria-label="Workspace">
+      <button class="nav active" type="button" onclick="location.href='index.html'">PERFORMANCE</button>
+      <button class="nav" type="button" onclick="location.href='animations.html'">GALLERY</button>
+      <button class="nav" type="button" onclick="location.href='generator.html'">GENERATOR</button>
+      <button class="nav" type="button" onclick="location.href='show-os.html'">SHOW OS</button>
+      <button class="nav" type="button" onclick="location.href='control-authority-pro.html'">CONTROL PRO</button>
+      <button class="nav" type="button" onclick="location.href='mapping.html'">MAPPING</button>
+      <button class="nav" type="button" onclick="location.href='settings.html'">SETTINGS</button>
+      <div id="topbarCrossSlot" class="topbar-cross-slot" aria-label="Topbar crossfader slot"></div>
+    </nav>
+
+    <div class="top-right-cluster">
+      <div class="status-strip status-strip-inline">
+        <div class="status-card">
+          <span>PREVIEW FPS</span>
+          <strong id="renderFpsValue">--</strong>
+          <small>PREVIEW</small>
+        </div>
+        <div class="status-card">
+          <span>LIVE FPS</span>
+          <strong id="fpsValue">--</strong>
+          <small>LIVE</small>
+        </div>
+
+        <div class="status-card">
+          <span>OUTPUT</span>
+          <strong id="outputState">OFF</strong>
+          <small id="outputDetail">preview | ser off</small>
+        </div>
+
+
+        <div class="status-card hardware-card optional-status" title="Hardware usage">
+          <span>HW</span>
+          <strong id="hardwareMain">CPU --%</strong>
+          <small id="hardwareDetail">ram --% | --</small>
+        </div>
+
+      </div>
+      <button id="menuBtn" class="menu-btn" type="button">â°</button>
+    </div>
+  </header>
+
+  <section id="centerMenuStrip" class="center-menu-strip" aria-label="Main menu">
+    <button id="menuSettingsBtn" data-href="settings.html" type="button">SETTINGS</button>
+    <button data-href="live-input.html" type="button">LIVE INPUT</button>
+    <button id="menuAnimationsBtn" data-href="animations.html" type="button">GALLERY</button>
+    <button data-href="generator.html" type="button">GENERATOR</button>
+    <button id="menuMappingBtn" data-href="mapping.html" type="button">MAPPING V2</button>
+    <button id="menuShowOsBtn" data-href="show-os.html" type="button">SHOW OS</button>
+    <button data-href="control-authority-pro.html" type="button">CONTROL PRO</button>
+    <button id="menuShortsBtn" data-href="shorts.html" type="button">SHORTS</button>
+    <button id="menuFullscreenBtn" type="button">FULLSCREEN OFF</button>
+    <button id="menuQuitBtn" type="button">QUIT</button>
+  </section>
+
+  <main class="performance-grid">
+    <section class="panel layer-panel left l1-zone">
+      <header class="panel-head">
+        <h2>L1 BASE</h2>
+        <div class="mini-actions">
+          <button id="l1_toggle" type="button">L1 ON</button>
+          <button id="l1_beatsync" type="button">SYNC</button>
+        </div>
+      </header>
+
+      <label class="param level-main">
+        <span>LEVEL</span>
+        <input id="l1_master" type="range" min="0" max="1" step="0.01" value="1">
+      </label>
+
+      <button id="l1_raw_preview" class="layer-raw-preview left" type="button" aria-label="L1 raw preview">
+        <canvas id="l1_raw_canvas"></canvas>
+      </button>
+
+      <div class="select-block left layer-select-block">
+        <strong>ANIMATION</strong>
+        <div class="row touch-row picker-row">
+          <select id="l1_anim" aria-label="L1 animation"></select>
+          <button id="l1_anim_prev" type="button">-</button>
+          <button id="l1_anim_next" type="button">+</button>
+          <button id="l1_anim_reset" type="button">R</button>
+        </div>
+
+        <strong>PALETTE</strong>
+        <div class="row touch-row picker-row">
+          <select id="l1_palette" class="palette-swatch-select" aria-label="L1 palette"></select>
+          <button id="l1_palette_prev" type="button">-</button>
+          <button id="l1_palette_next" type="button">+</button>
+          <button id="l1_palette_reset" type="button">R</button>
+        </div>
+      </div>
+
+      <div class="knob-grid">
+        <label class="param knob-param">
+          <span data-param-label="l1_p1">P1</span>
+          <input id="l1_p1" type="range" min="0" max="1" step="0.01" value="0.5">
+        </label>
+        <label class="param knob-param">
+          <span data-param-label="l1_p2">P2</span>
+          <input id="l1_p2" type="range" min="0" max="1" step="0.01" value="0.5">
+        </label>
+        <label class="param knob-param">
+          <span data-param-label="l1_p3">P3</span>
+          <input id="l1_p3" type="range" min="0" max="1" step="0.01" value="0.5">
+        </label>
+        <label class="param knob-param">
+          <span data-param-label="l1_p4">P4</span>
+          <input id="l1_p4" type="range" min="0" max="1" step="0.01" value="0.5">
+        </label>
+      </div>
+
+      <div class="layer-tools left transform-grid">
+        <button id="l1_params_random" type="button">RAND PARAM</button>
+        <label><input id="l1_reverse" type="checkbox"> FLIP</label>
+        <label><input id="l1_mirror_x" type="checkbox"> MIR X</label>
+        <label><input id="l1_mirror_y" type="checkbox"> MIR Y</label>
+      </div>
+
+      <div class="layer-actions left action-grid">
+        <button id="l1_blackout" type="button">BLACK</button>
+        <button id="l1_flash" type="button">FLASH</button>
+        <button id="l1_preview_toggle" type="button">PREW ON</button>
+      </div>
+
+      <aside class="fx-panel left embedded-fx" id="l1FxPanel">
+        <h3>FX1 <button id="l1FxToggle" type="button" aria-expanded="true" aria-label="Toggle L1 FX">â–˛</button></h3>
+        <label class="field">
+          <span>MODE</span>
+          <select id="fx1_mode">
+            <option value="none">OFF</option>
+            <option value="pulse">PULSE</option>
+            <option value="strobe">STROBE</option>
+            <option value="shimmer">SHIMMER</option>
+            <option value="spark">SPARK</option>
+            <option value="gate">GATE</option>
+            <option value="wave">WAVE</option>
+            <option value="crush">CRUSH</option>
+            <option value="invert">INVERT</option>
+            <option value="strobeGate">STROBE GATE</option>
+            <option value="beatCut">BEAT CUT</option>
+            <option value="glitchMix">GLITCH MIX</option>
+          </select>
+        </label>
+        <div class="fx-knob-grid">
+          <label class="param knob-param">
+            <span>AMOUNT</span>
+            <input id="fx1_amount" class="fx-knob" type="range" min="0" max="1" step="0.01" value="0">
+          </label>
+          <label class="param knob-param">
+            <span>RATE</span>
+            <input id="fx1_rate" class="fx-knob" type="range" min="0" max="1" step="0.01" value="0.5">
+          </label>
+        </div>
+        <div class="fx-action-row">
+          <button id="fx1_flash" class="flash-btn left" type="button">FLASH</button>
+          <button id="fx1_hold" class="fx-hold-btn" type="button">OFF</button>
+        </div>
+      </aside>
+
+      <aside class="fx-panel manual-palette left" id="l1_manual_palette">
+        <h3>MANUAL PALETTE <button id="l1_manual_palette_collapse" type="button" aria-expanded="true" aria-label="Toggle manual palette">â–˛</button></h3>
+        <div class="manual-palette-panel">
+          <button id="l1_manual_palette_toggle" class="manual-palette-toggle" type="button">MAN PAL OFF</button>
+          <div class="manual-palette-block">
+            <div class="manual-palette-head">
+              <strong>COLOR SLOTS</strong>
+              <small>Pick active colors</small>
+            </div>
+            <div class="manual-palette-slots">
+              <div class="manual-palette-slot" id="l1_manual_palette_slot_wrap_0">
+                <button id="l1_manual_palette_slot_0" class="manual-palette-slot-select" type="button">C1</button>
+              </div>
+              <div class="manual-palette-slot" id="l1_manual_palette_slot_wrap_1">
+                <button id="l1_manual_palette_slot_1" class="manual-palette-slot-select" type="button">C2</button>
+              </div>
+              <div class="manual-palette-slot" id="l1_manual_palette_slot_wrap_2">
+                <button id="l1_manual_palette_slot_2" class="manual-palette-slot-select" type="button">C3</button>
+              </div>
+            </div>
+          </div>
+          <div class="manual-palette-block">
+            <div class="manual-palette-head">
+              <strong>COLOR PICKER</strong>
+              <small>Tap wheel to set selected slot</small>
+            </div>
+            <div class="manual-palette-picker">
+              <canvas id="l1_manual_palette_wheel" class="manual-palette-wheel" width="224" height="224"></canvas>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="center-stage">
+      <section class="preview-panel active" id="previewPanel">
+        <div class="preview-shell">
+          <header class="preview-head">
+            <h3>PREVIEW <button id="previewCollapseToggle" type="button" aria-expanded="true" aria-label="Toggle preview panel">â–˛</button></h3>
+            <div class="preview-tabs">
+              <button id="previewTabStage" type="button">STAGE</button>
+              <button id="previewTabPixel" class="active" type="button">PIXEL</button>
+              <button id="previewTabShader" type="button">SHADER</button>
+              <button id="previewTabDebug" type="button">DEBUG</button>
+            </div>
+            <small id="previewModeStatus" class="preview-mode-status" aria-live="polite">PREVIEW: PIXEL BIG</small>
+          </header>
+          <div class="preview">
+            <div class="preview-box" id="previewBox">
+              <canvas id="ledCanvas" aria-label="LED preview"></canvas>
+              <canvas id="shaderPreviewCanvas" aria-label="Shader preview"></canvas>
+              <section id="debugPanel" class="debug-panel debug-panel-12m debug-output-health-37cd" aria-label="Output debug health">
+                <div class="debug-panel-head debug-panel-head-12m debug-output-health-head-37cd">
+                  <div>
+                    <h4>OUTPUT HEALTH</h4>
+                    <small id="dbgTelemetry">single writer / scheduler / backend / frame bus</small>
+                  </div>
+                  <div class="debug-head-actions">
+                    <span class="debug-live-pill" id="dbgOutputHealthPill37CD">WAIT</span>
+                  </div>
+                </div>
+
+                <div id="debugOutputHealthMount37CD" class="debug-output-health-mount-37cd" aria-live="polite">
+                  <article class="debug-output-health-loading-37cd">
+                    <strong>Loading Output Health Diagnostics…</strong>
+                    <small>Oprava 37DP: načítám pasivní diagnostiku.</small>
+                  </article>
+                </div>
+              </section>
+            <section id="shaderInspector" class="shader-inspector" aria-label="Shader inspector">
+              <div class="shader-inspector-head">
+                <h4>SHADER INSPECTOR <button id="shaderInspectorToggle" type="button" aria-expanded="true" aria-label="Toggle shader inspector">â–˛</button></h4>
+                <div class="shader-inspector-tools">
+                  <small id="shaderDebugInfo">--</small>
+                </div>
+              </div>
+              <div class="shader-inspector-grid">
+                <article class="shader-code-card">
+                  <header>
+                    <strong>L1</strong>
+                    <span id="shaderL1Name">--</span>
+                  </header>
+                  <pre id="shaderL1Code">No shader code</pre>
+                </article>
+                <article class="shader-code-card">
+                  <header>
+                    <strong>L2</strong>
+                    <span id="shaderL2Name">--</span>
+                  </header>
+                  <pre id="shaderL2Code">No shader code</pre>
+                </article>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="performance-strip">
+        <div class="center-mix mixer-under-layers">
+          <div class="mix mix-core">
+            <div id="mixCrossSlot" class="mix-cross-slot">
+              <div class="crossfader-wrap crossfader-wide">
+                <button id="crossMouseToggle" class="cross-mouse-toggle" type="button">M</button>
+                <span>L1</span>
+                <input id="cross" class="crossfader" type="range" min="0" max="1" step="0.01" value="0.5" aria-label="Crossfader">
+                <span>L2</span>
+                <button id="mixCollapseToggle" class="mix-collapse-toggle" type="button" aria-expanded="true" aria-label="Toggle blend and fade">â–˛</button>
+              </div>
+            </div>
+
+            <label class="field blend-field">
+              <span>BLEND</span>
+              <div class="blend-row">
+                <select id="blend"></select>
+                <button id="blend_prev" type="button">-</button>
+                <button id="blend_next" type="button">+</button>
+                <button id="blend_random" type="button">R</button>
+              </div>
+            </label>
+
+            <div class="transition-control">
+              <button id="transitionToggle" type="button">FADE OFF</button>
+              <label>
+                <span>SEC</span>
+                <input id="transitionSeconds" type="number" min="0.1" max="20" step="0.1" value="1.5">
+              </label>
+            </div>
+          </div>
+
+          <div class="mix master-fx-shell">
+            <aside class="fx-panel master embedded-fx" id="mFxPanel">
+              <h3>M FX <button id="mFxToggle" type="button" aria-expanded="true" aria-label="Toggle Master FX">â–˛</button></h3>
+              <section class="master-fx-block">
+                <h4>MASTER FX1</h4>
+                <label class="field">
+                  <span>MODE</span>
+          <select id="fxm_mode">
+                    <option value="none">OFF</option>
+                    <option value="pulse">PULSE</option>
+                    <option value="strobe">STROBE</option>
+                    <option value="shimmer">SHIMMER</option>
+                    <option value="spark">SPARK</option>
+                    <option value="gate">GATE</option>
+                    <option value="wave">WAVE</option>
+                    <option value="crush">CRUSH</option>
+                    <option value="invert">INVERT</option>
+                    <option value="strobeGate">STROBE GATE</option>
+                    <option value="beatCut">BEAT CUT</option>
+                    <option value="glitchMix">GLITCH MIX</option>
+                  </select>
+                </label>
+                <label class="param knob-param">
+                  <span>AMOUNT</span>
+                  <input id="fxm_amount" class="fx-knob" type="range" min="0" max="1" step="0.01" value="0">
+                </label>
+                <label class="param knob-param">
+                  <span>RATE</span>
+                  <input id="fxm_rate" class="fx-knob" type="range" min="0" max="1" step="0.01" value="0.5">
+                </label>
+                <div class="fx-action-row">
+                  <button id="fxm_flash" class="flash-btn master-flash" type="button">FLASH</button>
+                  <button id="fxm_hold" class="fx-hold-btn" type="button">OFF</button>
+                </div>
+              </section>
+              <section class="master-fx-block">
+                <h4>MASTER FX2</h4>
+                <label class="field">
+                  <span>MODE</span>
+                  <select id="fxm2_mode">
+                    <option value="none">OFF</option>
+                    <option value="pulse">PULSE</option>
+                    <option value="strobe">STROBE</option>
+                    <option value="shimmer">SHIMMER</option>
+                    <option value="spark">SPARK</option>
+                    <option value="gate">GATE</option>
+                    <option value="wave">WAVE</option>
+                    <option value="crush">CRUSH</option>
+                    <option value="invert">INVERT</option>
+                    <option value="strobeGate">STROBE GATE</option>
+                    <option value="beatCut">BEAT CUT</option>
+                    <option value="glitchMix">GLITCH MIX</option>
+                  </select>
+                </label>
+                <label class="param knob-param">
+                  <span>AMOUNT</span>
+                  <input id="fxm2_amount" class="fx-knob" type="range" min="0" max="1" step="0.01" value="0">
+                </label>
+                <label class="param knob-param">
+                  <span>RATE</span>
+                  <input id="fxm2_rate" class="fx-knob" type="range" min="0" max="1" step="0.01" value="0.5">
+                </label>
+                <div class="fx-action-row">
+                  <button id="fxm2_flash" class="flash-btn master-flash" type="button">FLASH</button>
+                  <button id="fxm2_hold" class="fx-hold-btn" type="button">OFF</button>
+                </div>
+              </section>
+            </aside>
+          </div>
+
+
+          <aside class="fx-panel perf-pads-panel" id="perfPadsPanel">
+            <h3>PADS <button id="perfPadsToggle" type="button" aria-expanded="true" aria-label="Toggle pads">â–˛</button></h3>
+            <div class="performance-pads">
+              <button id="perfPadTap" type="button">TAP</button>
+              <button id="perfPadSync" type="button" title="Dorovná beat stejně jako SYNC v sequenceru">SYNC</button>
+              <button id="perfPadBeatReset" type="button" title="Reset beatu na pozici 1">BEAT RESET</button>
+              <button id="perfPadHalfSpeed" type="button" title="Half speed BPM">HHS</button>
+              <button id="perfPadDoubleSpeed" type="button" title="Double speed BPM">DS</button>
+              <button id="perfPadDrop" class="pad-drop" type="button">DROP</button>
+              <button id="perfPadBlackout" class="pad-blackout" type="button" title="Momentary blackout only while pressed">BLACKOUT</button>
+              <button id="perfPadL1Fx" class="pad-strobe" type="button" title="Momentary L1 FX flash">L1 FX</button>
+              <button id="perfPadL2Fx" class="pad-strobe" type="button" title="Momentary L2 FX flash">L2 FX</button>
+              <button id="perfPadStrobe" class="pad-strobe" type="button" title="Momentary Master FX 1 flash">MASTER FX1</button>
+              <button id="perfPadMasterFx2" class="pad-strobe" type="button" title="Momentary Master FX 2 flash">MASTER FX2</button>
+            </div>
+          </aside>
+          <aside class="quick-step-auto-panel" id="quickStepAutoPanel">
+            <header class="quick-step-head">
+              <div class="quick-step-head-main">
+                <h3>STEP SEQUENCER <button id="quickStepCollapse" type="button" aria-expanded="true" aria-label="Toggle Step Sequencer">▲</button></h3>
+                <small id="quickStepStatus">OFF · STEP 1/16 · BEAT 0/64</small>
+                <div class="quick-step-collapsed-mini" id="quickStepCollapsedMini" aria-label="Collapsed sequencer preview"></div>
+              </div>
+              <div class="quick-step-actions quick-step-transport">
+                <button id="quickStepEnable" class="quick-step-power" type="button" aria-pressed="false">OFF</button>
+                <button id="quickStepFollow" type="button" aria-pressed="false">FOLLOW OFF</button>
+                <button id="quickStepSync" type="button" title="Jemne dorovnat na nejblizsi prvni dobu">SYNC</button>
+                <button id="quickStepReset" type="button">BEAT RESET</button>
+                <button id="quickStepUndo" type="button" title="Vrátit poslední změnu">UNDO</button>
+                <button id="quickStepErase" class="quick-step-erase-tool" type="button" aria-pressed="false" title="GUMA: drž a přejížděj přes eventy">GUMA</button>
+                <button id="quickStepClear" class="quick-step-danger-tool" type="button" title="Smazat celý pattern">CLEAR</button>
+              </div>
+              <div class="quick-step-length quick-step-length-group" aria-label="Beat length">
+                <button data-step-length="64" class="active" type="button">64</button>
+                <button data-step-length="128" type="button">128</button>
+                <button data-step-length="256" type="button">256</button>
+                <button data-step-length="512" type="button">512</button>
+                <button data-step-length="1024" type="button">1024</button>
+              </div>
+            </header>
+            <div class="quick-step-body" id="quickStepBody">
+              <div class="quick-step-grid" id="quickStepGrid" aria-label="Quick Step Automator"></div>
+              <div class="quick-step-side-tools" id="quickStepSideTools">
+              <div class="quick-step-random-tools" aria-label="Random tools">
+                <span class="quick-step-group-label">GENERATE</span>
+                <div class="quick-step-actions">
+                  <button id="quickStepRandom" type="button" title="Vygenerovat hudební pattern">RAND</button>
+                  <button id="quickStepMutateSoft" type="button" title="Jemne obměnit pattern">MUT 15%</button>
+                  <button id="quickStepMutateStrong" type="button" title="Silněji obměnit pattern">MUT 30%</button>
+                </div>
+                <div class="quick-step-humanize" id="quickStepHumanize" aria-label="Humanize profile">
+                  <button data-humanize="calm" type="button">CALM</button>
+                  <button data-humanize="musical" class="active" type="button">MUSICAL</button>
+                  <button data-humanize="wild" type="button">WILD</button>
+                </div>
+              </div>
+              <div class="quick-step-memory" aria-label="Compare slots">
+                <span class="quick-step-group-label">COMPARE</span>
+                <div class="quick-step-actions">
+                  <button id="quickStepStoreA" type="button" title="Uložit aktuální pattern do slotu A">STORE A</button>
+                  <button id="quickStepLoadA" type="button" title="Načíst compare slot A">LOAD A</button>
+                  <button id="quickStepStoreB" type="button" title="Uložit aktuální pattern do slotu B">STORE B</button>
+                  <button id="quickStepLoadB" type="button" title="Načíst compare slot B">LOAD B</button>
+                </div>
+              </div>
+              <div class="quick-step-patterns" aria-label="Pattern slots">
+                <span class="quick-step-group-label">PATTERNS</span>
+                <select id="quickStepPatternSlot" aria-label="Pattern slot">
+                  <option value="1">P1</option>
+                  <option value="2">P2</option>
+                  <option value="3">P3</option>
+                  <option value="4">P4</option>
+                  <option value="5">P5</option>
+                  <option value="6">P6</option>
+                  <option value="7">P7</option>
+                  <option value="8">P8</option>
+                </select>
+                <button id="quickStepPatternSave" type="button" title="Ulozit pattern do vybraneho slotu">SAVE</button>
+                <button id="quickStepPatternLoad" type="button" title="Nacist pattern z vybraneho slotu">LOAD</button>
+              </div>
+              <div class="quick-step-row-tools" aria-label="Locked rows">
+                <span class="quick-step-group-label">LOCK ROWS</span>
+                <div class="quick-step-lock-buttons">
+                  <button id="quickStepLock_anim1" data-row-lock="anim1" type="button">A1</button>
+                  <button id="quickStepLock_color1" data-row-lock="color1" type="button">C1</button>
+                  <button id="quickStepLock_param1" data-row-lock="param1" type="button">P1</button>
+                  <button id="quickStepLock_flip1" data-row-lock="flip1" type="button">FL1</button>
+                  <button id="quickStepLock_fx1" data-row-lock="fx1" type="button">FX1</button>
+                  <button id="quickStepLock_anim2" data-row-lock="anim2" type="button">A2</button>
+                  <button id="quickStepLock_color2" data-row-lock="color2" type="button">C2</button>
+                  <button id="quickStepLock_param2" data-row-lock="param2" type="button">P2</button>
+                  <button id="quickStepLock_flip2" data-row-lock="flip2" type="button">FL2</button>
+                  <button id="quickStepLock_fx2" data-row-lock="fx2" type="button">FX2</button>
+                </div>
+              </div>
+              </div>
+              <div class="quick-step-timeline" id="quickStepTimeline">
+                <div class="quick-step-timeline-head">
+                  <span id="quickStepWindowLabel">1–64 / 64 BEATS</span>
+                  <small id="quickStepNavStatus" class="quick-step-nav-status">BEAT −/+ = playhead · ‹/› = view</small>
+                  <small id="quickStepPerfProfiler" class="quick-step-perf-profiler" hidden>SEQ PERF</small>
+                  <div class="quick-step-zoom">
+                    <button id="quickStepStepPrev" type="button" aria-label="Step one slot back" title="Zpět o jedno políčko">−1</button>
+                    <button id="quickStepPagePrev" type="button" aria-label="Previous window" title="Předchozí okno">‹</button>
+                    <button id="quickStepWindowHome" type="button" aria-label="Jump to current window start" title="První políčko aktuálního zobrazení">|‹</button>
+                    <button id="quickStepZoomMinus" type="button" aria-label="Show fewer beats" title="Méně políček v okně">−</button>
+                    <button id="quickStepZoomPlus" type="button" aria-label="Show more beats" title="Více políček v okně">+</button>
+                    <button id="quickStepPageNext" type="button" aria-label="Next window" title="Další okno">›</button>
+                    <button id="quickStepStepNext" type="button" aria-label="Step one slot forward" title="Dopředu o jedno políčko">+1</button>
+                  </div>
+                </div>
+                <div class="quick-step-minimap" id="quickStepMinimap" aria-label="Sequencer overview"></div>
+              </div>
+              <div class="quick-step-legend">
+                <span><i class="prev"></i>PREV</span>
+                <span><i class="next"></i>NEXT</span>
+                <span><i class="random"></i>RANDOM</span>
+                <span><i class="param"></i>PARAM</span>
+                <span><i class="flip"></i>FLIP</span>
+                <span><i class="fx"></i>FX S/H/G/?</span>
+                <span><i class="empty"></i>EMPTY</span>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+      </section>
+    </section>
+
+    <section class="panel layer-panel right l2-zone">
+      <header class="panel-head">
+        <h2>L2 OVERLAY</h2>
+        <div class="mini-actions">
+          <button id="l2_toggle" type="button">L2 ON</button>
+          <button id="l2_beatsync" type="button">SYNC</button>
+        </div>
+      </header>
+
+      <label class="param level-main">
+        <span>LEVEL</span>
+        <input id="l2_master" type="range" min="0" max="1" step="0.01" value="1">
+      </label>
+
+      <button id="l2_raw_preview" class="layer-raw-preview right" type="button" aria-label="L2 raw preview">
+        <canvas id="l2_raw_canvas"></canvas>
+      </button>
+
+      <div class="select-block right layer-select-block">
+        <strong>ANIMATION</strong>
+        <div class="row touch-row picker-row">
+          <select id="l2_anim" aria-label="L2 animation"></select>
+          <button id="l2_anim_prev" type="button">-</button>
+          <button id="l2_anim_next" type="button">+</button>
+          <button id="l2_anim_reset" type="button">R</button>
+        </div>
+
+        <strong>PALETTE</strong>
+        <div class="row touch-row picker-row">
+          <select id="l2_palette" class="palette-swatch-select" aria-label="L2 palette"></select>
+          <button id="l2_palette_prev" type="button">-</button>
+          <button id="l2_palette_next" type="button">+</button>
+          <button id="l2_palette_reset" type="button">R</button>
+        </div>
+      </div>
+
+      <div class="knob-grid">
+        <label class="param knob-param">
+          <span data-param-label="l2_p1">P1</span>
+          <input id="l2_p1" type="range" min="0" max="1" step="0.01" value="0.5">
+        </label>
+        <label class="param knob-param">
+          <span data-param-label="l2_p2">P2</span>
+          <input id="l2_p2" type="range" min="0" max="1" step="0.01" value="0.5">
+        </label>
+        <label class="param knob-param">
+          <span data-param-label="l2_p3">P3</span>
+          <input id="l2_p3" type="range" min="0" max="1" step="0.01" value="0.5">
+        </label>
+        <label class="param knob-param">
+          <span data-param-label="l2_p4">P4</span>
+          <input id="l2_p4" type="range" min="0" max="1" step="0.01" value="0.5">
+        </label>
+      </div>
+
+      <div class="layer-tools right transform-grid">
+        <button id="l2_params_random" type="button">RAND PARAM</button>
+        <label><input id="l2_reverse" type="checkbox"> FLIP</label>
+        <label><input id="l2_mirror_x" type="checkbox"> MIR X</label>
+        <label><input id="l2_mirror_y" type="checkbox"> MIR Y</label>
+      </div>
+
+      <div class="layer-actions right action-grid">
+        <button id="l2_blackout" type="button">BLACK</button>
+        <button id="l2_flash" type="button">FLASH</button>
+        <button id="l2_preview_toggle" type="button">PREW ON</button>
+      </div>
+
+      <aside class="fx-panel right embedded-fx" id="l2FxPanel">
+        <h3>FX2 <button id="l2FxToggle" type="button" aria-expanded="true" aria-label="Toggle L2 FX">â–˛</button></h3>
+        <label class="field">
+          <span>MODE</span>
+          <select id="fx2_mode">
+            <option value="none">OFF</option>
+            <option value="pulse">PULSE</option>
+            <option value="strobe">STROBE</option>
+            <option value="shimmer">SHIMMER</option>
+            <option value="spark">SPARK</option>
+            <option value="gate">GATE</option>
+            <option value="wave">WAVE</option>
+            <option value="crush">CRUSH</option>
+            <option value="invert">INVERT</option>
+            <option value="strobeGate">STROBE GATE</option>
+            <option value="beatCut">BEAT CUT</option>
+            <option value="glitchMix">GLITCH MIX</option>
+          </select>
+        </label>
+        <div class="fx-knob-grid">
+          <label class="param knob-param">
+            <span>AMOUNT</span>
+            <input id="fx2_amount" class="fx-knob" type="range" min="0" max="1" step="0.01" value="0">
+          </label>
+          <label class="param knob-param">
+            <span>RATE</span>
+            <input id="fx2_rate" class="fx-knob" type="range" min="0" max="1" step="0.01" value="0.5">
+          </label>
+        </div>
+        <div class="fx-action-row">
+          <button id="fx2_flash" class="flash-btn right" type="button">FLASH</button>
+          <button id="fx2_hold" class="fx-hold-btn" type="button">OFF</button>
+        </div>
+      </aside>
+
+      <aside class="fx-panel manual-palette right" id="l2_manual_palette">
+        <h3>MANUAL PALETTE <button id="l2_manual_palette_collapse" type="button" aria-expanded="true" aria-label="Toggle manual palette">â–˛</button></h3>
+        <div class="manual-palette-panel">
+          <button id="l2_manual_palette_toggle" class="manual-palette-toggle" type="button">MAN PAL OFF</button>
+          <div class="manual-palette-block">
+            <div class="manual-palette-head">
+              <strong>COLOR SLOTS</strong>
+              <small>Pick active colors</small>
+            </div>
+            <div class="manual-palette-slots">
+              <div class="manual-palette-slot" id="l2_manual_palette_slot_wrap_0">
+                <button id="l2_manual_palette_slot_0" class="manual-palette-slot-select" type="button">C1</button>
+              </div>
+              <div class="manual-palette-slot" id="l2_manual_palette_slot_wrap_1">
+                <button id="l2_manual_palette_slot_1" class="manual-palette-slot-select" type="button">C2</button>
+              </div>
+              <div class="manual-palette-slot" id="l2_manual_palette_slot_wrap_2">
+                <button id="l2_manual_palette_slot_2" class="manual-palette-slot-select" type="button">C3</button>
+              </div>
+            </div>
+          </div>
+          <div class="manual-palette-block">
+            <div class="manual-palette-head">
+              <strong>COLOR PICKER</strong>
+              <small>Tap wheel to set selected slot</small>
+            </div>
+            <div class="manual-palette-picker">
+              <canvas id="l2_manual_palette_wheel" class="manual-palette-wheel" width="224" height="224"></canvas>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="bottom-status downbar is-disabled" hidden aria-hidden="true" aria-label="Downbar disabled">
+    <span>OUTPUT <strong>ARTNET</strong></span>
+    <span>NODE <strong>NODE-001</strong></span>
+    <span>UNIVERSES <strong>8</strong></span>
+    <span>SYNC <strong>LOCKED</strong></span>
+    <span>DOWNBAR <strong>DISABLED</strong></span>
+  </footer>
+
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <button type="button" onclick="location.href='index.html'">Performance</button>
+    <button type="button" onclick="location.href='mapping.html'">Mapping</button>
+  </nav>
+</div>
+
+
+<!-- STEP22GK: operator runtime only; debug/probe/test helpers moved to archive/runtime_debug_removed_step22gk -->
+<script src="runtime/runtime_mode_authority.js?v=13bu-az"></script>
+<script src="runtime/telemetry_store.js?v=13bu-bn"></script>
+  <script src="runtime/fps_state_rescue_13bu_cj.js?v=13bu-cj"></script>
+<script type="module" src="app.js?v=37ee-original-shader-preview"></script>
+<script src="runtime/runtime_loop_registry_37ce.js?v=37dp"></script>
+<script src="runtime/runtime_snapshot_recovery_37do.js?v=37dp"></script>
+<script src="runtime/output_route_registry_37bb.js?v=37bb"></script>
+<script src="runtime/live_output_gate_37bw.js?v=37bw"></script>
+<script src="runtime/output_route_health_37bd.js?v=37bw"></script>
+<script src="runtime/output_single_writer_watchdog_37be.js?v=37bw"></script>
+<script src="runtime/output_writer_deep_report_37bx.js?v=37bx"></script>
+<script src="runtime/output_writer_interlock_37by.js?v=37by"></script>
+<script src="runtime/output_health_panel_37cd.js?v=37ds"></script>
+<script src="runtime/live_serial_app_mirror_22cr.js?v=22cx"></script>
+
+<script>
+// STEP22GU: Rescue ArtNet source lock. Keep Performance preview mirrored to Master FrameBus by default.
+try {
+  // STEP22MC: do not hard-reset the ArtNet browser mirror on every Performance load.
+  // Settings/start may enable it, but page mount itself must not create a second writer.
+  if (!localStorage.getItem('budilightArtNetMasterMirror22EJ')) localStorage.setItem('budilightArtNetMasterMirror22EJ', '1');
+  if (!localStorage.getItem('budilightArtNetMasterMirrorFps22EJ')) localStorage.setItem('budilightArtNetMasterMirrorFps22EJ', '60');
+  // STEP22NU: clear legacy Safe Live FPS caps for Performance ArtNet output.
+  // Older test profiles stored 10/20/30 FPS in the browser and silently throttled
+  // the real LED output while UI counters looked unrelated.
+  try {
+    const mirror = Number(localStorage.getItem('budilightArtNetMasterMirrorFps22EJ') || 0);
+    if (!Number.isFinite(mirror) || mirror < 50) localStorage.setItem('budilightArtNetMasterMirrorFps22EJ', '60');
+    const savedSettings = JSON.parse(localStorage.getItem('led-engine-settings-v1') || '{}') || {};
+    if (Number(savedSettings.artnetMirrorFps || 0) < 50) savedSettings.artnetMirrorFps = 60;
+    if (Number(savedSettings.maxLiveFps || 0) < 50) savedSettings.maxLiveFps = 60;
+    if (Number(savedSettings.fps || 0) < 50) savedSettings.fps = 60;
+    if (Number(savedSettings.packetPaceMs || 0) > 0) savedSettings.packetPaceMs = 0;
+    if (Number(savedSettings.packetsPerBurst || 0) < 16) savedSettings.packetsPerBurst = 32;
+    localStorage.setItem('led-engine-settings-v1', JSON.stringify(savedSettings));
+  } catch {}
+} catch {}
+window.budiArtNetPreviewLiveOn = async function(){
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem('led-engine-settings-v1') || '{}') || {}; } catch {}
+  const artnetLiveDefaults = {
+    targetIp: '2.1.1.30',
+    bindIp: '',
+    targetMode: 'unicast',
+    port: 6454,
+    fps: 60,
+    maxLiveFps: 60,
+    pixelsPerUniverse: 170,
+    packetPaceMs: 0,
+    packetsPerBurst: 32,
+    maxPendingBatchMs: 120,
+    callbackMode: 'lightweight',
+    adaptiveFrameClock: 'off',
+    adaptiveFloorFps: 24,
+    packetOrder: 'sequential',
+    artSyncMode: 'off',
+    masterMaxAgeMs: 2500,
+    lastGoodHoldMs: 0,
+    blackoutAfterHold: true
+  };
+  const mirrorFps = Math.max(1, Math.min(60, Number(saved.artnetMirrorFps || saved.fps || 60) || 60));
+  try { if (window.__setBudilightArtNetMasterMirror22EJ) window.__setBudilightArtNetMasterMirror22EJ(true, mirrorFps); } catch {}
+  let serverCfg = {};
+  let firstPatchTarget = '';
+  try { serverCfg = ((await fetch('/api/artnet/live-config', { cache:'no-store' }).then(r=>r.json()))?.config) || {}; } catch {}
+  try {
+    const pr = await fetch('/api/artnet/master-mirror/patch-report', { cache:'no-store' }).then(r=>r.json());
+    const uni = Array.isArray(pr?.report?.universes) ? pr.report.universes.find(u => String(u?.target || '').trim() && String(u.target).trim() !== 'default') : null;
+    firstPatchTarget = String(uni?.target || '').trim();
+    if (!firstPatchTarget) return { ok:false, sent:false, blocked:true, reason:'NO_EXPLICIT_ARTNET_TARGETS', message:'V Mappingu není žádný zapnutý strip s vyplněnou ArtNet IP.' };
+  } catch {}
+  const targetIp = String(firstPatchTarget);
+  const port = Math.max(1, Math.min(65535, Number(serverCfg.port || saved.artnetPort || artnetLiveDefaults.port) || artnetLiveDefaults.port));
+  const universe = Math.max(0, Number(saved.universe || 0) || 0);
+  const pixelsPerUniverse = Math.max(1, Math.min(170, Number(saved.pixelsPerUniverse || artnetLiveDefaults.pixelsPerUniverse) || artnetLiveDefaults.pixelsPerUniverse));
+  const fps = Math.max(1, Math.min(120, Number(saved.fps || artnetLiveDefaults.fps) || artnetLiveDefaults.fps));
+  const payload = { targetIp, host:targetIp, outputIp:targetIp, bindIp:String(saved.bindIp || artnetLiveDefaults.bindIp), targetMode:String(saved.targetMode || artnetLiveDefaults.targetMode), port, universe, startUniverse:universe, net:0, subnet:0, fps, maxLiveFps:Math.max(1, Math.min(120, Number(saved.maxLiveFps || fps) || fps)), stripCount:8, pixelsPerStrip:300, pixelsPerUniverse, packetPaceMs:Math.max(0, Number(saved.packetPaceMs || artnetLiveDefaults.packetPaceMs) || artnetLiveDefaults.packetPaceMs), packetsPerBurst:Math.max(1, Math.min(32, Number(saved.packetsPerBurst || artnetLiveDefaults.packetsPerBurst) || artnetLiveDefaults.packetsPerBurst)), maxPendingBatchMs:Math.max(50, Number(saved.maxPendingBatchMs || artnetLiveDefaults.maxPendingBatchMs) || artnetLiveDefaults.maxPendingBatchMs), callbackMode:String(saved.callbackMode || artnetLiveDefaults.callbackMode), packetOrder:String(saved.packetOrder || artnetLiveDefaults.packetOrder), artSyncMode:String(saved.artSyncMode || artnetLiveDefaults.artSyncMode), adaptiveFrameClock:String(saved.adaptiveFrameClock || artnetLiveDefaults.adaptiveFrameClock), adaptiveFloorFps:Math.max(1, Math.min(60, Number(saved.adaptiveFloorFps || artnetLiveDefaults.adaptiveFloorFps) || artnetLiveDefaults.adaptiveFloorFps)), source:'master-framebus', visualPattern:'master-framebus', pattern:'master-framebus', sourceMode:'performance-master-only', mode:'udp-armed', armed:true, liveWrite:true, dryRun:false, masterMaxAgeMs:Math.max(100, Number(saved.masterMaxAgeMs || artnetLiveDefaults.masterMaxAgeMs) || artnetLiveDefaults.masterMaxAgeMs), lastGoodHoldMs:Math.max(0, Number(saved.lastGoodHoldMs || artnetLiveDefaults.lastGoodHoldMs) || artnetLiveDefaults.lastGoodHoldMs), blackoutAfterHold:Boolean(saved.blackoutAfterHold ?? artnetLiveDefaults.blackoutAfterHold), requireExplicitPatch:true };
+  await fetch('/api/artnet/sync-live/prime-socket',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{});
+  return fetch('/api/artnet/sync-live/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json());
+};
+</script>
+<script src="runtime/quick_step_automator.js?v=37ee-original-shader-preview"></script>
+<script src="runtime/center_block_sorter.js?v=step37j-center-stage-dnd"></script>
+<script src="runtime/artnet_master_framebus_mirror_22ej.js?v=22gv"></script>
+<script src="runtime/adaptive_fps_governor_13bu.js?v=13bu-k"></script>
+</body>
+</html>

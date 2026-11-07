@@ -1,0 +1,58 @@
+STEP37DG_PERFORMANCE_RUNTIME_DIET_PASS
+
+CIL:
+- Pokracovani optimalizace plynulosti bez zasahu do fyzicke output hotpath.
+- Omezit dalsi ne-kriticke debug/control-plane intervaly pres centralni runtime loop registry 37CE.
+- Zachovat ArtNet/server boundary kontrakty a shell-runner output kontrakt.
+
+HOTOVO V TOMTO KROKU:
+1) public/runtime/adaptive_fps_governor_13bu.js
+   - 1s evaluate loop presunuty pod __budilightRuntimeLoopRegistry37CE.adaptiveInterval().
+   - Pri live outputu a hidden view se zbytecne nebudi tak agresivne.
+
+2) public/runtime/output_health_panel_37cb.js
+   - Legacy health poll prehozeny na adaptive registry.
+   - Initial poll zustava zachovan, ale registrovany jako timeout.
+   - Pri live outputu / hidden view se polling zpomali a hidden se muze skipnout.
+
+3) public/runtime/output_health_panel_37cc.js
+   - Stejne jako 37CB: health poll pres adaptive registry.
+
+4) public/runtime/output_single_writer_watchdog_37be.js
+   - Initial watchdog tick prehozeny pres registry timeout, main watchdog zustava critical.
+   - Nezasahuje do writer blocking logiky.
+
+5) public/runtime/output_writer_deep_report_37bx.js
+   - Initial snapshot prehozeny pres registry timeout.
+   - Existing deep-report adaptive intervals zustaly zachovane.
+
+6) public/runtime/output_writer_interlock_37by.js
+   - Initial interlock snapshot prehozeny pres registry timeout.
+   - Existing heartbeat adaptive interval zustal zachovany.
+
+VALIDACE:
+- npm run check:js OK
+- npm run test:artnet-settings-boundary OK
+- npm run test:artnet-server-boundary OK
+- npm run test:shell-runner-output-contract OK
+
+CO ZBYVA DAL:
+1) Projit public/runtime/quick_step_automator.js:
+   - velky soubor, pravdepodobny zdroj step-lagu pri prepnuti stepu.
+   - cil: oddelit real-time beat akci od render/save/UI casti.
+
+2) Projit public/runtime/refresh_loops.js:
+   - overit, ze UI refresh nikdy nebezi ve stejne kadenci jako output.
+   - debug refresh musi byt aktivni jen pri aktivni Debug obrazovce.
+
+3) Projit public/runtime/thumb_queue.js a warmup/preload fronty:
+   - pokud bezi thumbnail/warmup prace pri Performance outputu, muze delat mikro-zaseky.
+   - cil: pozastavit thumbnails/prewarm pri live outputu, povolit jen idle okna.
+
+4) Projit direct setInterval fallbacky:
+   - vetsina dulezitych UI/debug intervalovych smycek uz registry pouziva.
+   - zbyvaji fallbacky a server/output smycky; ty se nesmi slepe menit.
+
+5) Doplnit Debug zobrazeni aktivnich runtime loop registry polozek:
+   - snapshot uz existuje pres window.__budilightRuntimeLoopRegistry37CE.snapshot().
+   - dalsi krok: zobrazit v Debugu top aktivni/slow loops a nextInMs.

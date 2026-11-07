@@ -1,0 +1,580 @@
+/* STEP 5E: PREW DEBUG telemetry dashboard. Passive UI only; no startup/render/output ownership. */
+.debug-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.debug-panel-head h4 {
+  margin: 0;
+}
+
+.debug-panel-head small {
+  display: block;
+  margin-top: 3px;
+  color: rgba(190, 235, 255, 0.72);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+}
+
+.debug-freeze-btn {
+  border: 1px solid rgba(0, 234, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(0, 20, 34, 0.72);
+  color: #dffbff;
+  padding: 6px 10px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.debug-freeze-btn[aria-pressed="true"] {
+  border-color: rgba(255, 214, 92, 0.7);
+  color: #ffe9a6;
+  box-shadow: 0 0 14px rgba(255, 214, 92, 0.16);
+}
+
+.debug-metric-cards {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.debug-metric-card {
+  min-width: 0;
+  border: 1px solid rgba(0, 217, 255, 0.18);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(7, 24, 39, 0.86), rgba(2, 7, 16, 0.92));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 10px 24px rgba(0,0,0,0.22);
+  padding: 8px;
+}
+
+.debug-metric-card span {
+  display: block;
+  color: rgba(200, 237, 255, 0.62);
+  font-size: 8px;
+  letter-spacing: 0.10em;
+}
+
+.debug-metric-card strong {
+  display: block;
+  margin-top: 3px;
+  color: #effdff;
+  font-size: 17px;
+  line-height: 1.05;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.debug-metric-card small {
+  display: block;
+  margin-top: 4px;
+  color: rgba(206, 232, 255, 0.58);
+  font-size: 8px;
+  line-height: 1.25;
+  min-height: 20px;
+}
+
+.debug-health-ok {
+  border-color: rgba(70, 255, 180, 0.34);
+}
+
+.debug-health-warn {
+  border-color: rgba(255, 214, 92, 0.56);
+}
+
+.debug-health-bad {
+  border-color: rgba(255, 82, 122, 0.68);
+}
+
+.debug-grid-telemetry {
+  margin-bottom: 8px;
+  padding: 8px 0;
+  border-top: 1px solid rgba(255,255,255,0.10);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+@media (max-width: 1100px) {
+  .debug-metric-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .debug-metric-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .debug-panel-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+.debug-timeline-panel {
+  margin-top: 12px;
+  border: 1px solid rgba(120, 255, 220, 0.18);
+  border-radius: 14px;
+  background: rgba(0, 12, 20, 0.58);
+  box-shadow: inset 0 0 24px rgba(0, 255, 210, 0.05);
+  overflow: hidden;
+}
+
+.debug-timeline-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 11px;
+  border-bottom: 1px solid rgba(120, 255, 220, 0.14);
+  letter-spacing: 0.08em;
+}
+
+.debug-timeline-head strong {
+  color: rgba(200, 255, 245, 0.96);
+  font-size: 0.75rem;
+}
+
+.debug-timeline-head small {
+  color: rgba(160, 255, 230, 0.72);
+  font-size: 0.68rem;
+}
+
+.debug-timeline-list {
+  display: grid;
+  gap: 5px;
+  padding: 9px;
+  max-height: 210px;
+  overflow: auto;
+}
+
+.debug-timeline-row {
+  display: grid;
+  grid-template-columns: 12px minmax(54px, 0.45fr) minmax(160px, 1.65fr) minmax(64px, 0.45fr);
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  font-size: 0.72rem;
+}
+
+.debug-timeline-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(80, 255, 205, 0.9);
+  box-shadow: 0 0 12px rgba(80, 255, 205, 0.55);
+}
+
+.debug-timeline-row strong {
+  color: rgba(190, 255, 245, 0.95);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+}
+
+.debug-timeline-row span:not(.debug-timeline-dot) {
+  color: rgba(220, 245, 255, 0.88);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.debug-timeline-row small {
+  justify-self: end;
+  color: rgba(170, 220, 230, 0.68);
+  font-size: 0.65rem;
+}
+
+.debug-timeline-warn .debug-timeline-dot {
+  background: rgba(255, 190, 80, 0.95);
+  box-shadow: 0 0 12px rgba(255, 170, 60, 0.6);
+}
+
+.debug-timeline-bad .debug-timeline-dot {
+  background: rgba(255, 80, 120, 0.95);
+  box-shadow: 0 0 12px rgba(255, 60, 100, 0.65);
+}
+
+.debug-timeline-empty {
+  padding: 12px;
+  color: rgba(180, 225, 235, 0.7);
+  font-size: 0.74rem;
+  text-align: center;
+}
+
+/* STEP 12M: decluttered live debug dashboard */
+.debug-panel-12m {
+  overflow: auto;
+  padding: 14px;
+}
+.debug-panel-head-12m {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  backdrop-filter: blur(14px);
+}
+.debug-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.debug-live-pill {
+  border: 1px solid rgba(0, 255, 190, 0.35);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(185, 255, 232, 0.95);
+  background: rgba(0, 40, 34, 0.45);
+}
+.debug-summary-12m {
+  grid-template-columns: repeat(6, minmax(96px, 1fr));
+}
+.debug-primary-card {
+  grid-column: span 2;
+}
+.debug-section-grid-12m {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.debug-section-card {
+  border: 1px solid rgba(110, 255, 225, 0.16);
+  border-radius: 16px;
+  padding: 12px;
+  background: linear-gradient(180deg, rgba(6, 18, 24, 0.78), rgba(3, 8, 13, 0.68));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.035), 0 10px 30px rgba(0,0,0,0.25);
+}
+.debug-section-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  padding-bottom: 8px;
+}
+.debug-section-card header strong,
+.debug-advanced-12m summary {
+  color: rgba(208, 255, 246, 0.96);
+  letter-spacing: 0.08em;
+  font-size: 12px;
+}
+.debug-section-card header small {
+  color: rgba(190, 216, 225, 0.62);
+  text-align: right;
+}
+.debug-kv-grid {
+  display: grid;
+  grid-template-columns: minmax(112px, 0.36fr) minmax(0, 1fr);
+  gap: 7px 10px;
+  align-items: center;
+}
+.debug-kv-grid span {
+  color: rgba(185, 209, 217, 0.68);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+.debug-kv-grid strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(245, 252, 255, 0.92);
+  font-size: 11px;
+  font-weight: 650;
+}
+.debug-kv-grid.advanced strong {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.debug-action-grid,
+.debug-danger-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+.debug-action-grid button,
+.debug-danger-row button,
+.debug-inline-control {
+  min-height: 30px;
+  border-radius: 10px;
+}
+.debug-danger-row {
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding-top: 10px;
+}
+.debug-danger-row #liveStopButton {
+  border-color: rgba(255, 95, 95, 0.55);
+  color: rgba(255, 210, 210, 0.98);
+  background: rgba(90, 5, 8, 0.38);
+}
+.debug-advanced-12m {
+  margin-top: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.20);
+}
+.debug-advanced-12m summary {
+  cursor: pointer;
+  user-select: none;
+}
+.debug-advanced-12m[open] summary {
+  margin-bottom: 10px;
+}
+.debug-telemetry-raw-12m .debug-timeline-panel {
+  margin-top: 10px;
+}
+@media (max-width: 1180px) {
+  .debug-summary-12m { grid-template-columns: repeat(3, minmax(90px, 1fr)); }
+  .debug-section-grid-12m { grid-template-columns: 1fr; }
+  .debug-primary-card { grid-column: span 1; }
+}
+@media (max-width: 720px) {
+  .debug-summary-12m { grid-template-columns: repeat(2, minmax(90px, 1fr)); }
+  .debug-kv-grid { grid-template-columns: 92px minmax(0, 1fr); }
+}
+
+
+/* STEP 12N: actionable debug status strip */
+.debug-actionable-12n {
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid rgba(139, 255, 214, 0.28);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(13, 22, 31, 0.92), rgba(31, 19, 42, 0.78));
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
+}
+.debug-actionable-12n header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.debug-actionable-12n header strong {
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+}
+.debug-actionable-12n header small {
+  color: rgba(226, 255, 248, 0.68);
+}
+.debug-actionable-grid-12n {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 1fr;
+  gap: 10px;
+}
+.debug-actionable-grid-12n > div {
+  min-width: 0;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.debug-actionable-grid-12n span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: rgba(226, 255, 248, 0.54);
+}
+.debug-actionable-grid-12n strong {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.82rem;
+  color: rgba(245, 255, 252, 0.94);
+}
+@media (max-width: 980px) {
+  .debug-actionable-grid-12n { grid-template-columns: 1fr; }
+}
+
+
+/* STEP 12O: compact live health snapshot */
+.debug-snapshot-12o {
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid rgba(0, 220, 255, 0.22);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(4, 16, 25, 0.92), rgba(10, 31, 35, 0.74));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.035), 0 16px 30px rgba(0,0,0,0.18);
+}
+.debug-snapshot-12o header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.debug-snapshot-12o header strong {
+  color: rgba(224, 255, 250, 0.96);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+.debug-snapshot-12o header small {
+  color: rgba(206, 236, 246, 0.62);
+  text-align: right;
+}
+.debug-snapshot-grid-12o {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+}
+.debug-snapshot-grid-12o > div {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,0.075);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.045);
+}
+.debug-snapshot-grid-12o span {
+  display: block;
+  color: rgba(204, 235, 245, 0.56);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+}
+.debug-snapshot-grid-12o strong {
+  display: block;
+  margin-top: 4px;
+  color: rgba(246, 255, 252, 0.94);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.debug-snapshot-grid-12o small {
+  display: block;
+  margin-top: 4px;
+  color: rgba(206, 232, 240, 0.58);
+  font-size: 0.68rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 980px) {
+  .debug-snapshot-grid-12o { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .debug-snapshot-grid-12o { grid-template-columns: 1fr; }
+}
+
+/* STEP 13B: organized operator workflow for serial/artnet diagnostics */
+.debug-workflow-13b {
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid rgba(120, 210, 255, 0.28);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(8, 21, 32, 0.86), rgba(25, 10, 34, 0.68));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.035), 0 14px 34px rgba(0,0,0,0.24);
+}
+.debug-workflow-13b header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.debug-workflow-13b header strong {
+  color: rgba(216, 250, 255, 0.98);
+  letter-spacing: 0.08em;
+  font-size: 12px;
+}
+.debug-workflow-13b header small {
+  color: rgba(190, 216, 225, 0.68);
+  text-align: right;
+}
+.debug-workflow-steps-13b {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.debug-workflow-steps-13b div {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 2px 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 13px;
+  padding: 9px;
+  background: rgba(0,0,0,0.18);
+}
+.debug-workflow-steps-13b span {
+  grid-row: span 2;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(10, 20, 24, 0.95);
+  background: rgba(143, 255, 230, 0.92);
+  font-weight: 800;
+  font-size: 12px;
+}
+.debug-workflow-steps-13b strong {
+  color: rgba(255,255,255,0.94);
+  font-size: 12px;
+}
+.debug-workflow-steps-13b small {
+  color: rgba(195, 222, 230, 0.66);
+  font-size: 10px;
+  line-height: 1.25;
+}
+.debug-action-grid-13b {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+}
+.debug-action-group-13b {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 7px;
+  min-height: 100%;
+  padding: 9px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 13px;
+  background: rgba(255,255,255,0.025);
+}
+.debug-action-group-13b h5 {
+  flex: 0 0 100%;
+  margin: 0 0 4px;
+  color: rgba(143, 255, 230, 0.92);
+  font-size: 10px;
+  letter-spacing: 0.09em;
+}
+.debug-action-group-warning-13b {
+  border-color: rgba(255, 190, 80, 0.22);
+  background: rgba(60, 35, 0, 0.12);
+}
+.debug-action-group-warning-13b h5 {
+  color: rgba(255, 220, 150, 0.95);
+}
+.debug-action-group-warning-13b button {
+  border-color: rgba(255, 190, 80, 0.32);
+}
+@media (max-width: 1180px) {
+  .debug-workflow-steps-13b,
+  .debug-action-grid-13b { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .debug-workflow-steps-13b,
+  .debug-action-grid-13b { grid-template-columns: 1fr; }
+}
+
+/* STEP 13C: serial diagnostics row/button is intentionally placed before serial target dry-run. */

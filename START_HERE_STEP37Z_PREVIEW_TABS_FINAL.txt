@@ -1,0 +1,22 @@
+STEP37Z_PREVIEW_TABS_FINAL
+
+Base: STEP37Y_PREVIEW_TABS_DEBUG_RESTORE
+
+Changes:
+- Finalized Preview tab binding guard to prevent duplicate handlers.
+- Pixel tab: first selects PIXEL, repeated click cycles BIG/SMALL.
+- Shader tab: first selects SHADER, repeated click cycles BIG/SMALL.
+- Debug tab: toggles debug overlay and returns to previous non-debug preview mode.
+- Added preview mode change event that forces canvas resize/repaint after tab switch.
+- Added stronger active states, titles and aria-pressed for preview tabs.
+- Fixed debug overlay canvas visibility for pixel/shader/stage base modes.
+- ArtNet/output route unchanged.
+
+Verified:
+- node --check public/runtime/preview_mode_runtime.js
+- node --check public/ui_bindings.js
+- node --check public/app.js
+- npm run check:js
+- npm run test:artnet-settings-boundary
+- npm run test:artnet-server-boundary
+- npm run test:artnet-live-source-policy

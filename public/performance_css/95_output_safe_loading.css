@@ -1,0 +1,42 @@
+/* STEP22NW — output-safe loading/gallery performance guard.
+   Rule: loading visuals must never cost live/output FPS. Keep the look, remove compositor-heavy motion. */
+
+body {
+  background-attachment: scroll !important;
+}
+
+.startup-overlay,
+.startup-overlay::before,
+.startup-card,
+.startup-card::before,
+.startup-bar::after,
+.startup-fill,
+.startup-step::after,
+.startup-activity span,
+.startup-greeting {
+  animation: none !important;
+  transition-duration: 0.12s !important;
+}
+
+.startup-overlay::before,
+.startup-card::before,
+.startup-bar::after {
+  display: none !important;
+}
+
+.startup-card,
+.startup-greeting {
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.54) !important;
+}
+
+body.startup-ready .startup-overlay,
+.startup-overlay.done {
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .startup-fill {
+    background-position: 50% 50% !important;
+  }
+}

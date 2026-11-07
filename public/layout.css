@@ -1,0 +1,17 @@
+/* Shared page shells and top-level layout hooks. */
+.app-shell {
+  width: 100%;
+}
+
+.topbar,
+.performance-grid,
+.page-shell,
+.bottom-status {
+  width: 100%;
+}
+
+/* Keep a single place for global fullscreen-safe overflow behavior. */
+body.ui-pro {
+  overflow-x: hidden;
+}
+

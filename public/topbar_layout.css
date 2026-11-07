@@ -1,0 +1,188 @@
+﻿/* Extracted from performance.css */
+/* Unified topbar across all UI pages (index / mapping / settings). */
+body.ui-pro:not(.login-page) .topbar {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  min-height: 74px !important;
+}
+
+body.ui-pro:not(.login-page) .topbar > .brand-block,
+body.ui-pro:not(.login-page) .topbar > .top-left-cluster {
+  justify-self: start !important;
+  min-width: 0 !important;
+}
+
+body.ui-pro:not(.login-page) .topbar > .status-strip,
+body.ui-pro:not(.login-page) .topbar > .top-right-cluster {
+  justify-self: end !important;
+  min-width: 0 !important;
+}
+
+body.ui-pro:not(.login-page) .workspace-tabs {
+  justify-self: center !important;
+  width: clamp(300px, 30vw, 520px) !important;
+  min-width: 300px !important;
+  max-width: 520px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+  overflow: hidden !important;
+}body.ui-pro:not(.login-page) .status-strip {
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+body.ui-pro:not(.login-page) .status-strip .status-card {
+  min-width: 72px !important;
+  flex: 1 1 84px !important;
+}
+
+body.ui-pro:not(.login-page) .topbar .hidden-master {
+  display: none !important;
+}
+
+/* Final layout override: centered wide crossfade block, stable ordering and spacing. */
+.center-mix {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  justify-items: center !important;
+  align-items: start !important;
+  gap: 10px !important;
+}
+
+.center-mix .mix-core {
+  width: min(100%, 980px) !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-areas:
+    "cross cross"
+    "blend fade" !important;
+  gap: 10px !important;
+  align-items: end !important;
+  padding: 12px !important;
+}
+
+.center-mix .crossfader-wide {
+  grid-area: cross !important;
+  width: 100% !important;
+}
+
+.center-mix .blend-field {
+  grid-area: blend !important;
+}
+
+.center-mix .transition-control {
+  grid-area: fade !important;
+}
+
+.center-mix .master-fx-shell,
+.center-mix .performance-pads {
+  width: min(100%, 980px) !important;
+}
+
+.center-mix .crossfader-wrap {
+  width: 100% !important;
+}
+
+.center-mix .crossfader {
+  width: 100% !important;
+}
+
+@media (max-width: 980px) {
+  .center-mix .mix-core {
+    width: min(100%, 860px) !important;
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "cross"
+      "blend"
+      "fade" !important;
+  }
+}
+
+/* Immediate compact switch before overlap starts. */
+@media (max-width: 1660px) {
+  body.ui-pro:not(.login-page) .topbar {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  body.ui-pro:not(.login-page) .workspace-tabs {
+    width: clamp(280px, 24vw, 360px) !important;
+    min-width: 280px !important;
+    max-width: 360px !important;
+  }body.ui-pro:not(.login-page) .status-strip .status-card {
+    min-width: 64px !important;
+    flex: 1 1 72px !important;
+  }
+
+  body.ui-pro:not(.login-page) .status-strip .optional-status,
+  body.ui-pro:not(.login-page) .status-strip .node-card {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1480px) {
+  body.ui-pro:not(.login-page) .topbar {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+  }
+
+  body.ui-pro:not(.login-page) .workspace-tabs {
+    width: clamp(260px, 22vw, 312px) !important;
+    min-width: 260px !important;
+    max-width: 312px !important;
+  }
+
+  body.ui-pro:not(.login-page) .status-strip .status-card {
+    min-width: 58px !important;
+    flex: 1 1 66px !important;
+  }
+}
+
+body.ui-pro .bottom-status,
+body.ui-pro .mobile-nav {
+  display: none !important;
+}
+
+body.ui-pro #menuBtn.menu-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 56px !important;
+  min-width: 56px !important;
+  height: auto !important;
+  color: #eaf6ff !important;
+  font-size: 22px !important;
+  line-height: 1 !important;
+}
+
+body.ui-pro #menuBtn.menu-btn::before {
+  content: none !important;
+}
+
+body.ui-pro .top-right-cluster {
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+}
+
+body.ui-pro .top-right-cluster .status-strip {
+  order: 1 !important;
+}
+
+body.ui-pro .top-right-cluster #menuBtn.menu-btn {
+  order: 2 !important;
+  margin-left: 0 !important;
+}
+
+

@@ -1,0 +1,666 @@
+/* STEP 7Q · main-page-like editor layout */
+.editor-workspace-mainlike {
+  grid-template-columns: 1fr;
+}
+.editor-main-form {
+  min-height: calc(100vh - 178px);
+}
+.editor-pick-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+.editor-meta-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.2fr) minmax(160px, 1fr) minmax(150px, .7fr);
+  gap: 10px;
+  align-items: end;
+}
+.editor-label select,
+#editorAnimSelect,
+#editorSaveMode {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.3);
+  color: white;
+  padding: 9px 10px;
+  outline: none;
+}
+.editor-actions-wide {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.validation-report {
+  border: 1px solid rgba(255,255,255,.13);
+  background: rgba(0,0,0,.2);
+  border-radius: 14px;
+  padding: 10px 12px;
+  min-height: 42px;
+  color: rgba(255,255,255,.78);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.validation-report ul { margin: 6px 0 0; padding-left: 18px; }
+.validation-report .ok { color: rgba(0,255,160,.95); }
+.validation-report .err { color: rgba(255,90,120,.95); }
+.validation-report .warn { color: rgba(255,210,90,.95); }
+body.editor-mode .anim-inspector .assign-box,
+body.editor-mode .anim-inspector .metadata-box,
+body.editor-mode .anim-inspector .anim-meta {
+  display: none;
+}
+body.editor-mode .anim-inspector canvas#bigPreview {
+  height: 240px;
+}
+body.editor-mode .preview-controls {
+  margin-bottom: 0;
+}
+@media (max-width: 900px) {
+  .editor-pick-row,
+  .editor-meta-row,
+  .editor-actions-wide { grid-template-columns: 1fr; }
+  .editor-main-form { min-height: auto; }
+}
+
+/* STEP 7S: editor layout repair + collapsible source panels */
+.library-source-toggle {
+  opacity: .86;
+  border-color: rgba(0,255,255,.24);
+  background: rgba(0,255,255,.07);
+}
+.library-source-toggle[aria-expanded="true"] {
+  opacity: 1;
+  border-color: rgba(0,255,255,.55);
+  background: rgba(0,255,255,.14);
+}
+.library-source-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: -2px 0 12px;
+  padding: 10px;
+  border: 1px solid rgba(0,255,255,.14);
+  border-radius: 16px;
+  background: rgba(0,0,0,.20);
+}
+.library-source-panel[hidden] { display: none !important; }
+.library-source-panel div {
+  min-width: 0;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+  padding: 9px 10px;
+}
+.library-source-panel strong,
+.library-source-panel span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.library-source-panel strong {
+  color: rgba(255,255,255,.88);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.library-source-panel span {
+  margin-top: 4px;
+  color: rgba(255,255,255,.58);
+  font-size: 12px;
+}
+.anim-editor-wrap.studio-view.is-active {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.editor-panel-head {
+  flex: 0 0 auto;
+}
+.editor-head-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.editor-workspace-mainlike {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+.editor-main-form {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto auto minmax(260px, 1fr) auto auto;
+  gap: 10px;
+}
+.editor-toolbar {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  padding: 10px;
+  border: 1px solid rgba(0,255,255,.12);
+  border-radius: 16px;
+  background: rgba(0,255,255,.045);
+}
+.editor-current-select span,
+.editor-save-row span,
+.editor-import-row span {
+  color: rgba(255,255,255,.60);
+}
+.editor-load-btn {
+  min-width: 145px;
+  align-self: end;
+}
+.editor-save-row {
+  padding: 10px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 16px;
+  background: rgba(255,255,255,.035);
+}
+.editor-import-row {
+  display: grid;
+  grid-template-columns: minmax(220px, .8fr) minmax(220px, 1fr);
+  gap: 10px;
+  align-items: end;
+}
+.editor-file-label {
+  padding: 10px;
+  border: 1px dashed rgba(255,255,255,.16);
+  border-radius: 16px;
+  background: rgba(0,0,0,.16);
+}
+.editor-hint {
+  color: rgba(255,255,255,.62);
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 16px;
+  background: rgba(0,0,0,.16);
+}
+.anim-editor-wrap #codeEditor {
+  min-height: 0;
+  height: 100%;
+  resize: none;
+  border-radius: 18px;
+  background: rgba(0,0,0,.42);
+}
+body.editor-mode .anim-inspector {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  min-height: 0;
+}
+body.editor-mode .anim-inspector .panel-head {
+  flex: 0 0 auto;
+}
+body.editor-mode .anim-inspector canvas#bigPreview {
+  flex: 0 0 auto;
+  height: 220px;
+}
+body.editor-mode .preview-runner-row {
+  margin-top: 10px;
+}
+body.editor-mode .preview-controls {
+  flex: 0 0 auto;
+}
+body.editor-mode .preview-runner-status::after {
+  content: ' · editor safe';
+}
+@media (max-width: 1200px) {
+  .library-source-panel { grid-template-columns: 1fr; }
+  .editor-toolbar,
+  .editor-save-row,
+  .editor-import-row { grid-template-columns: 1fr; }
+  .editor-load-btn { min-width: 0; }
+  .editor-main-form { grid-template-rows: auto auto auto minmax(420px, 1fr) auto auto; }
+  .anim-editor-wrap #codeEditor { min-height: 420px; }
+}
+
+/* STEP 8Q: editor hard reset after real overlap report
+   This block intentionally overrides older gallery/performance layers only while
+   the Editor tab is active. It removes the remaining Source block from the DOM
+   layout, prevents inactive studio views from occupying space, and forces a
+   non-overlapping three-column contract. */
+body.editor-mode.animations-page {
+  overflow: hidden;
+}
+
+body.editor-mode .app-shell {
+  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body.editor-mode main.anim-studio {
+  display: grid !important;
+  grid-template-columns: minmax(210px, 270px) minmax(0, 1fr) minmax(240px, 320px) !important;
+  grid-template-areas: "sidebar editor inspector" !important;
+  gap: 12px !important;
+  width: 100% !important;
+  height: calc(100dvh - 84px) !important;
+  min-height: 0 !important;
+  max-height: calc(100dvh - 84px) !important;
+  padding: 12px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  align-items: stretch !important;
+}
+
+body.editor-mode .anim-gallery-wrap,
+body.editor-mode .anim-selectors-wrap,
+body.editor-mode .anim-palettes-wrap,
+body.editor-mode #editorSourceToggle,
+body.editor-mode #editorSourcePanel,
+body.editor-mode .editor-source-panel,
+body.editor-mode .library-source-panel.editor-source-panel {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  inset: auto !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+body.editor-mode .anim-sidebar,
+body.editor-mode .anim-editor-wrap,
+body.editor-mode .anim-inspector {
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+  float: none !important;
+  width: auto !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+body.editor-mode .anim-sidebar {
+  grid-area: sidebar !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: auto !important;
+  scrollbar-gutter: stable !important;
+}
+
+body.editor-mode .anim-editor-wrap.studio-view,
+body.editor-mode .anim-editor-wrap.studio-view.is-active {
+  grid-area: editor !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 14px !important;
+}
+
+body.editor-mode .anim-inspector {
+  grid-area: inspector !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  padding: 12px !important;
+  overflow-y: auto !important;
+  scrollbar-gutter: stable !important;
+}
+
+body.editor-mode .anim-editor-wrap > .panel-head,
+body.editor-mode .anim-inspector > .panel-head {
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+  margin-bottom: 10px !important;
+}
+
+body.editor-mode .editor-head-actions {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  min-width: 0 !important;
+}
+
+body.editor-mode .editor-workspace,
+body.editor-mode .editor-workspace-mainlike {
+  flex: 1 1 auto !important;
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  overflow: hidden !important;
+}
+
+body.editor-mode .editor-main-form {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto minmax(82px, auto) !important;
+  gap: 12px !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: none !important;
+  overflow: hidden !important;
+}
+
+body.editor-mode .editor-toolbar,
+body.editor-mode .editor-save-row,
+body.editor-mode .editor-import-row,
+body.editor-mode .editor-actions-wide {
+  display: grid !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+body.editor-mode .editor-toolbar {
+  grid-template-columns: minmax(0, 1fr) minmax(132px, auto) !important;
+  align-items: end !important;
+}
+
+body.editor-mode .editor-save-row {
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(128px, .65fr) !important;
+}
+
+body.editor-mode .editor-import-row {
+  grid-template-columns: minmax(180px, .65fr) minmax(0, 1fr) !important;
+}
+
+body.editor-mode .editor-actions-wide {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+body.editor-mode .editor-label,
+body.editor-mode .editor-label input,
+body.editor-mode .editor-label textarea,
+body.editor-mode .editor-label select,
+body.editor-mode #editorAnimSelect,
+body.editor-mode #editorSaveMode,
+body.editor-mode #editorName,
+body.editor-mode #editorTag,
+body.editor-mode #fileInput {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+body.editor-mode .editor-hint,
+body.editor-mode .status-pill,
+body.editor-mode .preview-runner-status {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+
+body.editor-mode .anim-editor-wrap #codeEditor {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 260px !important;
+  max-width: 100% !important;
+  max-height: none !important;
+  resize: none !important;
+  overflow: auto !important;
+  box-sizing: border-box !important;
+}
+
+body.editor-mode .validation-report {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 82px !important;
+  max-height: 140px !important;
+  overflow: auto !important;
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+  box-sizing: border-box !important;
+}
+
+body.editor-mode .anim-inspector .assign-box,
+body.editor-mode .anim-inspector .metadata-box,
+body.editor-mode .anim-inspector .anim-meta {
+  display: none !important;
+}
+
+body.editor-mode .anim-inspector canvas#bigPreview {
+  display: block !important;
+  width: 100% !important;
+  height: clamp(150px, 22dvh, 220px) !important;
+  min-height: 150px !important;
+  max-height: 220px !important;
+  flex: 0 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+body.editor-mode .preview-runner-row,
+body.editor-mode .preview-controls {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+body.editor-mode .preview-runner-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 6px !important;
+  margin: 0 !important;
+}
+
+body.editor-mode .preview-controls {
+  display: grid !important;
+  gap: 9px !important;
+  margin: 0 !important;
+}
+
+body.editor-mode .preview-controls label {
+  display: grid !important;
+  grid-template-columns: 58px minmax(0, 1fr) !important;
+  gap: 8px !important;
+  align-items: center !important;
+  min-width: 0 !important;
+}
+
+body.editor-mode .preview-controls input[type="range"] {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+@media (max-width: 1260px) {
+  body.editor-mode main.anim-studio {
+    grid-template-columns: minmax(190px, 235px) minmax(0, 1fr) minmax(220px, 280px) !important;
+    gap: 10px !important;
+    padding: 10px !important;
+  }
+
+  body.editor-mode .editor-save-row,
+  body.editor-mode .editor-import-row {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 980px) {
+  body.editor-mode.animations-page,
+  body.editor-mode .app-shell {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  body.editor-mode main.anim-studio {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas:
+      "sidebar"
+      "inspector"
+      "editor" !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  body.editor-mode .anim-sidebar,
+  body.editor-mode .anim-editor-wrap,
+  body.editor-mode .anim-inspector,
+  body.editor-mode .editor-workspace,
+  body.editor-mode .editor-main-form {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  body.editor-mode .editor-main-form,
+  body.editor-mode .editor-toolbar,
+  body.editor-mode .editor-save-row,
+  body.editor-mode .editor-import-row,
+  body.editor-mode .editor-actions-wide {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  body.editor-mode .anim-editor-wrap #codeEditor {
+    height: auto !important;
+    min-height: 440px !important;
+  }
+}
+
+
+
+/* STEP 13BU-AS · Shadertoy v2 uses existing Editor/Gallery layout primitives. */
+.shadertoy-studio {
+  grid-template-columns: minmax(250px, 0.78fr) minmax(520px, 1.55fr) minmax(340px, 0.92fr);
+}
+.shadertoy-editor-main,
+.shadertoy-inspector {
+  min-height: 0;
+}
+.shadertoy-editor-workspace {
+  min-height: 0;
+}
+.shadertoy-editor-main .editor-main-form {
+  min-height: 0;
+}
+.shadertoy-editor-main .code-editor-label {
+  min-height: 0;
+  height: 100%;
+}
+#shaderSourceInput {
+  min-height: 520px;
+  height: calc(100vh - 235px);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  line-height: 1.45;
+}
+#shaderPreviewCanvas {
+  width: 100%;
+  min-height: 330px;
+  height: 42vh;
+  display: block;
+  background: #000;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+}
+#shaderErrorPanel[hidden] {
+  display: none;
+}
+#shaderErrorPanel {
+  color: var(--warning, #ffd27d);
+  white-space: pre-wrap;
+}
+@media (max-width: 1180px) {
+  .shadertoy-studio {
+    grid-template-columns: 1fr;
+    overflow: auto;
+  }
+  #shaderSourceInput {
+    height: 420px;
+  }
+}
+
+/* STEP 13BU-AU · ShaderToy usable editor layout + unified Performance topbar. */
+body.shadertoy-page-v2 .app-shell {
+  min-height: 100vh;
+  overflow: hidden;
+}
+body.shadertoy-page-v2 .topbar {
+  flex: 0 0 auto;
+}
+body.shadertoy-page-v2 .shadertoy-studio {
+  height: calc(100vh - 102px);
+  min-height: 0;
+  grid-template-columns: minmax(245px, 300px) minmax(520px, 1fr) minmax(330px, 430px);
+  align-items: stretch;
+  overflow: hidden;
+}
+body.shadertoy-page-v2 .shadertoy-tools-panel,
+body.shadertoy-page-v2 .shadertoy-editor-main,
+body.shadertoy-page-v2 .shadertoy-inspector {
+  min-height: 0;
+  overflow: hidden;
+}
+body.shadertoy-page-v2 .shadertoy-tools-panel,
+body.shadertoy-page-v2 .shadertoy-inspector {
+  display: flex;
+  flex-direction: column;
+}
+body.shadertoy-page-v2 .shadertoy-editor-workspace,
+body.shadertoy-page-v2 .shadertoy-editor-main .editor-main-form,
+body.shadertoy-page-v2 .shadertoy-editor-main .code-editor-label {
+  min-height: 0;
+  height: 100%;
+}
+body.shadertoy-page-v2 #shaderSourceInput {
+  min-height: 0;
+  height: 100%;
+  resize: none;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  line-height: 1.45;
+}
+body.shadertoy-page-v2 .shadertoy-editor-main .editor-actions-main {
+  flex: 0 0 auto;
+}
+body.shadertoy-page-v2 #shaderPreviewCanvas {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 0;
+  height: auto;
+  max-height: 38vh;
+  flex: 0 0 auto;
+  display: block;
+  background: #000;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.10);
+}
+body.shadertoy-page-v2 .preview-controls,
+body.shadertoy-page-v2 .assign-box {
+  flex: 0 0 auto;
+}
+body.shadertoy-page-v2 .library-note,
+body.shadertoy-page-v2 .workflow-hints {
+  font-size: 11px;
+}
+@media (max-width: 1320px) {
+  body.shadertoy-page-v2 .shadertoy-studio {
+    grid-template-columns: minmax(220px, 280px) minmax(460px, 1fr) minmax(300px, 380px);
+  }
+}
+@media (max-width: 1080px) {
+  body.shadertoy-page-v2 .app-shell {
+    overflow: auto;
+  }
+  body.shadertoy-page-v2 .shadertoy-studio {
+    height: auto;
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+  body.shadertoy-page-v2 #shaderSourceInput {
+    height: 460px;
+  }
+}

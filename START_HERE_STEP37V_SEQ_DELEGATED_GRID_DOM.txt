@@ -1,0 +1,19 @@
+STEP37V_SEQ_DELEGATED_GRID_DOM
+
+Navazuje na STEP37U.
+
+Změny:
+- quick_step_automator.js: grid buňky už nemají vlastní pointer/click listenery pro každou buňku.
+- Přidána delegace eventů na quickStepGrid: pointerdown, pointerover, click.
+- Přidána ROW_BY_KEY cache místo opakovaného ROWS.find() v hot path.
+- Přidána cellsByCell DOM cache pro okamžitou aktualizaci změněné buňky bez document.querySelector().
+- ArtNet/mapping/output cesta beze změny.
+
+Ověřeno:
+- node --check public/runtime/quick_step_automator.js OK
+- npm run test:artnet-settings-boundary OK
+- npm run test:artnet-server-boundary OK
+- npm run test:artnet-live-source-policy OK
+
+Poznámka:
+- npm run check:js opět nedoběhl do 30 s timeoutu, stejně jako u předchozích kroků, proto není počítán jako dokončený.

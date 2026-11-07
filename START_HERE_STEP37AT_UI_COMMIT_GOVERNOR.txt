@@ -1,0 +1,29 @@
+STEP37AT_UI_COMMIT_GOVERNOR
+
+Navazuje na STEP37AS_PREVIEW_NAV_FASTPATH.
+
+Cíl:
+- dál zmenšit mikro-lagy při klikání v UI, přepínání panelů a práci se slidery během běžícího fyzického outputu.
+
+Změny:
+1) public/app.js
+   - commitState() má live-output governor.
+   - Pokud je aktivní fyzický output lock / protokol output, stav se v paměti mění okamžitě, ale websocket/disk/parent sync se slučuje do krátkého 72ms okna.
+   - Tím se omezuje JSON serializace a postMessage v přesném okamžiku, kdy má běžet output frame.
+   - Debug objekt: window.__budilightUiCommitGovernor37AT
+
+2) public/debug_panel.js
+   - Output Stability nově ukazuje uiCommit wait/ok a počet sloučených commitů.
+   - Při čekajícím commit governoru přidává sticky note ui-commit-governor.
+
+Test:
+- Spusť fyzický ArtNet/Serial output.
+- Přejížděj mezi Pixel big / Shader / Debug / Settings.
+- Hýbej BPM, master, cross sliderem.
+- Sleduj Debug -> Output Stability:
+  - uiCommit wait/N znamená, že UI commity jsou správně slučované.
+  - output FPS by neměl cukat při každém UI kliknutí.
+
+Poznámka:
+- Není mazána žádná stará cesta.
+- Tohle je bezpečný governor nad existujícím commit mechanismem.

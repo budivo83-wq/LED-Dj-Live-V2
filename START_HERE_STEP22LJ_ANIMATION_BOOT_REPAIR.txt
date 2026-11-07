@@ -1,0 +1,5 @@
+STEP22LJ ANIMATION BOOT REPAIR
+
+- Preserve this note so migration guards can verify the sequencer purge follow-up history.
+- The animation boot path should stay owned by the runtime startup flow, not by any removed sequencer page assets.
+- When boot issues appear, validate module manifest loading before touching output or mapping code.

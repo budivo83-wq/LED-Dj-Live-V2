@@ -1,0 +1,21 @@
+STEP22NY_ARTNET_60_SWITCH_FREEZE_FIX
+
+Opravy:
+1) ArtNet live output už nebere default settings.fps = 30.
+   serial_output.js měl v sendArtnetLiveFrame(): settings.fps || 30, což fyzický ArtNet stream drželo kolem 30 FPS i když debug/transport tvrdil 60.
+   Nově preferuje artnetMirrorFps / maxLiveFps / uložený master mirror FPS a fallback je 60.
+
+2) ArtNet mapping patch se už nekompiluje při každém output framu.
+   Patch je cacheovaný krátkým 1s oknem a publikuje se jen při změně signatury.
+   Tím se odstraní zbytečná práce v hot output cestě.
+
+3) Přepnutí animace už nespouští těžký shader warmup / neighbor preload / CPU prewarm synchronně v click/change cestě.
+   Modul se přepne hned, fade se spustí hned, warmupy běží opožděně přes idle/timeout.
+
+4) Po přepnutí animace se už nevynucuje okamžitý plný preview draw uvnitř switch handleru.
+   Output loop si vezme další frame sám, preview doběhne vlastním throttlovaným tempem.
+
+Doporučení po nahrání:
+- udělej hard refresh / clear site data,
+- v Settings ověř Output FPS / ArtNet mirror FPS = 60,
+- při testu měj otevřený Performance, ale Debug panel raději nezobrazuj nonstop, protože sám dost zatěžuje DOM.

@@ -1,0 +1,15 @@
+STEP37BG - NAV PERF DIAGNOSTICS
+
+Changes:
+- Added visible shell-level navigation performance diagnostics overlay.
+- Tracks route, elapsed time, iframe load time, UI ready time, first output relay and first preview frame after navigation.
+- Exposes latest navigation metrics through window.__ledShellBoot.state.shellNavPerf.
+- Keeps existing shell navigation behavior unchanged; this step is diagnostic-only.
+
+Purpose:
+- Identify whether page switching lag comes from iframe load, UI ready/bootstrap, output telemetry relay, or preview startup.
+- Prepare for the next step: iframe keep-alive/page cache.
+
+Validation:
+- node --check public/shell.js
+- node --check public/runtime/shell_navigation_scheduler.js

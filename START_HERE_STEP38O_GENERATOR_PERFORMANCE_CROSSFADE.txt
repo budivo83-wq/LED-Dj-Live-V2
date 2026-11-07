@@ -1,0 +1,19 @@
+STEP38O GENERATOR PERFORMANCE CROSSFADE
+
+Open Generator.
+Set Takeover fade and Release fade in panel 04 Live Operator.
+
+Recommended first test:
+- Takeover fade: 0.9s
+- Release fade: 0.7s
+- Curve: smooth
+
+Start Performance output.
+Open Generator.
+Press LIVE MASTER.
+Generator should capture the previous MASTER frame and fade into its own frames while still owning output via the same MASTER bridge.
+
+Press LIVE ON again or OFF/RELEASE.
+Generator will fade down before releasing Performance back to the master output.
+
+No direct UDP writer was added.

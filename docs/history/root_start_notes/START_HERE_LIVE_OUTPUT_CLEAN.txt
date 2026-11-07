@@ -1,0 +1,27 @@
+BudiLight / LED Dj live — CLEAN OPERATOR BUILD
+
+Start:
+  npm install
+  npm start
+  otevři http://localhost:3000
+
+Běžné stránky:
+  /index.html       Performance
+  /animations.html  Gallery
+  /mapping.html     Mapping
+  /settings.html    Live Output Settings
+
+Co zůstalo pro obsluhu:
+  - Serial output pro ESP32D raw serial
+  - ArtNet output
+  - základní Quick hardware check
+  - START LIVE / STOP LIVE / BLACKOUT / PANIC
+
+Co bylo uklizeno:
+  - samostatné testovací stránky z public/
+  - historické START_HERE/START_LIVE soubory
+  - staré STEP dokumenty
+  - obří live-audit-log
+  - přebujelé package scripts
+
+Nic není trvale smazané: vše je v archive/operator_cleanup_step22fy/.

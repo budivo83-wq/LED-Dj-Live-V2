@@ -1,0 +1,36 @@
+STEP37BM - Sequencer command bus continuation
+
+Goal:
+- Move quick sequencer runtime actions further away from heavy normal state sync.
+- Keep state-update fallback intact.
+
+Changed:
+- public/app.js
+  - BudiStepSeqFastApi now exposes sendCommand(kind, payload, options).
+  - The command is sent as websocket { type:'command', command:{ kind, payload, persist:false }}.
+
+- public/runtime/websocket_sync.js
+  - Incoming websocket commands are also dispatched locally as window event:
+    budilight:command
+  - Patch/state commands still continue through the previous state application path.
+  - Payload-only commands no longer need to become global state updates.
+
+- public/runtime/quick_step_automator.js
+  - Added sequencer-command messages for:
+    - transport ON/OFF
+    - follow toggle
+    - seek/playhead jump
+    - grid-edit
+    - step-trigger
+  - Step-trigger sends the actual row modes for the current step, so receivers do not need to infer from a full state patch.
+  - Added remote command handler with loop-suppression guard.
+  - Existing localStorage saving and old fallback paths remain available.
+
+Validation:
+- node --check public/app.js
+- node --check public/runtime/websocket_sync.js
+- node --check public/runtime/quick_step_automator.js
+
+Notes:
+- This is a safe bridge layer, not a destructive sequencer rewrite.
+- The next optimization should target making sequencer pattern/program persistence idle-only and reducing any remaining full renderAll(true) calls during editing/navigation.

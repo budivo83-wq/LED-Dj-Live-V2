@@ -1,0 +1,23 @@
+STEP37BZ_BACKEND_WRITER_GUARD
+
+Cil:
+- Zablokovat serverove fallback/test/visible-chase writery pri realnem live ArtNet vystupu.
+- Backend uz nema potichu poslat autonomni frame do ArtNet, kdyz master-driven Performance frame loop bezi.
+
+Upraveno:
+- src/output/artnet_sync_live_sender_22dq.js
+
+Hlavni zmeny:
+1) Pridan backendWriterGuard37BZ.
+2) sendOneFrame() pri live udp-armed + master-framebus blokuje:
+   - visible-chase
+   - test-generator
+   - fallback/startup-fallback
+   - preview/debug/probe/gallery/thumbnail zdroje
+   - autonomni backend frame bez explicitniho operatorIntent/allowBackendWriter
+3) sendLatestMasterEvent() ma vlastni master-event guard a stale muze posilat Performance master frame.
+4) blackout() je oznacen jako operator-blackout + operatorIntent, aby zustal funkcni jako vedomy operator prikaz.
+5) Stav je videt v /api/artnet/sync-live/status jako backendWriterGuard37BZ.
+
+Kontrola:
+- 480 JS/MJS souboru proslo node --check bez syntax chyb.

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LED Dj live - Generator</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="performance.css" />
+  <link rel="stylesheet" href="performance_topbar.css" />
+  <link rel="stylesheet" href="performance_mix.css" />
+  <link rel="stylesheet" href="generator.css" />
+</head>
+<body class="ui-pro performance-page generator-page">
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="top-left-cluster">
+        <div class="brand-block">
+          <button id="onoff" class="power-btn" type="button">ON</button>
+          <div class="brand-mark">◈</div>
+          <div class="brand-text"><strong>LED<br>Dj</strong><span>generator</span></div>
+        </div>
+      </div>
+      <nav class="workspace-tabs" aria-label="Workspace">
+        <button class="nav" type="button" data-nav-href="index.html">PERFORMANCE</button>
+        <button class="nav active" type="button" data-nav-href="generator.html">GENERATOR</button>
+        <button class="nav" type="button" data-nav-href="animations.html">GALLERY</button>
+        <button class="nav" type="button" data-nav-href="show-os.html">SHOW OS</button>
+        <button class="nav" type="button" data-nav-href="mapping.html">MAPPING</button>
+        <button class="nav" type="button" data-nav-href="settings.html">SETTINGS</button>
+      </nav>
+      <div class="top-right-cluster">
+        <div class="status-strip status-strip-inline">
+          <div class="status-card"><span>MODE</span><strong id="generatorModeBadge">OFF</strong><small>safe</small></div>
+          <div class="status-card"><span>FPS</span><strong id="generatorFpsBadge">--</strong><small>preview</small></div>
+          <div class="status-card"><span>FRAME</span><strong>300×8</strong><small>RGB</small></div>
+        </div>
+        <button id="menuBtn" class="menu-btn" type="button">☰</button>
+      </div>
+    </header>
+
+    <section id="centerMenuStrip" class="center-menu-strip" aria-label="Main menu">
+      <button data-href="index.html" type="button">PERFORMANCE</button>
+      <button data-href="generator.html" type="button">GENERATOR</button>
+      <button data-href="animations.html" type="button">GALLERY</button>
+      <button data-href="show-os.html" type="button">SHOW OS</button>
+      <button data-href="mapping.html" type="button">MAPPING V2</button>
+      <button data-href="settings.html" type="button">SETTINGS</button>
+      <button id="menuFullscreenBtn" type="button">FULLSCREEN OFF</button>
+    </section>
+
+    <main class="generator-workbench">
+      <aside class="generator-panel">
+        <h2>01 Generator Control</h2>
+        <p class="generator-muted">STEP38V režim: generátor má live takeover, Settings FPS, stabilitu, crossfade, hudební režimy, Beat Intelligence, Scene Morph, Journey Timeline, MIDI/APC control, Node Graph UI v2 a nové shader/field moduly. OFF uvolní generátor, PREVIEW kreslí jen náhled, LIVE MASTER publikuje vlastní 300×8 RGB frame do framebusu a server MASTER mirroru.</p>
+        <div class="generator-actions">
+          <button id="generatorOff" class="active" type="button">OFF</button>
+          <button id="generatorPreview" type="button">PREVIEW</button>
+          <button id="generatorLive" class="danger" type="button">LIVE MASTER</button>
+        </div>
+        <div class="generator-actions">
+          <button id="generatorRandomSmall" type="button">SMALL MUTATION</button>
+          <button id="generatorReset" type="button">RESET PATCH</button>
+          <button id="generatorSave" type="button">SAVE STATE</button>
+          <button id="generatorRelease" type="button">RELEASE</button>
+        </div>
+
+        <h3>Show OS Bridge</h3>
+        <div class="generator-showos-bridge">
+          <div><span>Status</span><strong id="generatorShowOsStatus">READY</strong></div>
+          <small id="generatorShowOsSummary">Čekám na Show OS bridge payload.</small>
+          <div class="generator-actions compact">
+            <button id="generatorApplyShowOs" type="button">APPLY SHOW OS</button>
+            <button id="generatorShowOsAuto" type="button">AUTO FOLLOW OFF</button>
+            <button id="generatorShowOsIgnore" type="button">IGNORE CURRENT</button>
+          </div>
+        </div>
+
+        <h3>Preset bank</h3>
+        <div class="generator-preset-bank">
+          <input id="generatorPresetName" type="text" value="Psy Tunnel Starter" aria-label="Patch name" />
+          <select id="generatorPresetSelect" aria-label="Generator preset"></select>
+          <div class="generator-actions compact">
+            <button id="generatorLoadPreset" type="button">LOAD</button>
+            <button id="generatorSavePresetAs" type="button">SAVE AS</button>
+            <button id="generatorDeletePreset" type="button">DELETE CUSTOM</button>
+          </div>
+        </div>
+
+        <h3>Modules</h3>
+        <div id="generatorModuleList" class="generator-module-list"></div>
+      </aside>
+
+      <section class="generator-panel generator-preview-card">
+        <div class="generator-preview-focus">
+          <header class="generator-preview-head">
+            <h2>02 Preview / Master Frame</h2>
+            <button id="generatorPreviewExpand" class="generator-preview-expand" type="button" aria-expanded="false" aria-controls="generatorCanvas">LARGE VIEW</button>
+          </header>
+          <div class="generator-preview-frame">
+            <canvas id="generatorCanvas" width="300" height="8"></canvas>
+          </div>
+          <div class="generator-preview-hint">Sticky preview · scrollovat můžeš dál, náhled zůstává nahoře.</div>
+          <div class="generator-status-grid">
+            <div><span>Writer</span><strong id="generatorWriter">preview only</strong></div>
+            <div><span>Patch</span><strong id="generatorPatchName">Psy Tunnel Starter</strong></div>
+            <div><span>Beat</span><strong id="generatorBeat">0.00</strong></div>
+            <div><span>Bridge</span><strong id="generatorBridgeStatus">RELEASED</strong></div>
+            <div><span>Server</span><strong id="generatorServerStatus">idle</strong></div>
+            <div><span>FrameBus</span><strong id="generatorFrameBusStatus">--</strong></div>
+            <div><span>Local</span><strong id="generatorSentStatus">--</strong></div>
+          </div>
+        </div>
+
+
+        <section class="generator-operator-panel" aria-label="Generator live operator controls">
+          <header>
+            <div>
+              <h3>04 Live Operator</h3>
+              <p class="generator-muted">Rychlé bezpečné scény, blackout, release a základní měření zátěže pro živý test.</p>
+            </div>
+            <strong id="generatorOperatorBadge">SAFE</strong>
+          </header>
+          <div class="generator-operator-grid">
+            <label>Safe scene
+              <select id="generatorSafeSceneSelect" aria-label="Generator safe scene"></select>
+            </label>
+            <label>Live FPS ze Settings
+              <input id="generatorLiveFpsSelect" type="number" min="1" max="60" step="1" value="60" readonly aria-label="Generator live FPS from Settings" />
+              <small id="generatorLiveFpsSource">Settings FPS</small>
+            </label>
+            <label>Takeover fade
+              <select id="generatorTransitionTakeover" aria-label="Generator takeover transition">
+                <option value="0">CUT</option>
+                <option value="500">0.5s</option>
+                <option value="900" selected>0.9s</option>
+                <option value="1500">1.5s</option>
+                <option value="2500">2.5s</option>
+              </select>
+            </label>
+            <label>Release fade
+              <select id="generatorTransitionRelease" aria-label="Generator release transition">
+                <option value="0">CUT</option>
+                <option value="500">0.5s</option>
+                <option value="700" selected>0.7s</option>
+                <option value="1200">1.2s</option>
+                <option value="2000">2.0s</option>
+              </select>
+            </label>
+            <label>Transition curve
+              <select id="generatorTransitionCurve" aria-label="Generator transition curve">
+                <option value="smooth" selected>smooth</option>
+                <option value="ease">ease</option>
+                <option value="linear">linear</option>
+              </select>
+            </label>
+          </div>
+          <div class="generator-transition-status">
+            <span>Transition</span>
+            <strong id="generatorTransitionStatus">IDLE</strong>
+            <button id="generatorTransitionReport" type="button">COPY TRANSITION REPORT</button>
+          </div>
+          <div class="generator-actions compact">
+            <button id="generatorApplySafeScene" type="button">APPLY SAFE SCENE</button>
+            <button id="generatorBlackoutFrame" class="danger" type="button">BLACKOUT FRAME</button>
+            <button id="generatorPanicRelease" class="danger" type="button">PANIC RELEASE</button>
+          </div>
+          <div class="generator-metrics-grid">
+            <div><span>Render</span><strong id="generatorMetricRender">--</strong><small>ms avg / max</small></div>
+            <div><span>Publish</span><strong id="generatorMetricPublish">--</strong><small>ms avg</small></div>
+            <div><span>Server</span><strong id="generatorMetricServer">--</strong><small>ms avg</small></div>
+            <div><span>Drops</span><strong id="generatorMetricDrops">--</strong><small>fps gate</small></div>
+          </div>
+        </section>
+
+        <section class="generator-music-mode-panel" aria-label="Generator music modes">
+          <header class="generator-music-mode-header">
+            <div>
+              <h3>05 Music Modes</h3>
+              <p class="generator-muted">Hudební režim není jen preset: nastaví patch, node graph, křivky a při běhu jemně moduluje makra podle beatu/fráze.</p>
+            </div>
+            <strong id="generatorMusicModeBadge">MANUAL</strong>
+          </header>
+          <div class="generator-music-mode-grid">
+            <label>Mode
+              <select id="generatorMusicModeSelect" aria-label="Generator music mode"></select>
+            </label>
+            <div class="generator-music-mode-actions">
+              <button id="generatorApplyMusicMode" type="button">APPLY MODE</button>
+              <button id="generatorMusicModeRuntime" type="button">RUNTIME ON</button>
+            </div>
+          </div>
+          <div class="generator-music-mode-status">
+            <span>Status</span>
+            <strong id="generatorMusicModeStatus">MANUAL</strong>
+            <small id="generatorMusicModeIntent">Ruční patch bez hudebního runtime.</small>
+          </div>
+          <div class="generator-actions compact">
+            <button id="generatorBuildNow" type="button">BUILD NOW</button>
+            <button id="generatorDropNow" class="danger" type="button">DROP NOW</button>
+            <button id="generatorMusicModeReport" type="button">COPY MUSIC REPORT</button>
+          </div>
+        </section>
+
+
+
+        <section class="generator-beat-intel-panel" aria-label="Generator beat intelligence">
+          <header class="generator-music-mode-header">
+            <div>
+              <h3>05B Beat Intelligence</h3>
+              <p class="generator-muted">Hudební časování nad BPM: beat/bar/phrase/drop akcenty pro Generator engine a Music Modes. Neotevírá žádný nový výstupní writer.</p>
+            </div>
+            <strong id="generatorBeatIntelBadge">BEAT</strong>
+          </header>
+          <div class="generator-music-mode-grid">
+            <label>Phrase beats
+              <input id="generatorBeatIntelPhraseBeats" type="number" min="4" max="128" step="4" value="16" aria-label="Generator beat phrase beats" />
+            </label>
+            <label>Accent amount
+              <input id="generatorBeatIntelAccentAmount" type="range" min="0" max="1" step="0.01" value="0.46" aria-label="Generator beat accent amount" />
+            </label>
+            <label>Drop hold
+              <input id="generatorBeatIntelDropHold" type="number" min="1" max="64" step="1" value="8" aria-label="Generator drop hold beats" />
+            </label>
+            <div class="generator-music-mode-actions">
+              <button id="generatorBeatIntelEnabled" type="button">BEAT INTEL ON</button>
+              <button id="generatorBeatTap" type="button">TAP BEAT</button>
+            </div>
+          </div>
+          <div class="generator-midi-status-grid">
+            <div><span>BPM</span><strong id="generatorBeatIntelBpm">--</strong></div>
+            <div><span>Phrase</span><strong id="generatorBeatIntelPhrase">--</strong></div>
+            <div><span>Accent</span><strong id="generatorBeatIntelAccent">--</strong></div>
+          </div>
+          <div class="generator-music-mode-status">
+            <span>Status</span>
+            <strong id="generatorBeatIntelStatus">BOOT</strong>
+            <small>DROP MARK přidá dočasný drop akcent; PHRASE RESET srovná frázi na aktuální beat.</small>
+          </div>
+          <div class="generator-actions compact">
+            <button id="generatorBeatPhraseReset" type="button">PHRASE RESET</button>
+            <button id="generatorBeatDropMark" class="danger" type="button">DROP MARK</button>
+            <button id="generatorBeatIntelCopy" type="button">COPY BEAT REPORT</button>
+          </div>
+          <pre id="generatorBeatIntelReport" class="generator-live-test-log">BEAT INTELLIGENCE BOOT</pre>
+        </section>
+
+        <section class="generator-scene-morph-panel" aria-label="Generator scene morph">
+          <header class="generator-scene-morph-header">
+            <div>
+              <h3>06 Scene Morph</h3>
+              <p class="generator-muted">Plynulý morph mezi hudebním režimem nebo presetem. Nepřidává další writer, jen mění Generator frame před LIVE MASTER bridge.</p>
+            </div>
+            <strong id="generatorSceneMorphBadge">READY</strong>
+          </header>
+          <div class="generator-scene-morph-grid">
+            <label>Target
+              <select id="generatorSceneMorphTarget" aria-label="Generator scene morph target"></select>
+            </label>
+            <label>Duration
+              <input id="generatorSceneMorphDuration" type="number" min="1" max="256" step="1" value="16" aria-label="Generator scene morph duration" />
+            </label>
+            <label>Time mode
+              <select id="generatorSceneMorphTimeMode" aria-label="Generator scene morph time mode">
+                <option value="beats" selected>beats</option>
+                <option value="seconds">seconds</option>
+              </select>
+            </label>
+            <label>Curve
+              <select id="generatorSceneMorphCurve" aria-label="Generator scene morph curve">
+                <option value="smooth" selected>smooth</option>
+                <option value="ease">ease</option>
+                <option value="ease-in">ease in</option>
+                <option value="ease-out">ease out</option>
+                <option value="linear">linear</option>
+              </select>
+            </label>
+          </div>
+          <label class="generator-scene-morph-commit">
+            <input id="generatorSceneMorphCommit" type="checkbox" checked />
+            <span>Commit target po dokončení morphu</span>
+          </label>
+          <div class="generator-scene-morph-progress" aria-label="Scene morph progress">
+            <div id="generatorSceneMorphBar"></div>
+          </div>
+          <div class="generator-scene-morph-status">
+            <span>Status</span>
+            <strong id="generatorSceneMorphStatus">ARMED</strong>
+          </div>
+          <div class="generator-actions compact">
+            <button id="generatorSceneMorphArm" type="button">MORPH TO TARGET</button>
+            <button id="generatorSceneMorphCancel" class="danger" type="button">CANCEL MORPH</button>
+            <button id="generatorSceneMorphReport" type="button">COPY MORPH REPORT</button>
+          </div>
+        </section>
+
+
+        <section class="generator-journey-panel" aria-label="Generator journey timeline">
+          <header class="generator-journey-header">
+            <div>
+              <h3>07 Journey Timeline</h3>
+              <p class="generator-muted">Automatická režie celé cesty: vybírá další hudební režim/preset, spustí Scene Morph, podrží scénu a pokračuje na další krok.</p>
+            </div>
+            <strong id="generatorJourneyBadge">IDLE</strong>
+          </header>
+          <div class="generator-journey-grid">
+            <label>Journey
+              <select id="generatorJourneySelect" aria-label="Generator journey preset"></select>
+            </label>
+            <label class="generator-journey-check">
+              <input id="generatorJourneyLoop" type="checkbox" />
+              <span>Loop</span>
+            </label>
+            <label class="generator-journey-check">
+              <input id="generatorJourneyAutoPreview" type="checkbox" checked />
+              <span>Auto PREVIEW z OFF</span>
+            </label>
+            <label class="generator-journey-check">
+              <input id="generatorJourneyCommit" type="checkbox" checked />
+              <span>Commit step po morphu</span>
+            </label>
+          </div>
+          <div class="generator-journey-progress" aria-label="Journey progress">
+            <div id="generatorJourneyBar"></div>
+          </div>
+          <div class="generator-journey-status">
+            <span>Status</span>
+            <strong id="generatorJourneyStatus">IDLE</strong>
+            <small id="generatorJourneyNext">Vyber Journey a spusť START JOURNEY.</small>
+          </div>
+          <div id="generatorJourneySteps" class="generator-journey-steps">Načítám kroky...</div>
+          <div class="generator-actions compact">
+            <button id="generatorJourneyLoad" type="button">LOAD JOURNEY</button>
+            <button id="generatorJourneyStart" type="button">START JOURNEY</button>
+            <button id="generatorJourneyStop" class="danger" type="button">STOP JOURNEY</button>
+            <button id="generatorJourneyReport" type="button">COPY JOURNEY REPORT</button>
+          </div>
+        </section>
+
+        <section class="generator-midi-panel" aria-label="Generator MIDI APC control">
+          <header class="generator-midi-header">
+            <div>
+              <h3>08 MIDI / APC Control</h3>
+              <p class="generator-muted">Web MIDI vrstva pro APC40/APC mini/Oxygen/generic MIDI: makra, hudební režimy, morph, Journey a nouzové akce. Ovládá pouze Generator, nepřidává žádný nový output writer.</p>
+            </div>
+            <strong id="generatorMidiBadge">BOOT</strong>
+          </header>
+          <div class="generator-midi-grid">
+            <label>Input
+              <select id="generatorMidiInputSelect" aria-label="Generator MIDI input">
+                <option value="auto">AUTO / první dostupný</option>
+              </select>
+            </label>
+            <label>Learn action
+              <select id="generatorMidiLearnAction" aria-label="Generator MIDI learn action"></select>
+            </label>
+          </div>
+          <div class="generator-actions compact">
+            <button id="generatorMidiConnect" type="button">CONNECT MIDI</button>
+            <button id="generatorMidiEnable" type="button">MIDI OFF</button>
+            <button id="generatorMidiLearn" type="button">LEARN NEXT</button>
+            <button id="generatorMidiRefresh" type="button">REFRESH MIDI</button>
+            <button id="generatorMidiReset" class="danger" type="button">RESET MAP</button>
+            <button id="generatorMidiReport" type="button">COPY MIDI REPORT</button>
+          </div>
+          <div class="generator-midi-status-grid">
+            <div><span>Status</span><strong id="generatorMidiStatus">čekám na MIDI access</strong></div>
+            <div><span>Last message</span><strong id="generatorMidiLast">--</strong></div>
+            <div><span>Last action</span><strong id="generatorMidiAction">--</strong></div>
+          </div>
+          <div class="generator-midi-mapping-wrap">
+            <h4>Active mappings</h4>
+            <ul id="generatorMidiMappingList" class="generator-midi-mapping-list"><li>Načítám mapování...</li></ul>
+          </div>
+        </section>
+
+        <section class="generator-stability-panel" aria-label="Generator live stability watchdog">
+          <header class="generator-stability-header">
+            <div>
+              <h3>06 Live Stability Watchdog</h3>
+              <p class="generator-muted">Kontrola, že Generator opravdu vlastní output, Performance je ztišená, MASTER mirror je čerstvý a ArtNet drží FPS ze Settings.</p>
+            </div>
+            <strong id="generatorStabilityBadge">BOOT</strong>
+          </header>
+          <div id="generatorStabilityCards" class="generator-stability-cards">Načítám stabilitu...</div>
+          <div class="generator-stability-verdict">
+            <span>Verdikt</span>
+            <strong id="generatorStabilityVerdict">--</strong>
+            <small id="generatorStabilityNext">--</small>
+          </div>
+          <div class="generator-stability-hints">
+            <h4>Live warnings</h4>
+            <ul id="generatorStabilityHints"><li>Čekám na první diagnostiku.</li></ul>
+          </div>
+          <div class="generator-actions compact">
+            <button id="generatorStabilityRefresh" type="button">REFRESH STABILITY</button>
+            <button id="generatorStabilityCopy" type="button">COPY STABILITY REPORT</button>
+          </div>
+        </section>
+
+        <section class="generator-live-test-panel" aria-label="Generator live testing chain">
+          <header class="generator-live-test-header">
+            <div>
+              <h3>06 Live Testing Chain</h3>
+              <p class="generator-muted">Jedno místo pro kontrolu cesty: Show OS → Generator → MASTER mirror → ArtNet sender → UDP/LED.</p>
+            </div>
+            <strong id="generatorLiveTestStage">BOOT</strong>
+          </header>
+          <div id="generatorLiveChain" class="generator-live-chain">Načítám diagnostiku...</div>
+          <div class="generator-live-verdict">
+            <span>Verdikt</span>
+            <strong id="generatorLiveVerdict">--</strong>
+            <small id="generatorLiveNext">--</small>
+          </div>
+          <div class="generator-actions compact">
+            <button id="generatorLiveTestRefresh" type="button">REFRESH CHAIN</button>
+            <button id="generatorMasterSelfTest" type="button">MASTER SELF TEST</button>
+            <button id="generatorOpenSettings" type="button">OPEN SETTINGS</button>
+            <button id="generatorOpenShowOs" type="button">OPEN SHOW OS</button>
+          </div>
+          <pre id="generatorLiveTestLog" class="generator-live-test-log">LIVE TEST BOOT</pre>
+        </section>
+
+        <section class="generator-output-truth-panel" aria-label="Generator output truth merge">
+          <header class="generator-output-truth-header">
+            <div>
+              <h3>08 Output Truth</h3>
+              <p class="generator-muted">Konkrétní ArtNet pravda bez přepínání do Settings: source, bind IP, target, port, routes, sender a poslední UDP výsledek.</p>
+            </div>
+            <strong id="generatorOutputTruthBadge">BOOT</strong>
+          </header>
+          <div id="generatorOutputTruthCards" class="generator-output-truth-cards">Načítám Output Truth...</div>
+          <div class="generator-output-truth-routes-wrap">
+            <h4>Routes / universes</h4>
+            <div id="generatorOutputTruthRoutes" class="generator-output-truth-routes">--</div>
+          </div>
+          <div class="generator-output-truth-hints">
+            <h4>Why not output?</h4>
+            <ul id="generatorOutputTruthHints"><li>Čekám na diagnostiku.</li></ul>
+          </div>
+          <div class="generator-actions compact">
+            <button id="generatorOutputTruthRefresh" type="button">REFRESH OUTPUT TRUTH</button>
+            <button id="generatorOutputTruthCopy" type="button">COPY REPORT</button>
+            <button id="generatorOpenMapping" type="button">OPEN MAPPING</button>
+          </div>
+        </section>
+
+
+        <section class="generator-field-test-panel" aria-label="Generator field test controls">
+          <header class="generator-field-test-header">
+            <div>
+              <h3>09 Field Test Controls</h3>
+              <p class="generator-muted">Fyzické testy pásků přes stejný MASTER/ArtNet řetězec: žádný nový UDP writer, žádný fallback výstup.</p>
+            </div>
+            <strong id="generatorFieldTestBadge">READY</strong>
+          </header>
+          <div class="generator-field-test-grid">
+            <label>Test
+              <select id="generatorFieldTestType" aria-label="Generator field test type"></select>
+            </label>
+            <label>Strip
+              <select id="generatorFieldTestStrip" aria-label="Generator field test strip">
+                <option value="all">ALL</option>
+                <option value="0">S1</option>
+                <option value="1">S2</option>
+                <option value="2">S3</option>
+                <option value="3">S4</option>
+                <option value="4">S5</option>
+                <option value="5">S6</option>
+                <option value="6">S7</option>
+                <option value="7">S8</option>
+              </select>
+            </label>
+            <label>Universe
+              <select id="generatorFieldTestUniverse" aria-label="Generator field test universe">
+                <option value="auto">AUTO</option>
+              </select>
+            </label>
+            <label>Color
+              <select id="generatorFieldTestColor" aria-label="Generator field test color"></select>
+            </label>
+            <label>Intensity <b id="generatorFieldTestIntensityValue">78%</b>
+              <input id="generatorFieldTestIntensity" type="range" min="0.05" max="1" step="0.01" value="0.78" />
+            </label>
+            <label>Hold
+              <select id="generatorFieldTestHold" aria-label="Generator field test hold seconds">
+                <option value="1.5">1.5s</option>
+                <option value="3" selected>3s</option>
+                <option value="8">8s</option>
+                <option value="30">30s</option>
+              </select>
+            </label>
+          </div>
+          <div class="generator-actions compact">
+            <button id="generatorFieldTestPreview" type="button">PREVIEW TEST</button>
+            <button id="generatorFieldTestPublish" type="button">PUBLISH IF LIVE</button>
+            <button id="generatorFieldTestStop" class="danger" type="button">STOP TEST</button>
+            <button id="generatorFieldTestCopy" type="button">COPY TEST REPORT</button>
+          </div>
+          <div class="generator-field-test-summary">
+            <span>Active test</span>
+            <strong id="generatorFieldTestSummary">Žádný field test neběží.</strong>
+            <small id="generatorFieldTestHint">PUBLISH posílá frame ven jen při zapnutém LIVE MASTER. V PREVIEW/OFF je test bezpečně jen v náhledu.</small>
+          </div>
+        </section>
+
+        <section class="generator-node-editor-panel" aria-label="Generator node graph editor">
+          <header class="generator-node-editor-header">
+            <div>
+              <h3>Node graph v2</h3>
+              <p class="generator-muted">Skládání bloků: přidat, duplikovat, bypass, solo, delete a změna pořadí. Stále jde přes stejný Generator render → LIVE MASTER bridge.</p>
+            </div>
+          </header>
+          <div class="generator-node-toolbar">
+            <label>Add node
+              <select id="generatorNodeAddSelect" aria-label="Generator add node type"></select>
+            </label>
+            <button id="generatorNodeAdd" type="button">ADD NODE</button>
+            <button id="generatorNodeClearSolo" type="button">CLEAR SOLO / ENABLE ALL</button>
+            <button id="generatorNodeCopyReport" type="button">COPY GRAPH REPORT</button>
+          </div>
+          <div id="generatorNodeFlow" class="generator-node-flow"></div>
+        </section>
+      </section>
+
+      <aside class="generator-panel">
+        <h2>03 Macros / Curves</h2>
+        <p class="generator-muted">Makra jsou rychlé ruční ovladače. Curves řídí vývoj parametrů, zatímco Node graph skládá samotný obrazový řetězec.</p>
+        <h3>Macros</h3>
+        <div id="generatorMacroGrid" class="generator-macro-grid"></div>
+        <h3>Curves</h3>
+        <div id="generatorControls" class="generator-control-stack"></div>
+        <h3>Diagnostics</h3>
+        <pre id="generatorLog" class="generator-log">BOOT</pre>
+      </aside>
+    </main>
+  </div>
+
+  <script src="runtime/runtime_loop_registry_37ce.js?v=38d"></script>
+  <script src="runtime/output_route_registry_37bb.js?v=37bb"></script>
+  <script src="runtime/output_writer_interlock_37by.js?v=37by"></script>
+  <script type="module" src="generator.js?v=38v-beat-intelligence"></script>
+</body>
+</html>

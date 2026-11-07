@@ -1,0 +1,25 @@
+STEP37DL_STEPSEQ_THUMB_PROFILER
+
+Cíl:
+- Navázat na STEP37DK a rozšířit Debug / Output Health tak, aby už neukazoval jen writer/loop registry, ale i praktické podezřelé zdroje micro-lagů: quick-step sequencer a thumbnail/preload queue.
+
+Změny:
+- output_health_panel_37cd.js version bump na STEP37DL_STEPSEQ_THUMB_PROFILER.
+- Debug snapshot nově sbírá sequencer profiler z __budilightStepSequencerProfiler37AP / __budilightStepSeqPerf37BO.
+- Debug snapshot nově sbírá thumbnail queue stats z __ledThumbQueueStats.
+- Output Health přidal KPI: Sequencer step a Thumb queue.
+- Output Health přidal karty: Sequencer profiler a Thumbnail / preload queue.
+- Verdict/actions nově upozorní na sequencer step hitch nebo thumbnail backlog.
+- Cache bust v index.html: output_health_panel_37cd.js?v=37dl.
+
+Ověřeno:
+- npm run check:js OK
+- npm run test:artnet-settings-boundary OK
+- npm run test:artnet-server-boundary OK
+- npm run test:shell-runner-output-contract OK
+
+Co testovat:
+1. Otevřít Performance -> Debug.
+2. Ověřit, že Output Health už nevypisuje jen Runtime loops, ale i Sequencer profiler a Thumbnail / preload queue.
+3. Zapnout sequencer a sledovat Last / max step. Pokud max leze nad cca 8-12 ms, další krok je rozdělit těžké step akce ještě víc.
+4. Sledovat Thumb queue během live outputu. Pokud queue roste, další krok je tvrdý live-output freeze runtime thumbnail renderu.

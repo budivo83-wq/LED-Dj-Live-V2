@@ -1,0 +1,33 @@
+STEP38B_GENERATOR_SAFE_PREVIEW
+
+Co je hotové:
+1) Přidána samostatná stránka public/generator.html.
+2) Přidán bezpečný preview-only Generator engine:
+   - public/generator.js
+   - public/generator.css
+   - public/runtime/generator_engine.js
+   - public/runtime/generator_graph.js
+   - public/runtime/generator_curves.js
+   - public/runtime/generator_bridge.js
+3) Shell navigace zná generator.html a top navigace má tlačítko GENERATOR.
+4) Generator v této verzi fyzický výstup NEPŘEBÍRÁ. LIVE tlačítko je zamčené a jen vrátí režim Preview.
+5) ArtNet stabilizace STEP38A:
+   - check-js běží paralelně.
+   - data/artnet-live-config.json je přepnuté zpět na standardní port 6454.
+   - Settings ukazují varování při nestandardním ArtNet portu.
+   - Settings mají SAFE RESET 8×300 / 6454.
+   - MultiOut editor má 16 slotů, aby šly vidět všechny split routes pro 8×300.
+   - Přidán OUTPUT TRUTH panel s aktuálním portem, bind IP, targetem a routami.
+
+Jak testovat:
+1) Spustit npm start.
+2) Otevřít shell / app.
+3) Kliknout GENERATOR.
+4) Zapnout PREVIEW. Měl by běžet 300×8 pixelated preview bez dopadu na ArtNet/Serial.
+5) V Settings ověřit ART-NET LIVE:
+   - port 6454,
+   - bind IP ručně vybrat,
+   - SAFE RESET 8×300 / 6454 připraví 16 rout pro 8 stripů po 300 px.
+
+Další krok:
+STEP38C/38D: napojit GeneratorEngine na master framebus přes single-writer guard, aby mohl bezpečně převzít LED output jen při explicitním LIVE ON.

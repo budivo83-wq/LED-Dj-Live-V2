@@ -1,0 +1,11 @@
+STEP37CV_RECOVERED_SAFE_SMOOTHNESS
+
+Základ: STEP37CT_GLOBAL_OUTPUT_SLIDERS_RESTORED.
+STEP37CU se nepoužívá, protože rozbil loading animací/UI.
+
+Bezpečné změny v CV:
+- opraven missing helper bug v output_single_writer_watchdog_37be.js (gateUiActive/gateShouldRun/HIDDEN_TICK_MS), aby watchdog nemohl házet ReferenceError.
+- output_writer_deep_report_37bx.js už mimo Debug/Health neběží těžkým pollingem; snapshot/server poll jsou v pasivním režimu výrazně pomalejší.
+- output_writer_interlock_37by.js dál blokuje špatné writery synchronně při zápisu, ale jeho periodická diagnostika je mimo Debug zlehčená.
+
+Záměr: obnovit funkční loading/animace/UI z CT a pokračovat v plynulosti bez rizikových zásahů do app.js/state sync loaderu.

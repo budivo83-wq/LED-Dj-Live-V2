@@ -1,0 +1,22 @@
+STEP37BU_FRAME_LOOP_GATES
+
+Navazuje na STEP37BT_VIEWPORT_RESIZE_GOVERNOR.
+
+Cil:
+- cached iframe stranky zustavaji v pameti, ale jejich animation/frame loopy nesmi bezet naplno, kdyz nejsou aktivni.
+
+Upraveno:
+- public/animations.js
+  - Gallery/Animation Studio preview loop respektuje led-shell-view-active.
+  - Skryta galerie neprekresluje big preview ani editor preview.
+  - Thumbnail queue se ve skrytem iframe jen odklada, nespousti drawPreview pumpu.
+  - Debug hook: window.__budilightGalleryFrameGate37BU
+
+- public/shadertoy_page.js
+  - Shadertoy GPU draw loop se pri skryti iframe uspi.
+  - Pri navratu na aktivni stranku se preview okamzite obnovi.
+  - Debug hook: window.__budilightShaderFrameGate37BU
+
+Poznamka:
+- Output runner zustava beze zmen.
+- Tohle nesaha na render/output cestu, jen brani cached vedlejsim strankam zrat RAF/GPU/Canvas cas.

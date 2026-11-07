@@ -1,0 +1,16 @@
+/* STEP22FY operator cleanup: hides legacy debug/test clutter without removing runtime wiring. */
+body.settings-page .settings-clean-dev-vault,
+body.settings-page .shader-test-show-box,
+body.settings-page .step22al-repair-panel,
+body.settings-page .settings-card-migration,
+body.settings-page .settings-card-output-routing,
+body.settings-page .settings-card-wireless,
+body.settings-page .settings-card-blx,
+body.settings-page .output-map-card,
+body.settings-page .settings-card-password,
+body.settings-page .advanced-auto-vault,
+body.settings-page .operator-hidden-test { display:none !important; }
+body.settings-page details.advanced-auto-vault { display:none !important; }
+body.settings-page .settings-card-serial,
+body.settings-page .settings-card-artnet { border-color:rgba(34,255,224,.50) !important; box-shadow:0 0 28px rgba(34,255,224,.12) !important; }
+body.settings-page .settings-card-rescue { display:none !important; }

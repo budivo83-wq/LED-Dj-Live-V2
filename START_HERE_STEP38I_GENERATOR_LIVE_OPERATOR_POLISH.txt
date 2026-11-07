@@ -1,0 +1,27 @@
+STEP38I_GENERATOR_LIVE_OPERATOR_POLISH
+
+Navazuje na STEP38H.
+
+Hlavní změny:
+- Generator má nový panel 04 Live Operator.
+- Přidané bezpečné scény pro test: Calm / Build / Drop / Afterhours / Diagnostic / Blackout.
+- Přidaný BLACKOUT FRAME a PANIC RELEASE.
+- Přidaná volba Generator LIVE FPS: 15 / 30 / 45 / 60.
+- Přidané měření render/publish/server ms a drops/errors.
+- Bridge snapshot teď obsahuje last/avg render, publish a server časy.
+
+Důležité:
+- Safe scene při LIVE režimu přepne Generator do PREVIEW, aby změna patchu nevyskočila rovnou na LED.
+- BLACKOUT fyzicky posílá jen když je Generator už v LIVE MASTER.
+- PANIC RELEASE: pokus o blackout frame + release do OFF.
+- UDP ArtNet se stále neposílá z Generatoru přímo, ale přes MASTER mirror a existující ArtNet sender.
+
+Ověřovací příkazy:
+- npm run check:js
+- npm run check:full
+- npm run check:layers
+- npm run test:generator-step38e
+- npm run test:generator-step38f
+- npm run test:generator-step38g
+- npm run test:generator-step38h
+- npm run test:generator-step38i

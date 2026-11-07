@@ -1,0 +1,139 @@
+﻿/* Extracted from performance.css */
+.mapping-page .center-menu-strip,
+.settings-page .center-menu-strip,
+.shorts-page .center-menu-strip {
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+}
+
+.blx-setup-box {
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 217, 255, 0.24);
+  border-radius: 10px;
+  background: rgba(2, 10, 18, 0.6);
+}
+
+.blx-setup-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.blx-setup-head strong {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+#blxProtocolBadge {
+  font-size: 11px;
+  color: #9defff;
+  letter-spacing: 0.04em;
+}
+
+.blx-setup-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(233, 244, 255, 0.82);
+}
+
+.settings-card-runtime {
+  order: 0;
+}
+
+.settings-card-appearance {
+  order: 1;
+}
+
+.settings-card-tools {
+  order: 2;
+}
+
+.settings-card-password {
+  order: 99;
+}
+
+.settings-card-output-routing {
+  order: 3;
+}
+
+.settings-card-serial {
+  order: 11;
+}
+
+.settings-card-blx {
+  order: 12;
+}
+
+.settings-card-artnet {
+  order: 13;
+}
+
+.settings-card-wireless {
+  order: 14;
+}
+
+.output-map-card {
+  order: 98;
+}
+
+
+
+.runtime-stable-live-btn {
+  width: 100%;
+  margin: 8px 0 4px;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 192, 64, 0.55);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255, 150, 32, 0.18), rgba(255, 64, 96, 0.12));
+  color: #ffe7b0;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow: 0 0 18px rgba(255, 140, 40, 0.12);
+}
+
+.runtime-stable-live-btn:hover {
+  border-color: rgba(255, 220, 120, 0.85);
+  box-shadow: 0 0 24px rgba(255, 140, 40, 0.22);
+}
+
+.runtime-stable-live-note {
+  margin-bottom: 8px;
+}
+
+/* STEP22GD: compact operator live-output health panel */
+.live-output-health {
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  line-height: 1.45;
+  margin-top: 12px;
+}
+.serial-clean-summary {
+  margin-top: 10px;
+  opacity: .9;
+}
+.operator-hidden-test {
+  display: none !important;
+}
+
+
+/* STEP38A: ArtNet truth and safe reset visibility */
+#artnetPortWarning.artnet-port-warning-bad {
+  color: #ffb36f;
+  border-color: rgba(255, 150, 80, .42);
+  background: rgba(255, 120, 50, .08);
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+#artnetTruthPanel38A {
+  border-color: rgba(126, 240, 194, .38);
+  box-shadow: 0 0 22px rgba(126, 240, 194, .08);
+}
+.multiout-slot-panel {
+  max-height: 52vh;
+  overflow: auto;
+  padding-right: 4px;
+}

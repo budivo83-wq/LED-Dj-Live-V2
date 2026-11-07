@@ -1,0 +1,31 @@
+{
+  "ok": true,
+  "version": "STEP22DX_ARTNET_LIVE_REAL_OUTPUT_CONFIG",
+  "savedAt": "2026-07-28T13:56:27.748Z",
+  "config": {
+    "outputIp": "192.168.1.50",
+    "bindIp": "",
+    "targetMode": "unicast",
+    "port": 6454,
+    "fps": 55,
+    "maxLiveFps": 60,
+    "bpm": 145,
+    "stripCount": 8,
+    "pixelsPerStrip": 300,
+    "universeStart": 0,
+    "pixelsPerUniverse": 170,
+    "packetPaceMs": 0,
+    "packetsPerBurst": 32,
+    "maxPendingBatchMs": 120,
+    "callbackMode": "lightweight",
+    "adaptiveFrameClock": "on",
+    "adaptiveFloorFps": 24,
+    "packetOrder": "sequential",
+    "artSyncMode": "off",
+    "masterMaxAgeMs": 2500,
+    "lastGoodHoldMs": 0,
+    "blackoutAfterHold": true,
+    "visualPattern": "master-framebus",
+    "sourceMode": "performance-master-only"
+  }
+}

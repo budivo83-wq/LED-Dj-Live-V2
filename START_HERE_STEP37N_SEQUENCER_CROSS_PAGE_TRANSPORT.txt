@@ -1,0 +1,15 @@
+STEP37N - Sequencer / Performance cross-page transport fix
+
+Fix:
+- Global BPM/beat clock now restores its wall-clock based start time into performance.now() on boot.
+- Returning to Performance after visiting Mapping/Settings/etc no longer restarts beat position from zero.
+- Quick Step Sequencer now persists a lightweight transport clock separately from pattern data.
+- Sequencer saves transport on pagehide/beforeunload/hidden and periodically while running.
+
+Touched:
+- public/bpm_engine.js
+- public/runtime/quick_step_automator.js
+- public/index.html cache-bust query
+
+Intent:
+The sequencer should keep its musical position when switching between pages and return to Performance at the current beat/step instead of starting again from step 1.
