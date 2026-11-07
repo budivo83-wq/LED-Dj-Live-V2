@@ -845,10 +845,11 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
     // still rendered, but the center master frame stayed black and the output
     // router had no useful frame to send.
     if (state.enabled !== false) {
+      const c1Mix = state.l1.flash || state.fx1.flash ? 1 : 1 - state.cross;
+      const c2Mix = state.l2.flash || state.fx2.flash ? 1 : state.cross;
       for (let y = 0; y < H; y += 1) {
+        const rowOffset = y * W * 3;
         for (let x = 0; x < W; x += 1) {
-          const c1Mix = state.l1.flash || state.fx1.flash ? 1 : 1 - state.cross;
-          const c2Mix = state.l2.flash || state.fx2.flash ? 1 : state.cross;
           const c1Base = renderPixelColor("l1", x, y, c1Mix);
           const c2Base = renderPixelColor("l2", x, y, c2Mix);
           const c1 = fx1Active ? applySingleFx(c1Base, fx1, x, y, 0) : c1Base;
@@ -857,9 +858,10 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
           const postFx1 = fxMasterActive ? applySingleFx(blended, fxMaster, x, y, 2) : blended;
           const postFx2 = fxMaster2Active ? applySingleFx(postFx1, fxMaster2, x, y, 3) : postFx1;
           const color = applyOutputCorrection(postFx2);
-          frame[(y * W + x) * 3] = color[0] | 0;
-          frame[(y * W + x) * 3 + 1] = color[1] | 0;
-          frame[(y * W + x) * 3 + 2] = color[2] | 0;
+          const offset = rowOffset + x * 3;
+          frame[offset] = color[0] | 0;
+          frame[offset + 1] = color[1] | 0;
+          frame[offset + 2] = color[2] | 0;
         }
       }
     }
