@@ -103,8 +103,6 @@ Use this page as the top-level map for the project docs.
 - [STEP22KH–KN Visual Physics Core](STEP22KH_KN_VISUAL_PHYSICS_CORE.md)
 - [STEP22KQ Cleanup & Architecture Console](STEP22KQ_CLEANUP_ARCHITECTURE_CONSOLE.md)
 
-- [STEP22KS — Show OS Cleanup Pass 2](STEP22KS_SHOW_OS_CLEANUP_PASS_2.md)
-
 - [STEP22KT — Cleanup Pass 3 / Test Mode Polish](STEP22KT_CLEANUP_PASS_3_TEST_POLISH.md)
 
 - [STEP22KX — Operator Launch Pack](STEP22KX_OPERATOR_LAUNCH_PACK.md)

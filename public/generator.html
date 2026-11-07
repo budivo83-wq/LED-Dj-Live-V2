@@ -24,7 +24,6 @@
         <button class="nav" type="button" data-nav-href="index.html">PERFORMANCE</button>
         <button class="nav active" type="button" data-nav-href="generator.html">GENERATOR</button>
         <button class="nav" type="button" data-nav-href="animations.html">GALLERY</button>
-        <button class="nav" type="button" data-nav-href="show-os.html">SHOW OS</button>
         <button class="nav" type="button" data-nav-href="mapping.html">MAPPING</button>
         <button class="nav" type="button" data-nav-href="settings.html">SETTINGS</button>
       </nav>
@@ -42,7 +41,6 @@
       <button data-href="index.html" type="button">PERFORMANCE</button>
       <button data-href="generator.html" type="button">GENERATOR</button>
       <button data-href="animations.html" type="button">GALLERY</button>
-      <button data-href="show-os.html" type="button">SHOW OS</button>
       <button data-href="mapping.html" type="button">MAPPING V2</button>
       <button data-href="settings.html" type="button">SETTINGS</button>
       <button id="menuFullscreenBtn" type="button">FULLSCREEN OFF</button>
@@ -64,16 +62,6 @@
           <button id="generatorRelease" type="button">RELEASE</button>
         </div>
 
-        <h3>Show OS Bridge</h3>
-        <div class="generator-showos-bridge">
-          <div><span>Status</span><strong id="generatorShowOsStatus">READY</strong></div>
-          <small id="generatorShowOsSummary">Čekám na Show OS bridge payload.</small>
-          <div class="generator-actions compact">
-            <button id="generatorApplyShowOs" type="button">APPLY SHOW OS</button>
-            <button id="generatorShowOsAuto" type="button">AUTO FOLLOW OFF</button>
-            <button id="generatorShowOsIgnore" type="button">IGNORE CURRENT</button>
-          </div>
-        </div>
 
         <h3>Preset bank</h3>
         <div class="generator-preset-bank">
@@ -405,7 +393,7 @@
           <header class="generator-live-test-header">
             <div>
               <h3>06 Live Testing Chain</h3>
-              <p class="generator-muted">Jedno místo pro kontrolu cesty: Show OS → Generator → MASTER mirror → ArtNet sender → UDP/LED.</p>
+              <p class="generator-muted">Jedno místo pro kontrolu cesty: Generator → MASTER mirror → ArtNet sender → UDP/LED.</p>
             </div>
             <strong id="generatorLiveTestStage">BOOT</strong>
           </header>
@@ -419,7 +407,6 @@
             <button id="generatorLiveTestRefresh" type="button">REFRESH CHAIN</button>
             <button id="generatorMasterSelfTest" type="button">MASTER SELF TEST</button>
             <button id="generatorOpenSettings" type="button">OPEN SETTINGS</button>
-            <button id="generatorOpenShowOs" type="button">OPEN SHOW OS</button>
           </div>
           <pre id="generatorLiveTestLog" class="generator-live-test-log">LIVE TEST BOOT</pre>
         </section>

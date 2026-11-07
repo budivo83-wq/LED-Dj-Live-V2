@@ -172,7 +172,6 @@ export function normalizeGeneratorOutputTruth(diagnostics = {}) {
     ages: {
       master: ageText(frameAgeMs),
       sent: ageText(sentAgeMs),
-      showOs: summary.ages?.showOs || 'none',
       preview: summary.ages?.preview || 'none'
     }
   });

@@ -19,7 +19,6 @@ import { registerArtNetNetworkRoutes22DV } from "./artnet_network_routes_22dv.js
 import { registerArtNetLiveConfigRoutes22DX } from "./artnet_live_config_routes_22dx.js";
 import { registerArtNetMasterFrameRoutes22EJ } from "./artnet_master_frame_routes_22ej.js";
 import { registerArtNetDebugRoutes22DZ } from "./artnet_debug_routes_22dz.js";
-import { registerShowControlRoutes22JQ } from "./show_control_routes_22jq.js";
 
 export function registerMainRoutes(app, deps) {
   const {
@@ -78,7 +77,6 @@ export function registerMainRoutes(app, deps) {
   registerArtNetDebugRoutes22DZ(app, { artnetControlService });
   registerArtNetLiveConfigRoutes22DX(app, { expressRef, rootDir, liveSender22DQ });
   registerMultiTransportRoutes22U(app, { expressRef, multiTransport22U, artnetScheduler22P });
-  registerShowControlRoutes22JQ(app, { expressRef, rootDir });
 
   // Legacy/manual diagnostics surface. Keep registered for live_arm_panel and
   // operator/debug flows, but do not treat it as the primary ArtNet control path.

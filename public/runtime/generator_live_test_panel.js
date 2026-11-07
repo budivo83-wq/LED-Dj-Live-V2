@@ -11,9 +11,6 @@ export const GENERATOR_LIVE_TEST_ENDPOINTS = Object.freeze({
 export const GENERATOR_BRIDGE_SNAPSHOT_KEY = 'budilight.generator.bridge.snapshot.v1';
 export const GENERATOR_LIVE_LOCK_KEY = 'budilight.generator.live.lock.v1';
 export const GENERATOR_PREVIEW_HEARTBEAT_KEY = 'budilight.generator.preview.heartbeat';
-export const GENERATOR_SHOWOS_SNAPSHOT_KEY = 'budilight.generator.showos.snapshot.v1';
-export const SHOWOS_PERFORMANCE_BRIDGE_KEY = 'budilight.performance.bridge.pro';
-export const SHOWOS_INTENT_KEY = 'budilight.showos.intent';
 
 function nowWall() {
   return Date.now();
@@ -69,27 +66,20 @@ export function readGeneratorLiveLocalDiagnostics(storage = globalThis.localStor
   const bridge = readStorageJson(storage, GENERATOR_BRIDGE_SNAPSHOT_KEY, null);
   const lock = readStorageJson(storage, GENERATOR_LIVE_LOCK_KEY, null);
   const preview = readStorageJson(storage, GENERATOR_PREVIEW_HEARTBEAT_KEY, null);
-  const showOsSnapshot = readStorageJson(storage, GENERATOR_SHOWOS_SNAPSHOT_KEY, null);
-  const showOsPayload = readStorageJson(storage, SHOWOS_PERFORMANCE_BRIDGE_KEY, null) || readStorageJson(storage, SHOWOS_INTENT_KEY, null);
   const bridgeAgeMs = ageMs(bridge?.lastPublishAt || bridge?.at);
   const lockAgeMs = ageMs(lock?.at);
   const previewAgeMs = ageMs(preview?.at);
-  const showOsAgeMs = ageMs(showOsSnapshot?.at || showOsPayload?.t || showOsPayload?.at);
   return Object.freeze({
     bridge,
     lock,
     preview,
-    showOsSnapshot,
-    showOsPayload,
     age: {
       bridgeMs: bridgeAgeMs,
       lockMs: lockAgeMs,
       previewMs: previewAgeMs,
-      showOsMs: showOsAgeMs,
       bridge: ageLabel(bridgeAgeMs),
       lock: ageLabel(lockAgeMs),
       preview: ageLabel(previewAgeMs),
-      showOs: ageLabel(showOsAgeMs)
     }
   });
 }
@@ -133,14 +123,11 @@ export function summarizeGeneratorLiveChain(diagnostics = {}) {
   const bridge = local.bridge || {};
   const lock = local.lock || {};
   const preview = local.preview || {};
-  const showOsSnapshot = local.showOsSnapshot || {};
-  const showOsPayload = local.showOsPayload || {};
   const master = server.master || server.monitor?.master || {};
   const live = server.live || server.monitor?.live || {};
   const patch = server.patch || {};
   const monitorDiagnosis = server.monitor?.diagnosis || {};
 
-  const showOsReady = Boolean(showOsSnapshot.ok || showOsPayload?.targetWorld || showOsPayload?.world || showOsPayload?.targetUniverse);
   const previewFresh = local.age?.previewMs != null && local.age.previewMs <= 2500;
   const bridgeActive = bridge.active === true || lock.active === true;
   const bridgePublishing = bridgeActive && (Number(bridge.serverSent || 0) > 0 || Number(bridge.publishedLocal || 0) > 0);
@@ -162,9 +149,9 @@ export function summarizeGeneratorLiveChain(diagnostics = {}) {
   let verdict = 'Generator není v live řetězci aktivní.';
   let next = 'Zapni PREVIEW pro kontrolu obrazu, potom LIVE MASTER pro publikování do MASTER mirroru.';
 
-  if (!showOsReady && !previewFresh && !bridgeActive && !masterHasFrame && !liveRunning) {
+  if (!previewFresh && !bridgeActive && !masterHasFrame && !liveRunning) {
     stage = 'IDLE';
-    verdict = 'Žádný čerstvý Show OS, Preview ani MASTER frame.';
+    verdict = 'Žádný čerstvý Preview ani MASTER frame.';
   } else if (serverErrors > 0) {
     stage = 'GENERATOR_UPLOAD_ERROR';
     verdict = `Generator bridge hlásí chyby při uploadu do server MASTER mirroru (${serverErrors}).`;
@@ -209,11 +196,6 @@ export function summarizeGeneratorLiveChain(diagnostics = {}) {
     ok = true;
     verdict = 'Generator preview běží, fyzický výstup není přebraný.';
     next = 'Pro fyzický test zapni LIVE MASTER a pak SAFE MASTER LIVE v Settings.';
-  } else if (showOsReady) {
-    stage = 'SHOWOS_READY';
-    ok = true;
-    verdict = 'Show OS payload je připravený, ale Generator ho nemusí mít aplikovaný do live řetězce.';
-    next = 'V Generatoru dej APPLY SHOW OS nebo zapni AUTO FOLLOW.';
   }
 
   return Object.freeze({
@@ -221,7 +203,6 @@ export function summarizeGeneratorLiveChain(diagnostics = {}) {
     stage,
     verdict,
     next,
-    showOsReady,
     previewFresh,
     bridgeActive,
     bridgePublishing,
@@ -253,7 +234,6 @@ export function buildGeneratorLivePanelRows(diagnostics = {}) {
   const live = server.live || server.monitor?.live || {};
   const patch = server.patch || {};
   return [
-    { id: 'showos', label: 'Show OS', ok: s.showOsReady, value: s.showOsReady ? 'payload ready' : 'no payload', detail: `age ${s.ages?.showOs || 'none'}` },
     { id: 'preview', label: 'Generator Preview', ok: s.previewFresh || s.bridgeActive, value: s.bridgeActive ? 'live armed' : (s.previewFresh ? 'preview fresh' : 'idle'), detail: `age ${s.ages?.preview || 'none'}` },
     { id: 'bridge', label: 'Live Master Bridge', ok: s.bridgePublishing || s.bridgeActive, value: s.bridgeActive ? boolText(true) : boolText(false), detail: `${Number(bridge.serverSent || 0)} server · ${Number(bridge.publishedLocal || 0)} local · err ${Number(bridge.serverErrors || 0)}` },
     { id: 'master', label: 'MASTER Mirror', ok: s.masterFresh, value: s.masterFresh ? 'fresh' : (s.masterHasFrame ? 'stale' : 'empty'), detail: `${pick(s.masterSource, 'unknown')} · age ${s.ages?.master || 'none'}` },

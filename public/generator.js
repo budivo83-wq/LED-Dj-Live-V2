@@ -38,14 +38,6 @@ import {
 } from './runtime/generator_presets.js';
 import { loadGeneratorState, saveGeneratorState, publishGeneratorPreviewHeartbeat, createGeneratorLiveBridge, GENERATOR_BRIDGE_VERSION } from './runtime/generator_bridge.js';
 import {
-  readShowOsBridgePayload,
-  mapShowOsBridgeToGeneratorState,
-  isGeneratorShowOsAutoFollowEnabled,
-  setGeneratorShowOsAutoFollowEnabled,
-  writeGeneratorShowOsSnapshot,
-  GENERATOR_SHOWOS_BRIDGE_VERSION
-} from './runtime/generator_showos_bridge.js';
-import {
   collectGeneratorLiveDiagnostics,
   buildGeneratorLivePanelView,
   runGeneratorMasterSelfTest,
@@ -196,9 +188,6 @@ const sentStatusNode = $('generatorSentStatus');
 const macroGridNode = $('generatorMacroGrid');
 const presetSelectNode = $('generatorPresetSelect');
 const presetNameNode = $('generatorPresetName');
-const showOsStatusNode = $('generatorShowOsStatus');
-const showOsSummaryNode = $('generatorShowOsSummary');
-const showOsAutoNode = $('generatorShowOsAuto');
 const liveTestChainNode = $('generatorLiveChain');
 const liveTestStageNode = $('generatorLiveTestStage');
 const liveTestVerdictNode = $('generatorLiveVerdict');
@@ -333,10 +322,6 @@ let lastStabilityRenderAt = 0;
 let curveRuntime = createGeneratorCurveRuntime();
 let presetBank = loadGeneratorPresetBank();
 let activePresetId = loadActiveGeneratorPreset();
-let showOsAutoFollow = isGeneratorShowOsAutoFollowEnabled();
-let lastShowOsSignature = '';
-let lastShowOsPollAt = 0;
-let lastShowOsAppliedAt = 0;
 let lastLiveTestPollAt = 0;
 let liveTestBusy = false;
 let lastLiveTestSnapshot = null;
@@ -419,68 +404,6 @@ function updatePatchMacrosFromValues() {
 
 function resetCurveRuntime() {
   curveRuntime = createGeneratorCurveRuntime();
-}
-
-function showOsPayloadSignature(payload) {
-  if (!payload) return '';
-  return [payload.t, payload.targetWorld, payload.targetUniverse, payload.targetWeather, payload.storyPhase, payload.energy, payload.chaos, payload.density, payload.motion, payload.authority?.operatorLock ? 'lock' : 'open'].join('|');
-}
-
-function updateShowOsStatus(text, detail = '') {
-  if (showOsStatusNode) showOsStatusNode.textContent = text || 'idle';
-  if (showOsSummaryNode) showOsSummaryNode.textContent = detail || '';
-  if (showOsAutoNode) {
-    showOsAutoNode.classList.toggle('active', showOsAutoFollow);
-    showOsAutoNode.textContent = showOsAutoFollow ? 'AUTO FOLLOW ON' : 'AUTO FOLLOW OFF';
-  }
-}
-
-function applyShowOsBridge(reason = 'manual', options = {}) {
-  const payload = readShowOsBridgePayload();
-  if (!payload) {
-    updateShowOsStatus('NO PAYLOAD', 'V Show OS nejdĹ™Ă­v poĹˇli Bridge payload.');
-    log('Show OS bridge: ĹľĂˇdnĂ˝ payload nenalezenĂ˝.');
-    return false;
-  }
-  const mapped = mapShowOsBridgeToGeneratorState(payload, { patch, graph, curves }, { influence: options.influence });
-  graph = normalizeGeneratorGraph(mapped.graph);
-  curves = normalizeGeneratorCurves(mapped.curves);
-  patch = normalizeGeneratorPatch({ ...mapped.patch, modules: graphToModuleFlags(graph), graph });
-  if (reason === 'manual') resetCurveRuntime();
-  lastShowOsSignature = showOsPayloadSignature(mapped.payload);
-  lastShowOsAppliedAt = Date.now();
-  writeGeneratorShowOsSnapshot({ ok: true, source: reason, summary: mapped.summary, payload: mapped.payload });
-  saveAll();
-  renderModules();
-  renderNodeFlow();
-  renderMacros();
-  renderControls();
-  renderStaticUi();
-  updateShowOsStatus(reason === 'auto' ? 'AUTO APPLIED' : 'APPLIED', `${mapped.summary.targetUniverse} â†’ ${mapped.summary.targetWorld} Â· ${mapped.summary.targetWeather} Â· ${mapped.summary.storyPhase} Â· ${mapped.summary.worldFamily}`);
-  log(`Show OS â†’ Generator ${reason}: ${mapped.summary.targetWorld} / ${mapped.summary.storyPhase}`);
-  return true;
-}
-
-function setShowOsAutoFollow(enabled) {
-  showOsAutoFollow = setGeneratorShowOsAutoFollowEnabled(Boolean(enabled));
-  updateShowOsStatus(showOsAutoFollow ? 'AUTO ARMED' : 'AUTO OFF', showOsAutoFollow ? 'Generator bude sledovat novĂ˝ Show OS bridge payload.' : 'RuÄŤnĂ­ makra zĹŻstĂˇvajĂ­ pod kontrolou operĂˇtora.');
-  if (showOsAutoFollow) applyShowOsBridge('auto-arm', { influence: 0.62 });
-}
-
-function pollShowOsBridge(now = performance.now()) {
-  if (now - lastShowOsPollAt < 650) return;
-  lastShowOsPollAt = now;
-  const payload = readShowOsBridgePayload();
-  if (!payload) {
-    updateShowOsStatus(showOsAutoFollow ? 'WAITING' : 'NO PAYLOAD', 'Ĺ˝ĂˇdnĂ˝ Show OS bridge payload zatĂ­m nenĂ­ uloĹľenĂ˝.');
-    return;
-  }
-  const sig = showOsPayloadSignature(payload);
-  if (!showOsAutoFollow) {
-    updateShowOsStatus('READY', `${payload.targetUniverse} â†’ ${payload.targetWorld} Â· ${payload.targetWeather} Â· ${payload.storyPhase}`);
-    return;
-  }
-  if (sig && sig !== lastShowOsSignature && Date.now() - lastShowOsAppliedAt > 400) applyShowOsBridge('auto', { influence: payload.authority?.operatorLock ? 0.28 : 0.42 });
 }
 
 function updateTransitionStatus(reason = 'render') {
@@ -2121,7 +2044,6 @@ function draw(now) {
       lastHeartbeatAt = now;
     }
   }
-  pollShowOsBridge(now);
   if (now - lastLiveTestPollAt > 1600) {
     lastLiveTestPollAt = now;
     refreshLiveTestPanel('auto').catch(() => {});
@@ -2170,11 +2092,7 @@ function setupGeneratorShellControls() {
   $('generatorSavePresetAs')?.addEventListener('click', saveCurrentPreset);
   $('generatorLoadPreset')?.addEventListener('click', () => applyPreset(findGeneratorPreset(presetBank, presetSelectNode?.value || activePresetId)));
   $('generatorDeletePreset')?.addEventListener('click', deleteSelectedPreset);
-  $('generatorApplyShowOs')?.addEventListener('click', () => { applyShowOsBridge('manual', { influence: 0.86 }); refreshLiveTestPanel('manual').catch(() => {}); });
-  $('generatorShowOsAuto')?.addEventListener('click', () => setShowOsAutoFollow(!showOsAutoFollow));
-  $('generatorShowOsIgnore')?.addEventListener('click', () => { lastShowOsSignature = showOsPayloadSignature(readShowOsBridgePayload()); updateShowOsStatus('IGNORED ONCE', 'Aktuální payload je přeskočený, další nový payload může znovu dorazit.'); });
   $('generatorOpenSettings')?.addEventListener('click', () => { location.href = 'settings.html'; });
-  $('generatorOpenShowOs')?.addEventListener('click', () => { location.href = 'show-os.html'; });
   $('generatorOpenMapping')?.addEventListener('click', () => { location.href = 'mapping.html'; });
 }
 
@@ -2303,8 +2221,7 @@ function boot() {
   bind();
   applyFullscreenPreference(localStorage.getItem('led-fullscreen-preferred-v1') === 'true');
   syncFullscreenButtonLabel(menuFullscreen);
-  updateShowOsStatus(showOsAutoFollow ? 'AUTO ARMED' : 'READY', 'SHOW OS bridge mĹŻĹľe Ĺ™Ă­dit makra, kĹ™ivky a node graph pĹ™es APPLY nebo AUTO FOLLOW.');
-  log(`${STEP_VERSION} ready. Bridge ${GENERATOR_BRIDGE_VERSION}. Presets ${GENERATOR_PRESETS_VERSION}. Graph ${GENERATOR_GRAPH_VERSION}. ShowOS ${GENERATOR_SHOWOS_BRIDGE_VERSION}. LiveTest ${GENERATOR_LIVE_TEST_PANEL_VERSION}. LiveOps ${GENERATOR_LIVE_OPS_VERSION}. OutputTruth ${GENERATOR_OUTPUT_TRUTH_PANEL_VERSION}. FieldTests ${GENERATOR_FIELD_TEST_VERSION}. SettingsFps ${GENERATOR_SETTINGS_FPS_VERSION}. Stability ${GENERATOR_LIVE_STABILITY_VERSION}. Transition ${GENERATOR_TRANSITION_VERSION}. MusicModes ${GENERATOR_MUSIC_MODES_VERSION}. SceneMorph ${GENERATOR_SCENE_MORPH_VERSION}. Journey ${GENERATOR_JOURNEY_TIMELINE_VERSION}. MIDI ${GENERATOR_MIDI_APC_VERSION}.`);
+  log(`${STEP_VERSION} ready. Bridge ${GENERATOR_BRIDGE_VERSION}. Presets ${GENERATOR_PRESETS_VERSION}. Graph ${GENERATOR_GRAPH_VERSION}. LiveTest ${GENERATOR_LIVE_TEST_PANEL_VERSION}. LiveOps ${GENERATOR_LIVE_OPS_VERSION}. OutputTruth ${GENERATOR_OUTPUT_TRUTH_PANEL_VERSION}. FieldTests ${GENERATOR_FIELD_TEST_VERSION}. SettingsFps ${GENERATOR_SETTINGS_FPS_VERSION}. Stability ${GENERATOR_LIVE_STABILITY_VERSION}. Transition ${GENERATOR_TRANSITION_VERSION}. MusicModes ${GENERATOR_MUSIC_MODES_VERSION}. SceneMorph ${GENERATOR_SCENE_MORPH_VERSION}. Journey ${GENERATOR_JOURNEY_TIMELINE_VERSION}. MIDI ${GENERATOR_MIDI_APC_VERSION}.`);
   log('Node graph: source â†’ modifier â†’ color â†’ fx â†’ output. KaĹľdĂ˝ blok mĂˇ enable, mix, intensity a poĹ™adĂ­.');
   renderLiveTestPanel();
   renderOutputTruthPanel();
@@ -2314,11 +2231,6 @@ function boot() {
   try { window.parent?.postMessage({ type: 'led-ui-ready', detail: { page: 'generator', version: 'STEP38U' } }, '*'); } catch {}
   raf = requestAnimationFrame(draw);
 }
-
-window.addEventListener('storage', (event) => {
-  if (!showOsAutoFollow) return;
-  if (event?.key === 'budilight.performance.bridge.pro' || event?.key === 'budilight.showos.intent') applyShowOsBridge('storage', { influence: 0.40 });
-});
 
 window.addEventListener('beforeunload', () => {
   try { liveBridge.stop('page-unload'); } catch {}

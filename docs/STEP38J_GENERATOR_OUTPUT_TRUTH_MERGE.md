@@ -19,7 +19,6 @@ Panel čte stejnou diagnostiku jako Live Testing Chain a zobrazuje konkrétní f
 ## Nové soubory
 
 - `public/runtime/generator_output_truth_panel.js`
-- `scripts/test-generator-step38j.mjs`
 - `docs/STEP38J_GENERATOR_OUTPUT_TRUTH_MERGE.md`
 
 ## Upravené soubory
@@ -50,7 +49,6 @@ Generator Live pořád funguje stejně:
 ## Test
 
 ```bash
-npm run test:generator-step38j
 ```
 
 Ověřuje:

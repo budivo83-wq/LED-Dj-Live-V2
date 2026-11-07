@@ -1,6 +1,5 @@
 STEP38I_GENERATOR_LIVE_OPERATOR_POLISH
 
-Navazuje na STEP38H.
 
 Hlavní změny:
 - Generator má nový panel 04 Live Operator.
@@ -22,6 +21,4 @@ Ověřovací příkazy:
 - npm run check:layers
 - npm run test:generator-step38e
 - npm run test:generator-step38f
-- npm run test:generator-step38g
-- npm run test:generator-step38h
 - npm run test:generator-step38i

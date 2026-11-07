@@ -300,39 +300,6 @@ body.generator-preview-expanded .generator-preview-expand { background: rgba(255
 .generator-node-fx { border-color: rgba(255,190,95,.26); background: rgba(255,190,95,.055); }
 .generator-node-output { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.045); }
 
-/* STEP38G Show OS → Generator bridge */
-.generator-showos-bridge {
-  display: grid;
-  gap: 8px;
-  margin: 10px 0 14px;
-  border: 1px solid rgba(255, 200, 96, .20);
-  border-radius: 16px;
-  padding: 10px;
-  background: linear-gradient(135deg, rgba(255, 200, 96, .075), rgba(126, 175, 255, .045));
-}
-.generator-showos-bridge div:first-child {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-.generator-showos-bridge span {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  color: rgba(238,242,255,.56);
-}
-.generator-showos-bridge strong { color: #ffd982; }
-.generator-showos-bridge small {
-  color: rgba(238,242,255,.64);
-  line-height: 1.35;
-}
-#generatorShowOsAuto.active {
-  border-color: rgba(255,217,130,.74);
-  background: rgba(255,217,130,.18);
-  color: #fff2c7;
-}
-
 /* STEP38H live testing chain */
 .generator-live-test-panel {
   display: grid;

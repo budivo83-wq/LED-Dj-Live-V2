@@ -8,8 +8,6 @@ export const SHELL_VIEWS = Object.freeze([
   "settings.html",
   "shorts.html",
   "shadertoy.html",
-  "show-os.html",
-  "control-authority-pro.html",
   "live-input.html"
 ]);
 

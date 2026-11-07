@@ -12,7 +12,6 @@ Co je změněné:
 Smysl:
 - output runner dál běží stejně
 - fyzický výstup není zpomalený touto změnou
-- při přechodu Performance -> Mapping/Settings/Show OS by shell neměl cpát aktivní stránce tak rychlou output telemetry jako Performance
 - cached iframe stránky zůstávají uspane podle starší inactive-page logiky
 
 Kontrola v prohlížeči:

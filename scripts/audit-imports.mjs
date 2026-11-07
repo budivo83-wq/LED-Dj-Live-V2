@@ -18,8 +18,6 @@ const ROOT_HTMLS = [
   "public/shadertoy.html",
   "public/output-runner.html",
   "public/live-input.html",
-  "public/show-os.html",
-  "public/control-authority-pro.html"
 ];
 
 function walk(dir, out = []) {

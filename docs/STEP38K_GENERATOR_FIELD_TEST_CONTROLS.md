@@ -62,9 +62,6 @@ Full Generator guard chain:
 ```bash
 npm run test:generator-step38e
 npm run test:generator-step38f
-npm run test:generator-step38g
-npm run test:generator-step38h
 npm run test:generator-step38i
-npm run test:generator-step38j
 npm run test:generator-step38k
 ```
