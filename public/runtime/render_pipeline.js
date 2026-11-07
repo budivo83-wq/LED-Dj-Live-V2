@@ -646,8 +646,8 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
       const previewMode = getPreviewMode();
       const previewStartedAt = performance.now();
       const quietShellMount = shellViewOnly && now < shellPreviewQuietUntil;
-      const liveOutputClockActive = isLiveOutputClockActive();
-      const physicalOutputActive = isPhysicalOutputActive();
+      const physicalOutputActive = Boolean(isOutputEnabled());
+      const liveOutputClockActive = physicalOutputActive && !shellViewOnly;
       const previewBudgetPressured = isPreviewBudgetUnderPressure(now);
       const shellLiveMonitorOnly = shellViewOnly && physicalOutputActive;
       const shellMonitorRenderDue = !shellLiveMonitorOnly || (now - lastShellMonitorRenderAt >= shellMonitorRenderGapMs());
