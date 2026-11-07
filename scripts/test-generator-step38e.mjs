@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { renderGeneratorFrame, normalizeGeneratorPatch } from '../public/runtime/generator_engine.js';
 import {
   createDefaultGeneratorCurves,
+  normalizeGeneratorCurves,
   evaluateGeneratorCurves,
   createGeneratorCurveRuntime,
   smoothGeneratorCurveValues,
@@ -40,6 +41,7 @@ assert.ok(rendered.frame.some((value) => value > 0), 'generator frame should con
 
 const curves = createDefaultGeneratorCurves();
 assert.equal(curves.lanes.length, 8);
+assert.equal(normalizeGeneratorCurves(curves), curves, 'normalized curves should be reused by frame evaluators');
 assert.ok(curves.lanes.some((lane) => lane.mode === 'beat'));
 assert.ok(curves.lanes.some((lane) => lane.mode === 'random'));
 const targets = evaluateGeneratorCurves(curves, 10, { bpm: 145, beat: 24 });

@@ -87,6 +87,11 @@ export function createDefaultGeneratorCurves() {
 }
 
 export function normalizeGeneratorCurves(input = {}) {
+  // Curves are normalized at control/storage boundaries and then reused by
+  // both hot-path evaluators on every animation frame.
+  if (input?.version === GENERATOR_CURVES_VERSION
+    && Array.isArray(input.lanes)
+    && input.lanes.length === GENERATOR_CURVE_LANE_DEFAULTS.length) return input;
   const byId = new Map((Array.isArray(input.lanes) ? input.lanes : []).map((lane) => [String(lane.id || ''), lane]));
   return {
     version: GENERATOR_CURVES_VERSION,
