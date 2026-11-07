@@ -1,13 +1,13 @@
 {
   "ok": true,
   "version": "STEP22DX_ARTNET_LIVE_REAL_OUTPUT_CONFIG",
-  "savedAt": "2026-07-28T13:56:27.748Z",
+  "savedAt": "2026-11-07T06:54:40.138Z",
   "config": {
     "outputIp": "192.168.1.50",
     "bindIp": "",
     "targetMode": "unicast",
     "port": 6454,
-    "fps": 55,
+    "fps": 60,
     "maxLiveFps": 60,
     "bpm": 145,
     "stripCount": 8,

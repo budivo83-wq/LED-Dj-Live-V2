@@ -34,6 +34,7 @@ assert.match(GENERATOR_BEAT_INTELLIGENCE_VERSION, /STEP38V/);
 assert.match(GENERATOR_ENGINE_VERSION, /STEP38V/);
 
 const config = normalizeGeneratorBeatConfig({ enabled: true, phraseBeats: 32, accentAmount: 0.7, dropHoldBeats: 12 });
+assert.equal(normalizeGeneratorBeatConfig(config), config, 'normalized beat config should be reused in the frame hot path');
 assert.equal(config.phraseBeats, 32);
 assert.equal(config.dropHoldBeats, 12);
 assert.ok(config.accentAmount > 0.6);
@@ -48,6 +49,7 @@ let runtime = createGeneratorBeatRuntime();
 runtime = tapGeneratorBeat(runtime, { nowWall: 1000, beat: 4, bpm: 145 });
 runtime = tapGeneratorBeat(runtime, { nowWall: 1500, beat: 5, bpm: 145 });
 assert.ok(runtime.suggestedBpm > 115 && runtime.suggestedBpm < 125, 'tap tempo suggests roughly 120 BPM');
+assert.equal(runtime.phraseAnchorBeat, 0, 'tap tempo does not silently reset phrase alignment');
 runtime = resetGeneratorBeatPhrase(runtime, { beat: 16, nowWall: 1800 });
 assert.equal(runtime.phraseAnchorBeat, 16);
 runtime = markGeneratorBeatDrop(runtime, config, { beat: 20, nowWall: 2000 });
@@ -60,6 +62,15 @@ assert.ok(beatResult.values.pulse > baseValues.pulse, 'beat intelligence raises 
 assert.ok(beatResult.values.shimmer > baseValues.shimmer, 'beat intelligence raises shimmer');
 assert.ok(formatGeneratorBeatStatus(beatResult.meta, config).includes('DROP'));
 assert.ok(buildGeneratorBeatReport(beatResult.runtime, config, beatResult.meta).includes('Generator Beat Intelligence'));
+const dropEnd = applyGeneratorBeatIntelligence(beatResult.runtime, config, baseValues, { beat: 32, bpm: 120, time: 9 });
+assert.equal(dropEnd.meta.dropActive, false, 'drop accent expires at the hold boundary');
+const disabled = applyGeneratorBeatIntelligence(beatResult.runtime, { ...config, enabled: false }, baseValues, { beat: 20.01, bpm: 120, time: 8 });
+assert.equal(disabled.meta.enabled, false);
+assert.equal(disabled.values.pulse, baseValues.pulse, 'disabled beat intelligence leaves values unchanged');
+const autoPhrase = applyGeneratorBeatIntelligence(createGeneratorBeatRuntime(), { ...config, autoPhraseReset: true }, baseValues, { beat: 32.25, bpm: 120, time: 10 });
+assert.equal(autoPhrase.runtime.phraseAnchorBeat, 32, 'auto phrase reset advances to the current phrase boundary');
+assert.equal(autoPhrase.runtime.lastMarker, 'auto-phrase-reset');
+assert.ok(autoPhrase.meta.phraseProgress < 0.02, 'auto phrase reset starts the new phrase');
 const snap = writeGeneratorBeatSnapshot(beatResult.runtime, beatResult.meta, storage);
 assert.equal(snap.meta.dropActive, true);
 

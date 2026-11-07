@@ -1,15 +1,16 @@
 {
-  "generatedAt": "2026-07-05T20:13:12.340Z",
+  "generatedAt": "2026-11-07T02:11:04.205Z",
   "summary": {
-    "htmlRoots": 12,
-    "livePublicJs": 303,
-    "unreachedPublicJs": 7,
-    "stagedSrcJs": 179
+    "htmlRoots": 13,
+    "livePublicJs": 290,
+    "unreachedPublicJs": 8,
+    "stagedSrcJs": 183
   },
   "roots": [
     "public/shell.html",
     "public/index.html",
     "public/animations.html",
+    "public/generator.html",
     "public/login.html",
     "public/mapping.html",
     "public/settings.html",
@@ -147,6 +148,20 @@
       "outputHits": [],
       "hotHits": [
         "localStorage"
+      ]
+    },
+    {
+      "rel": "public/generator.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "frameBus",
+        "FrameBus",
+        "ArtNet"
+      ],
+      "hotHits": [
+        "requestAnimationFrame",
+        "localStorage",
+        "addEventListener"
       ]
     },
     {
@@ -513,6 +528,148 @@
       ],
       "hotHits": [
         "dispatchEvent"
+      ]
+    },
+    {
+      "rel": "public/runtime/generator_beat_intelligence.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/generator_bridge.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "FrameBus",
+        "artnet",
+        "fetch(",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "setTimeout",
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/generator_field_tests.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/generator_journey_timeline.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/generator_live_ops.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet"
+      ],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/generator_live_stability.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/generator_live_test_panel.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/generator_midi_apc.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/generator_music_modes.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/generator_output_truth_panel.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "FrameBus",
+        "ArtNet"
+      ],
+      "hotHits": []
+    },
+    {
+      "rel": "public/runtime/generator_presets.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/generator_scene_morph.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/generator_settings_fps.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "ArtNet",
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/generator_showos_bridge.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
+      ]
+    },
+    {
+      "rel": "public/runtime/generator_transition.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [
+        "artnet",
+        "/api/artnet"
+      ],
+      "hotHits": [
+        "localStorage"
       ]
     },
     {
@@ -1935,6 +2092,16 @@
       "hotHits": []
     },
     {
+      "rel": "src/server/live_output_common.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "artnet",
+        "serial",
+        "Serial"
+      ],
+      "hotHits": []
+    },
+    {
       "rel": "src/server/live_output_core_diagnostics.js",
       "status": "SERVER_OR_STAGED_SRC",
       "outputHits": [
@@ -2022,7 +2189,6 @@
       "rel": "src/server/live_output_test_run_flow.js",
       "status": "SERVER_OR_STAGED_SRC",
       "outputHits": [
-        "artnet",
         "serial"
       ],
       "hotHits": []
@@ -2200,6 +2366,14 @@
       "hotHits": [
         "setInterval"
       ]
+    },
+    {
+      "rel": "src/server/runtime_mode_controller.js",
+      "status": "SERVER_OR_STAGED_SRC",
+      "outputHits": [
+        "serial"
+      ],
+      "hotHits": []
     },
     {
       "rel": "src/server/runtime_profile_routes.js",

@@ -8,7 +8,11 @@ export function createArtNetSenderEngine({
   target = { host: "2.1.1.30", port: 6454 },
   sendPacket = null
 } = {}) {
-  const limiter = createOutputRateLimiter({ fps, autoAdapt: true, minFps: 20 });
+  // The monotonic output clock owns Art-Net cadence. Keep this limiter as a
+  // safety gate, but never let one early/jittery tick permanently lower the
+  // configured FPS; that creates a second hidden clock and causes 60 -> 50 ->
+  // 40 FPS degradation even after the scheduler has recovered.
+  const limiter = createOutputRateLimiter({ fps, autoAdapt: false, minFps: 20 });
   let sequence = 1;
   let sentFrames = 0;
   let droppedFrames = 0;

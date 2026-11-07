@@ -40,6 +40,10 @@ function storageSet(storage, key, value) {
 }
 
 export function normalizeGeneratorBeatConfig(input = {}) {
+  // Config objects created by this module are immutable and already validated.
+  // The beat evaluator runs on every animation frame, so avoid rebuilding the
+  // same config object in that hot path.
+  if (input?.version === GENERATOR_BEAT_INTELLIGENCE_VERSION && Object.isFrozen(input)) return input;
   return Object.freeze({
     version: GENERATOR_BEAT_INTELLIGENCE_VERSION,
     enabled: input.enabled !== false,
@@ -98,7 +102,6 @@ export function tapGeneratorBeat(runtime = createGeneratorBeatRuntime(), context
     lastTapWallAt: nowWall,
     lastTapIntervals: intervals,
     suggestedBpm,
-    phraseAnchorBeat: Number(context.beat || 0) || 0,
     lastMarker: 'tap-beat',
     lastMarkerAt: nowWall
   });
@@ -132,7 +135,11 @@ export function applyGeneratorBeatIntelligence(runtime = createGeneratorBeatRunt
   const beat = Number(context.beat || 0) || 0;
   const bpm = clamp(context.bpm, 40, 220, 145);
   const time = Number(context.time || 0) || 0;
-  const phraseAnchorBeat = Number(runtime.phraseAnchorBeat || 0) || 0;
+  const initialPhraseAnchorBeat = Number(runtime.phraseAnchorBeat || 0) || 0;
+  const phraseCycles = cfg.autoPhraseReset && beat >= initialPhraseAnchorBeat + cfg.phraseBeats
+    ? Math.floor((beat - initialPhraseAnchorBeat) / cfg.phraseBeats)
+    : 0;
+  const phraseAnchorBeat = initialPhraseAnchorBeat + phraseCycles * cfg.phraseBeats;
   const phraseBeat = Math.max(0, beat - phraseAnchorBeat);
   const phraseProgress = fract(phraseBeat / Math.max(1, cfg.phraseBeats));
   const beatPhase = fract(beat);
@@ -140,7 +147,7 @@ export function applyGeneratorBeatIntelligence(runtime = createGeneratorBeatRunt
   const downbeatAccent = 1 - smoothstep(0.015, 0.26, beatPhase);
   const barAccent = 1 - smoothstep(0.025, 0.30, barPhase);
   const phraseAccent = 1 - smoothstep(0.018, 0.22, phraseProgress);
-  const dropActive = enabled && beat <= Number(runtime.dropUntilBeat || -Infinity);
+  const dropActive = enabled && beat < Number(runtime.dropUntilBeat || -Infinity);
   const dropProgress = dropActive ? clamp01(1 - ((Number(runtime.dropUntilBeat || beat) - beat) / Math.max(1, cfg.dropHoldBeats)), 0) : 0;
   const dropAccent = dropActive ? Math.max(0.42, downbeatAccent, barAccent * 0.75) : 0;
   const amount = enabled ? cfg.accentAmount : 0;
@@ -172,7 +179,12 @@ export function applyGeneratorBeatIntelligence(runtime = createGeneratorBeatRunt
     lastMarker: runtime.lastMarker || 'none',
     suggestedBpm: Number(runtime.suggestedBpm || 0) || 0
   });
-  const nextRuntime = createGeneratorBeatRuntime({ ...runtime, lastMeta: meta });
+  const nextRuntime = createGeneratorBeatRuntime({
+    ...runtime,
+    phraseAnchorBeat,
+    lastMarker: phraseCycles > 0 ? 'auto-phrase-reset' : runtime.lastMarker,
+    lastMeta: meta
+  });
   return Object.freeze({ runtime: nextRuntime, values: Object.freeze(next), meta });
 }
 

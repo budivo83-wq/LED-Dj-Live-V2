@@ -45,7 +45,8 @@
     "test:generator-step38s": "node scripts/test-generator-step38s.mjs",
     "test:generator-step38t": "node scripts/test-generator-step38t.mjs",
     "test:generator-step38u": "node scripts/test-generator-step38u.mjs",
-    "test:generator-step38v": "node scripts/test-generator-step38v.mjs"
+    "test:generator-step38v": "node scripts/test-generator-step38v.mjs",
+    "test:artnet-output-fps-stability": "node scripts/test-artnet-output-fps-stability.mjs"
   },
   "dependencies": {
     "express": "^4.18.2",

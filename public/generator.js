@@ -258,6 +258,7 @@ const beatIntelEnabledNode = $('generatorBeatIntelEnabled');
 const beatIntelPhraseBeatsNode = $('generatorBeatIntelPhraseBeats');
 const beatIntelAccentAmountNode = $('generatorBeatIntelAccentAmount');
 const beatIntelDropHoldNode = $('generatorBeatIntelDropHold');
+const beatIntelAutoPhraseResetNode = $('generatorBeatIntelAutoPhraseReset');
 const beatIntelReportNode = $('generatorBeatIntelReport');
 const stabilityBadgeNode = $('generatorStabilityBadge');
 const stabilityCardsNode = $('generatorStabilityCards');
@@ -579,7 +580,6 @@ function applyBeatIntelBpmSuggestion(reason = 'tap') {
 }
 
 function renderBeatIntelligencePanel(reason = 'render') {
-  beatIntelConfig = normalizeGeneratorBeatConfig(beatIntelConfig);
   const meta = lastBeatIntelMeta || beatIntelRuntime.lastMeta || {};
   if (beatIntelEnabledNode) {
     beatIntelEnabledNode.classList.toggle('active', beatIntelConfig.enabled);
@@ -588,6 +588,7 @@ function renderBeatIntelligencePanel(reason = 'render') {
   setValueIfIdle(beatIntelPhraseBeatsNode, String(beatIntelConfig.phraseBeats));
   setValueIfIdle(beatIntelAccentAmountNode, String(beatIntelConfig.accentAmount));
   setValueIfIdle(beatIntelDropHoldNode, String(beatIntelConfig.dropHoldBeats));
+  if (beatIntelAutoPhraseResetNode) beatIntelAutoPhraseResetNode.checked = beatIntelConfig.autoPhraseReset === true;
   if (beatIntelBadgeNode) {
     beatIntelBadgeNode.textContent = beatIntelConfig.enabled ? (meta.dropActive ? 'DROP' : 'BEAT ON') : 'BEAT OFF';
     beatIntelBadgeNode.className = beatIntelConfig.enabled ? (meta.dropActive ? 'hot' : 'ok') : 'watch';
@@ -2170,6 +2171,7 @@ function setupGeneratorFormControls() {
   beatIntelPhraseBeatsNode?.addEventListener('change', () => updateBeatIntelligenceConfig({ phraseBeats: Number(beatIntelPhraseBeatsNode.value || beatIntelConfig.phraseBeats) }));
   beatIntelAccentAmountNode?.addEventListener('input', () => updateBeatIntelligenceConfig({ accentAmount: Number(beatIntelAccentAmountNode.value || beatIntelConfig.accentAmount) }));
   beatIntelDropHoldNode?.addEventListener('change', () => updateBeatIntelligenceConfig({ dropHoldBeats: Number(beatIntelDropHoldNode.value || beatIntelConfig.dropHoldBeats) }));
+  beatIntelAutoPhraseResetNode?.addEventListener('change', () => updateBeatIntelligenceConfig({ autoPhraseReset: beatIntelAutoPhraseResetNode.checked }));
   $('generatorSceneMorphArm')?.addEventListener('click', armSelectedSceneMorph);
   $('generatorSceneMorphCancel')?.addEventListener('click', () => cancelSceneMorph('operator-cancel'));
   sceneMorphTargetNode?.addEventListener('change', () => updateSceneMorphConfig({ targetId: sceneMorphTargetNode.value }));
