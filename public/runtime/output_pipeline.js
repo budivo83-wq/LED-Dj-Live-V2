@@ -188,7 +188,6 @@ export function createOutputPipeline(deps) {
 
   function emitMetrics(options = {}) {
     updateWindowRates();
-    updateLiveMetrics();
     const snapshot = snapshotMetrics();
     const now = getNow();
     snapshot.sentDelta = Math.max(0, Number(snapshot.sent || 0) - lastPublishedSent);
