@@ -4,6 +4,7 @@ const DEFAULT_PARAMS = new Float32Array([0.5, 0.5, 0.5, 0.5]);
 const FAILED_SHADER = Symbol("FAILED_SHADER");
 const SCENE_SHADER_BANK_SIZE = 10;
 const shaderProgramCacheByGl = new WeakMap();
+const layerGpuKeyCache = new WeakMap();
 const shaderStats = {
   cacheHits: 0,
   cacheMisses: 0,
@@ -553,7 +554,13 @@ function createLayerShaderRenderer() {
 }
 
 function layerShaderForGpu(gl, cache, gpu) {
-  const key = `${gpu.functionName}::${hashString(gpu.code || "")}`;
+  // GPU descriptors are stable module objects. Hashing the full GLSL source
+  // on every preview frame was unnecessary work once the program was cached.
+  let key = layerGpuKeyCache.get(gpu);
+  if (!key) {
+    key = `${gpu.functionName}::${hashString(gpu.code || "")}`;
+    layerGpuKeyCache.set(gpu, key);
+  }
   return getCachedShader(gl, `layer:${key}`, () => {
     const program = createProgram(gl, `
     attribute vec2 a_position;

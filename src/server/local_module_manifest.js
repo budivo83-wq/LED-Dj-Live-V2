@@ -21,7 +21,17 @@ export const LOCAL_MODULE_MANIFEST = Object.freeze({
     "shader_cosmic_web.js",
     "shader_bass_pressure.js",
     "shader_kick_vortex.js",
-    "shader_spectrum_tunnel.js"
+    "shader_spectrum_tunnel.js",
+    "shader_wormhole.js",
+    "shader_plasma_iq.js",
+    "shader_voronoi_flow.js",
+    "shader_reaction_diffusion.js",
+    "shader_caustics.js",
+    "shader_liquid_metal.js",
+    "shader_kaleidoscope.js",
+    "shader_electric_storm.js",
+    "shader_photon_tunnel.js",
+    "shader_bloom_pulse.js"
   ],
   "l1_palettes": [
     "arctic_sunrise.js",
@@ -82,7 +92,17 @@ export const LOCAL_MODULE_MANIFEST = Object.freeze({
     "shader_cosmic_web.js",
     "shader_bass_pressure.js",
     "shader_kick_vortex.js",
-    "shader_spectrum_tunnel.js"
+    "shader_spectrum_tunnel.js",
+    "shader_wormhole.js",
+    "shader_plasma_iq.js",
+    "shader_voronoi_flow.js",
+    "shader_reaction_diffusion.js",
+    "shader_caustics.js",
+    "shader_liquid_metal.js",
+    "shader_kaleidoscope.js",
+    "shader_electric_storm.js",
+    "shader_photon_tunnel.js",
+    "shader_bloom_pulse.js"
   ],
   "l2_palettes": [
     "arctic_sunrise.js",

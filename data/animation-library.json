@@ -308,6 +308,46 @@
     {
       "id": "builtin:shader_hologram_grid", "name": "Hologram Grid", "description": "Scanning holographic wireframe grid.",
       "file": "shader_hologram_grid.js", "source": "l1_anims/shader_hologram_grid.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 29, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_wormhole", "name": "Wormhole", "description": "Deep-space radial wormhole tunnel.",
+      "file": "shader_wormhole.js", "source": "l1_anims/shader_wormhole.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 30, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_plasma_iq", "name": "Plasma IQ", "description": "Iterated plasma field with animated escape.",
+      "file": "shader_plasma_iq.js", "source": "l1_anims/shader_plasma_iq.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 31, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_voronoi_flow", "name": "Voronoi Flow", "description": "Flowing cellular Voronoi field.",
+      "file": "shader_voronoi_flow.js", "source": "l1_anims/shader_voronoi_flow.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 32, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_reaction_diffusion", "name": "Reaction Diffusion", "description": "Organic feedback-like reaction field.",
+      "file": "shader_reaction_diffusion.js", "source": "l1_anims/shader_reaction_diffusion.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 33, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_caustics", "name": "Caustics", "description": "Liquid light caustic interference.",
+      "file": "shader_caustics.js", "source": "l1_anims/shader_caustics.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 34, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_liquid_metal", "name": "Liquid Metal", "description": "Molten metallic wave field.",
+      "file": "shader_liquid_metal.js", "source": "l1_anims/shader_liquid_metal.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 35, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_kaleidoscope", "name": "Kaleidoscope", "description": "Mirrored radial kaleidoscope facets.",
+      "file": "shader_kaleidoscope.js", "source": "l1_anims/shader_kaleidoscope.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 36, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_electric_storm", "name": "Electric Storm", "description": "Branching electric storm filaments.",
+      "file": "shader_electric_storm.js", "source": "l1_anims/shader_electric_storm.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 37, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_photon_tunnel", "name": "Photon Tunnel", "description": "High-speed photon tunnel streaks.",
+      "file": "shader_photon_tunnel.js", "source": "l1_anims/shader_photon_tunnel.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu"], "order": 38, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_bloom_pulse", "name": "Bloom Pulse", "description": "Soft rhythmic radial bloom.",
+      "file": "shader_bloom_pulse.js", "source": "l1_anims/shader_bloom_pulse.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "beat"], "order": 39, "gallery": { "thumbnail": "runtime" }
     }
   ]
 }
