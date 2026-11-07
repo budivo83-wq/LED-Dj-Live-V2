@@ -45,6 +45,7 @@ export function createLayerRuntime(deps) {
     key: "",
     table: new Uint8ClampedArray(256)
   };
+  let frameOutputCorrectionTable = null;
   // STEP22OC: hot render path cache. The old renderer recalculated normalized
   // params, layer time and allocated a coords object for every pixel/layer.
   // At 8×300×2 layers×60 FPS that is thousands of avoidable allocations per
@@ -104,7 +105,7 @@ export function createLayerRuntime(deps) {
   }
 
   function applyOutputCorrection(color) {
-    const table = getOutputCorrectionTable();
+    const table = frameOutputCorrectionTable || getOutputCorrectionTable();
     return [
       table[color[0] | 0] | 0,
       table[color[1] | 0] | 0,
@@ -127,6 +128,10 @@ export function createLayerRuntime(deps) {
     }
     outputCorrectionCache.key = key;
     return table;
+  }
+
+  function beginFrame() {
+    frameOutputCorrectionTable = getOutputCorrectionTable();
   }
 
   function manualPaletteColor(palette, value) {
@@ -297,5 +302,5 @@ export function createLayerRuntime(deps) {
     updateAnimationSelectorBackground(layer, previewCanvas, now);
   }
 
-  return { layerTime, getLayerVisibility, applyOutputCorrection, manualPaletteColor, renderLayerColor, getLayerColor, drawLayerRawPreview };
+  return { layerTime, getLayerVisibility, applyOutputCorrection, beginFrame, manualPaletteColor, renderLayerColor, getLayerColor, drawLayerRawPreview };
 }

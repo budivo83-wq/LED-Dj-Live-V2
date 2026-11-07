@@ -20,8 +20,11 @@ export function createFrameComposer(deps) {
   // Cache its progress once per frame; the old path called performance.now(),
   // fetched state and evaluated easing for every pixel during a fade.
   let frameBlend = { initialized: false, state: null, transition: null, mode: null, progress: 1 };
+  let frameLayerRuntime = null;
 
   function beginFrame() {
+    frameLayerRuntime = getLayerRuntime();
+    frameLayerRuntime?.beginFrame?.();
     const state = getState();
     const transition = getTransitions()?.blend || null;
     const progress = transition ? getTransitionProgress(transition) : 1;
@@ -35,7 +38,7 @@ export function createFrameComposer(deps) {
   }
 
   function applyOutputCorrection(color) {
-    const layerRuntime = getLayerRuntime();
+    const layerRuntime = frameLayerRuntime || getLayerRuntime();
     return layerRuntime ? layerRuntime.applyOutputCorrection(color) : color;
   }
 
