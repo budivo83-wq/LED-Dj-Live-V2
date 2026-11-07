@@ -9,6 +9,7 @@ import {
   normalizeGeneratorMusicModeId,
   applyGeneratorMusicMode,
   applyGeneratorMusicModeRuntimeValues,
+  createGeneratorMusicModeRuntimeBuffer,
   buildGeneratorMusicModeSummary,
   formatGeneratorMusicModeStatus,
   buildGeneratorMusicModeReport,
@@ -61,6 +62,9 @@ assert.ok(dropAccent.values.shimmer > dropValues.shimmer, 'drop downbeat should 
 const manualValues = { energy: 0.2, density: 0.3, speed: 0.4, colorShift: 0.5, feedback: 0.1, warp: 0.2, pulse: 0.3, shimmer: 0.4 };
 const manual = applyGeneratorMusicModeRuntimeValues('manual', manualValues, { enabled: true, beat: 99, bpm: 145, time: 99 });
 assert.deepEqual(manual.values, manualValues, 'manual runtime must not rewrite operator values');
+const runtimeBuffer = createGeneratorMusicModeRuntimeBuffer();
+const buffered = applyGeneratorMusicModeRuntimeValues('build', buildBase, { enabled: true, beat: 8, bpm: 145, time: 3, runtimeBuffer });
+assert.equal(buffered.values, runtimeBuffer.values, 'runtime buffer should reuse Music Mode values object');
 
 const summary = buildGeneratorMusicModeSummary('psy-chaos', drop.patch, drop.graph, drop.curves);
 assert.ok(summary.nodes.includes('gate'));

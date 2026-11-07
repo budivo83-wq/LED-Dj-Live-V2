@@ -102,6 +102,10 @@ export function setGeneratorMusicModeRuntimeEnabled(enabled = true, storage = gl
   return value;
 }
 
+export function createGeneratorMusicModeRuntimeBuffer(initial = {}) {
+  return { values: { ...initial }, meta: null };
+}
+
 function buildModePatch(modeId, patch) {
   const p = normalizeGeneratorPatch({ ...GENERATOR_DEFAULT_PATCH, ...(patch || {}) });
   if (modeId === 'manual') return normalizeGeneratorPatch({ ...p, name: p.name || 'Manual Generator Patch' });
@@ -263,7 +267,10 @@ export function applyGeneratorMusicModeRuntimeValues(modeId = 'manual', values =
   const phraseRamp = Math.max(smoothstep(0.08, 0.96, phrase), clamp01(intelligence.phraseProgress, 0));
   const phraseAccent = clamp01(intelligence.phraseAccent, 0);
   const dropAccent = clamp01(intelligence.dropAccent, 0);
-  const next = { ...values };
+  const runtimeBuffer = context.runtimeBuffer && typeof context.runtimeBuffer === 'object' ? context.runtimeBuffer : null;
+  const next = runtimeBuffer?.values && typeof runtimeBuffer.values === 'object'
+    ? Object.assign(runtimeBuffer.values, values)
+    : { ...values };
   const add = (key, amount) => { next[key] = clamp01(Number(next[key] ?? 0.5) + amount, Number(next[key] ?? 0.5)); };
   const setMin = (key, value) => { next[key] = Math.max(clamp01(next[key], 0), clamp01(value, 0)); };
   let accent = 0;
@@ -325,8 +332,7 @@ export function applyGeneratorMusicModeRuntimeValues(modeId = 'manual', values =
     accent = 0.04;
   }
 
-  return Object.freeze({
-    values: Object.freeze({
+  const outputValues = runtimeBuffer ? next : Object.freeze({
       energy: clamp01(next.energy, values.energy ?? 0.5),
       density: clamp01(next.density, values.density ?? 0.5),
       speed: clamp01(next.speed, values.speed ?? 0.5),
@@ -335,8 +341,18 @@ export function applyGeneratorMusicModeRuntimeValues(modeId = 'manual', values =
       warp: clamp01(next.warp, values.warp ?? 0.5),
       pulse: clamp01(next.pulse, values.pulse ?? 0.5),
       shimmer: clamp01(next.shimmer, values.shimmer ?? 0.5)
-    }),
-    meta: Object.freeze({
+    });
+  if (runtimeBuffer) {
+    outputValues.energy = clamp01(next.energy, values.energy ?? 0.5);
+    outputValues.density = clamp01(next.density, values.density ?? 0.5);
+    outputValues.speed = clamp01(next.speed, values.speed ?? 0.5);
+    outputValues.colorShift = clamp01(next.colorShift, values.colorShift ?? 0.5);
+    outputValues.feedback = clamp01(next.feedback, values.feedback ?? 0.5);
+    outputValues.warp = clamp01(next.warp, values.warp ?? 0.5);
+    outputValues.pulse = clamp01(next.pulse, values.pulse ?? 0.5);
+    outputValues.shimmer = clamp01(next.shimmer, values.shimmer ?? 0.5);
+  }
+  const outputMeta = Object.freeze({
       version: GENERATOR_MUSIC_MODES_VERSION,
       id,
       name: mode.name,
@@ -347,8 +363,9 @@ export function applyGeneratorMusicModeRuntimeValues(modeId = 'manual', values =
       phrase,
       phrasePct: Math.round(phrase * 100),
       accent: clamp01(accent, 0)
-    })
-  });
+    });
+  if (runtimeBuffer) runtimeBuffer.meta = outputMeta;
+  return Object.freeze({ values: outputValues, meta: outputMeta });
 }
 
 export function buildGeneratorMusicModeSummary(modeId = 'manual', patch = {}, graph = {}, curves = {}) {

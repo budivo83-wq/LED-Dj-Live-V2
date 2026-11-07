@@ -105,6 +105,7 @@ import {
   saveGeneratorMusicMode,
   isGeneratorMusicModeRuntimeEnabled,
   setGeneratorMusicModeRuntimeEnabled,
+  createGeneratorMusicModeRuntimeBuffer,
   applyGeneratorMusicMode,
   applyGeneratorMusicModeRuntimeValues,
   buildGeneratorMusicModeSummary,
@@ -350,6 +351,7 @@ let transitionBusy = false;
 let lastTransitionUiAt = 0;
 let activeMusicModeId = loadGeneratorMusicMode(localStorage);
 let musicModeRuntimeEnabled = isGeneratorMusicModeRuntimeEnabled(localStorage);
+let musicModeRuntimeBuffer = createGeneratorMusicModeRuntimeBuffer();
 let lastMusicModeMeta = { id: activeMusicModeId, enabled: musicModeRuntimeEnabled, phrasePct: 0, accent: 0 };
 let lastMusicModeSummary = buildGeneratorMusicModeSummary(activeMusicModeId, patch, graph, curves);
 let sceneMorphConfig = readGeneratorSceneMorphConfig(localStorage);
@@ -1995,7 +1997,7 @@ function draw(now) {
     queueGeneratorSnapshot('beat-intelligence', () => writeGeneratorBeatSnapshot(beatIntelRuntime, lastBeatIntelMeta, localStorage));
     lastBeatIntelSnapshotAt = now;
   }
-  const musicRuntime = applyGeneratorMusicModeRuntimeValues(activeMusicModeId, beatIntel.values, { enabled: musicModeRuntimeEnabled, bpm: baseBpm, beat, time, beatIntelligence: beatIntel.meta });
+  const musicRuntime = applyGeneratorMusicModeRuntimeValues(activeMusicModeId, beatIntel.values, { enabled: musicModeRuntimeEnabled, bpm: baseBpm, beat, time, beatIntelligence: beatIntel.meta, runtimeBuffer: musicModeRuntimeBuffer });
   lastMusicModeMeta = musicRuntime.meta || lastMusicModeMeta;
   let renderGraph = graph;
   // `patch` and `musicRuntime.values` are already normalized at their control
