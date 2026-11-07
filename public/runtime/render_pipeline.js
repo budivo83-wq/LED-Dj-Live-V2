@@ -740,7 +740,7 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
           || (allowShellCanvasMonitorDuringLiveOutput() && now - lastShellMonitorBlitAt >= shellCanvasMonitorGapMs())
           || (!allowShellCanvasMonitorDuringLiveOutput() && now - lastShellMonitorBlitAt >= shellCanvasMonitorGapMs());
         const skipMonitorBlit = headless
-          || (liveOutputClockActive && mirrorActual > 0 && mirrorActual < 55)
+          || (liveOutputClockActive && previewMode !== "pixel" && mirrorActual > 0 && mirrorActual < 55)
           || !shellMonitorDue
           || (previewBudgetPressured && previewMode !== "pixel");
         if (!skipMonitorBlit) {
