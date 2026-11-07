@@ -5910,6 +5910,12 @@ body.performance-page[data-preview-mode="shader"][data-shader-preview-size="big"
   min-height: clamp(30vh, 42vh, 52vh);
   max-height: none;
 }
+body.performance-page[data-preview-mode="shader"][data-shader-preview-size="led"] .preview-box,
+body.performance-page[data-preview-mode="shader"][data-shader-preview-size="led"] #shaderPreviewCanvas {
+  min-height: clamp(30vh, 42vh, 52vh);
+  max-height: none;
+  image-rendering: pixelated;
+}
 
 
 /* STEP37Z: final preview tab bindings and debug overlay visibility repair. */

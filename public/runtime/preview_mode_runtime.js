@@ -2,8 +2,8 @@ export const PREVIEW_MODE_RUNTIME_VERSION = "37AA-preview-tabs-diagnostics";
 
 const VALID_PREVIEW_MODES = ["stage", "pixel", "shader", "debug"];
 const PIXEL_PREVIEW_CYCLE = ["big", "small"];
-const SHADER_PREVIEW_CYCLE = ["big", "small"];
-const DEBUG_BASE_MODES = ["stage", "pixel-big", "pixel-small", "shader-big", "shader-small", "shader"];
+const SHADER_PREVIEW_CYCLE = ["big", "small", "led"];
+const DEBUG_BASE_MODES = ["stage", "pixel-big", "pixel-small", "shader-big", "shader-small", "shader-led", "shader"];
 
 export function createPreviewModeRuntime({ state, controls, documentRef = document } = {}) {
   if (!state) throw new Error("createPreviewModeRuntime requires state");
@@ -128,7 +128,7 @@ export function createPreviewModeRuntime({ state, controls, documentRef = docume
         entry.setAttribute?.("aria-pressed", active ? "true" : "false");
         entry.dataset.previewSize = shaderMode;
         entry.textContent = `SHADER ${shaderLabel}`;
-        entry.title = active ? `Shader preview: ${shaderLabel}. Click toggles BIG/SMALL.` : "Switch to shader preview.";
+        entry.title = active ? `Shader preview: ${shaderLabel}. Click toggles BIG/SMALL/LED FRAME.` : "Switch to shader preview.";
         return;
       }
       if (entry.id === "previewTabDebug") {

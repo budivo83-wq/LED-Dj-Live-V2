@@ -10,10 +10,15 @@ function expect(pattern, note) {
   if (!pattern.test(source)) failures.push(note);
 }
 
-expect(/function readOutputPriorityPreviewFps\(fallback = 24\)/, "output priority preview should default to 24 FPS");
-expect(/return Math\.max\(18, Math\.min\(30, Math\.round\(safe\)\)\);/, "output priority preview should stay in the 18-30 FPS band");
-expect(/const capFps = readOutputPriorityPreviewFps\(24\);/, "visible preview should use the 24 FPS output-priority cap");
-expect(/const shaderCapDuringOutput = outputPriorityPreviewActive\(\) \? 15 : 120;/, "shader preview should use the 15 FPS output cap");
+function reject(pattern, note) {
+  if (pattern.test(source)) failures.push(note);
+}
+
+expect(/const capFps = livePreviewFpsCap\(Number\(runtimeProfile\.previewFps \|\| 30\)\);/, "visible preview should use the Settings main preview FPS");
+expect(/const shaderLedFrame = documentRef\?\.body\?\.dataset\?\.shaderPreviewSize === "led";/, "shader LED frame mode should be explicit");
+expect(/const shaderCap = shaderLedFrame \? \(1000 \/ Math\.max\(1, previewFrameMs\)\) : 120;/, "shader LED frame should follow the main preview FPS");
+expect(/const gpuScene = !shaderLedFrame && now >= getForceCpuPreviewUntil\(\) \? createGpuScene\(\) : null;/, "shader LED frame should bypass the full-resolution shader scene");
+reject(/const shaderCapDuringOutput = outputPriorityPreviewActive\(\) \? 15 : 120;/, "legacy shader output cap must be removed");
 expect(/const shellRawPreviewFps = readStoredLayerPreviewFps\(outputPriorityPreviewActive\(\) \? 8 : 6\);/, "raw layer preview should use the 8 FPS output cap");
 
 if (failures.length) {

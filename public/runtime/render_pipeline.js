@@ -296,13 +296,6 @@ export function createRenderPipeline(deps) {
     } catch { return false; }
   }
 
-  function readOutputPriorityPreviewFps(fallback = 24) {
-    const cached = readPreviewSettingsCache();
-    const raw = Number(cached.outputPriorityPreviewFps || globalThis?.localStorage?.getItem?.('budilightOutputPriorityPreviewFps37AR') || fallback);
-    const safe = Number.isFinite(raw) && raw > 0 ? raw : fallback;
-    return Math.max(18, Math.min(30, Math.round(safe)));
-  }
-
   function outputPriorityPreviewActive() {
     try {
       return Boolean(isPhysicalOutputActive()) && isOutputLockActive()
@@ -328,10 +321,10 @@ export function createRenderPipeline(deps) {
     try {
       if (outputPriorityPreviewActive()) {
         // STEP37AR: physical output owns timing. Visible preview remains useful,
-        // but it must never inherit a 30/60 FPS UI cap while ArtNet/Serial is
-        // the performance-critical path. Default monitor cap is 24 FPS and can
-        // be overridden by budilightOutputPriorityPreviewFps37AR / settings.
-        const capFps = readOutputPriorityPreviewFps(24);
+        // but it must never inherit the output transport FPS. Main Preview FPS
+        // from Settings owns this monitor cadence; adaptive guidance may still
+        // reduce it when the browser is under pressure.
+        const capFps = livePreviewFpsCap(Number(runtimeProfile.previewFps || 30));
         schedulerDebugState.previewOutputPriority = true;
         schedulerDebugState.previewOutputPriorityFps = capFps;
         return 1000 / capFps;
@@ -697,8 +690,11 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
         setLastPreviewRenderer("shell-quiet");
       } else if (previewMode === "shader") {
         const softShaderFps = Number(adaptiveSoftState?.recommendations?.shaderPreviewFps || 0);
-        const shaderCapDuringOutput = outputPriorityPreviewActive() ? 15 : 120;
-        const shaderFps = Math.max(1, Math.min(shaderCapDuringOutput, Number((adaptiveSoftState?.active && softShaderFps > 0) ? softShaderFps : (getShaderPreviewFps?.() || (1000 / previewFrameMs) || 20))));
+        const shaderLedFrame = documentRef?.body?.dataset?.shaderPreviewSize === "led";
+        const shaderCap = shaderLedFrame ? (1000 / Math.max(1, previewFrameMs)) : 120;
+        const shaderFps = Math.max(1, Math.min(shaderCap, Number(shaderLedFrame
+          ? shaderCap
+          : ((adaptiveSoftState?.active && softShaderFps > 0) ? softShaderFps : (getShaderPreviewFps?.() || (1000 / previewFrameMs) || 20)))));
         const shaderPreviewFrameMs = 1000 / shaderFps;
         const shaderDue = now - lastShaderPreviewAt >= shaderPreviewFrameMs;
         if (shaderDue) {
@@ -710,12 +706,16 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
           // LED pixels. Always try the full-resolution GPU shader scene here;
           // it draws only into the visible preview canvas and does not publish
           // or modify the ArtNet/Serial frame bus.
-          const gpuScene = now >= getForceCpuPreviewUntil() ? createGpuScene() : null;
-          if (gpuScene && shaderPreviewRenderer?.drawShaderScene) {
+          const gpuScene = !shaderLedFrame && now >= getForceCpuPreviewUntil() ? createGpuScene() : null;
+          if (shaderLedFrame) {
+            drawShaderPreview(frame, null);
+            usedGpuPreview = true;
+            setLastPreviewRenderer(shaderPreviewRenderer?.kind === "webgl" ? "webgl:led-frame" : "2d:led-frame");
+          } else if (gpuScene && shaderPreviewRenderer?.drawShaderScene) {
             usedGpuPreview = shaderPreviewRenderer.drawShaderScene(gpuScene) !== false;
             if (!usedGpuPreview) onGpuDrawFailed?.("shader-preview");
           }
-          if (usedGpuPreview) {
+          if (usedGpuPreview && !shaderLedFrame) {
             setLastPreviewRenderer(liveOutputClockActive
               ? (shaderPreviewRenderer.kind === "webgl" ? "webgl:shader-original-live" : "gpu-shader-original-live")
               : (shaderPreviewRenderer.kind === "webgl" ? "webgl:shader" : "gpu-shader"));
