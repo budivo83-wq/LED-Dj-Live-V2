@@ -7,6 +7,7 @@ export const GENERATOR_MUSIC_MODE_KEY = 'budilight.generator.musicMode.v1';
 export const GENERATOR_MUSIC_MODE_RUNTIME_KEY = 'budilight.generator.musicMode.runtimeEnabled.v1';
 
 const MODE_IDS = Object.freeze(['manual', 'ambient', 'build', 'groove', 'drop', 'break', 'psy-chaos', 'afterhours']);
+const MODE_ID_SET = new Set(MODE_IDS);
 
 function clamp01(value, fallback = 0) {
   const n = Number(value);
@@ -65,6 +66,7 @@ export const GENERATOR_MUSIC_MODES = Object.freeze([
   Object.freeze({ id: 'psy-chaos', name: 'Psy Chaos', intent: 'kaleido, warp, random shimmer, ale pořád clampnuté hodnoty', phraseBeats: 8, energy: 'wild' }),
   Object.freeze({ id: 'afterhours', name: 'Afterhours', intent: 'tmavý pomalý režim na konec/frázové zklidnění', phraseBeats: 32, energy: 'dark' })
 ]);
+const MODE_BY_ID = new Map(GENERATOR_MUSIC_MODES.map((mode) => [mode.id, mode]));
 
 export function listGeneratorMusicModes() {
   return GENERATOR_MUSIC_MODES.map((mode) => ({ ...mode }));
@@ -72,12 +74,12 @@ export function listGeneratorMusicModes() {
 
 export function normalizeGeneratorMusicModeId(id = '') {
   const value = String(id || '').trim();
-  return MODE_IDS.includes(value) ? value : 'manual';
+  return MODE_ID_SET.has(value) ? value : 'manual';
 }
 
 export function getGeneratorMusicMode(id = '') {
   const modeId = normalizeGeneratorMusicModeId(id);
-  return GENERATOR_MUSIC_MODES.find((mode) => mode.id === modeId) || GENERATOR_MUSIC_MODES[0];
+  return MODE_BY_ID.get(modeId) || GENERATOR_MUSIC_MODES[0];
 }
 
 export function loadGeneratorMusicMode(storage = globalThis.localStorage) {
