@@ -21,11 +21,21 @@ export function createFrameComposer(deps) {
   // fetched state and evaluated easing for every pixel during a fade.
   let frameBlend = { initialized: false, state: null, transition: null, mode: null, progress: 1 };
   let frameLayerRuntime = null;
+  let frameLayerStates = null;
+  let frameLayerVisibility = null;
 
   function beginFrame() {
     frameLayerRuntime = getLayerRuntime();
     frameLayerRuntime?.beginFrame?.();
     const state = getState();
+    frameLayerStates = {
+      l1: getLayerState("l1"),
+      l2: getLayerState("l2")
+    };
+    frameLayerVisibility = {
+      l1: getLayerVisibility(frameLayerStates.l1),
+      l2: getLayerVisibility(frameLayerStates.l2)
+    };
     const transition = getTransitions()?.blend || null;
     const progress = transition ? getTransitionProgress(transition) : 1;
     frameBlend = {
@@ -43,8 +53,9 @@ export function createFrameComposer(deps) {
   }
 
   function renderPixelColor(layerKey, x, y, mix) {
-    const layerState = getLayerState(layerKey);
-    const visibility = getLayerVisibility(layerState);
+    const layerState = frameLayerStates?.[layerKey] || getLayerState(layerKey);
+    if (!layerState) return [0, 0, 0];
+    const visibility = frameLayerVisibility?.[layerKey] ?? getLayerVisibility(layerState);
     const gain = visibility * mix * layerState.master;
     if (gain <= 0) return [0, 0, 0];
     const base = getLayerColor(layerKey, x, y);
