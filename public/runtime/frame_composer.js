@@ -28,6 +28,11 @@ export function createFrameComposer(deps) {
     clamp01,
     getBeatPosition: () => frameBeat == null ? getBeatPosition() : frameBeat
   };
+  const blendRuntimeDeps = {
+    clamp01,
+    getBeatPosition: () => frameBeat == null ? getBeatPosition() : frameBeat,
+    state: null
+  };
 
   function beginFrame() {
     frameLayerRuntime = getLayerRuntime();
@@ -51,6 +56,7 @@ export function createFrameComposer(deps) {
       mode: state?.blendMode,
       progress
     };
+    blendRuntimeDeps.state = state;
   }
 
   function applyOutputCorrection(color) {
@@ -74,10 +80,9 @@ export function createFrameComposer(deps) {
   }
 
   function blend(a, b) {
-    const state = getState();
-    const transitions = getTransitions();
-    const transition = transitions?.blend || null;
-    if (!frameBlend.initialized || frameBlend.state !== state || frameBlend.transition !== transition || frameBlend.mode !== state?.blendMode) beginFrame();
+    if (!frameBlend.initialized) beginFrame();
+    const state = frameBlend.state;
+    const transition = frameBlend.transition;
     const cachedProgress = frameBlend.progress;
     if (!transition) return blendWithMode(a, b, state.blendMode);
 
@@ -96,7 +101,8 @@ export function createFrameComposer(deps) {
   }
 
   function blendWithMode(a, b, mode) {
-    return blendWithModeRuntime({ clamp01, getBeatPosition, state: getState() }, a, b, mode);
+    blendRuntimeDeps.state = frameBlend.initialized ? frameBlend.state : getState();
+    return blendWithModeRuntime(blendRuntimeDeps, a, b, mode);
   }
 
   return {
