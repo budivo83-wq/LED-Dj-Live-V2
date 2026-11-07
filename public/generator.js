@@ -897,7 +897,7 @@ async function setMode(nextMode, options = {}) {
     pendingReleaseMode = '';
     latestBridgeSnapshot = liveBridge.start({ width: patch.width, height: patch.height, fps: liveFps, directServerMirror: true, localFrameBus: true });
     const status = transitionRuntime?.active ? formatGeneratorTransitionStatus(transitionRuntime, transitionConfig) : 'CUT';
-    log(`LIVE MASTER zapnutĂ˝ @ ${liveFps} FPS podle Settings. Takeover: ${status}. Performance writer je potlaÄŤenĂ˝, Generator publikuje vlastnĂ­ master framy.`);
+    log(`LIVE MASTER zapnutý @ ${liveFps} FPS podle Settings. Takeover: ${status}. Performance writer je potlačený, Generator publikuje vlastní master framy.`);
   } else {
     if (mode === 'live') {
       const releaseMs = Math.max(0, Number(transitionConfig.releaseMs || 0));
