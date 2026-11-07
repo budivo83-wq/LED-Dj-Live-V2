@@ -847,6 +847,8 @@ export function createStep22DqLiveSender(defaults = {}) {
     lastSendAt: 0,
     lastSendResult: null,
     lastPacketSummary: null,
+    lastStripBrightnessTrace37CS: null,
+    lastStripBrightnessTraceAt37CS: 0,
     udpPacketCallbackCount: 0,
     udpPacketCallbackErrorCount: 0,
     lastUdpCallbackAt: 0,
@@ -1435,7 +1437,17 @@ export function createStep22DqLiveSender(defaults = {}) {
       bytes: packetBytes
     };
     }
-    const stripBrightnessTrace37CS = analyzeStripBrightness37CS({ frame: directFrame.frame, packets, patch: resolvedPatch37CS, width: frameWidth37CS, height: frameHeight37CS });
+    // Brightness tracing is diagnostics only and scans the complete frame plus
+    // routed packet payloads. Do not put that O(pixels + packet payload) work
+    // on every 60 FPS output tick; keep the latest trace and refresh it at a
+    // bounded diagnostic cadence.
+    const refreshStripBrightnessTrace37CS = !state.lastStripBrightnessTraceAt37CS
+      || sendNow - state.lastStripBrightnessTraceAt37CS >= 250;
+    if (refreshStripBrightnessTrace37CS) {
+      state.lastStripBrightnessTrace37CS = analyzeStripBrightness37CS({ frame: directFrame.frame, packets, patch: resolvedPatch37CS, width: frameWidth37CS, height: frameHeight37CS });
+      state.lastStripBrightnessTraceAt37CS = sendNow;
+    }
+    const stripBrightnessTrace37CS = state.lastStripBrightnessTrace37CS;
     state.lastSendResult = { sent: true, reason: 'udp-queued-master-ws-fastpath', targetIp, targetPort, packetTargets, packetCount: packets.length, bytes: packetBytes, batchId, stripBrightnessTrace37CS };
     return {
       ok: true,
