@@ -49,6 +49,7 @@ export function createLayerRuntime(deps) {
   let frameRenderTime = null;
   let frameWidth = 0;
   let frameHeight = 0;
+  let frameLayerTransitions = null;
   // STEP22OC: hot render path cache. The old renderer recalculated normalized
   // params, layer time and allocated a coords object for every pixel/layer.
   // At 8×300×2 layers×60 FPS that is thousands of avoidable allocations per
@@ -139,6 +140,20 @@ export function createLayerRuntime(deps) {
     frameWidth = WRef();
     frameHeight = HRef();
     frameOutputCorrectionTable = getOutputCorrectionTable();
+    frameLayerTransitions = {
+      l1: cacheLayerTransition(transitions.l1),
+      l2: cacheLayerTransition(transitions.l2)
+    };
+  }
+
+  function cacheLayerTransition(transition) {
+    if (!transition) return null;
+    const progress = transitionProgress(transition);
+    return {
+      transition,
+      progress,
+      amount: progress < 1 ? easeInOut(progress) : 1
+    };
   }
 
   function manualPaletteColor(palette, value) {
@@ -180,11 +195,17 @@ export function createLayerRuntime(deps) {
     const transition = transitions[layerKey];
 
     if (transition) {
-      const progress = transitionProgress(transition);
+      const cachedTransition = frameLayerTransitions?.[layerKey];
+      const progress = cachedTransition?.transition === transition
+        ? cachedTransition.progress
+        : transitionProgress(transition);
       if (progress < 1) {
         const previous = renderLayerColor(layerKey, transition.state, transition.modules, x, y);
         const current = renderLayerColor(layerKey, layerState, layerModules, x, y);
-        return mixColor(previous, current, easeInOut(progress));
+        const amount = cachedTransition?.transition === transition
+          ? cachedTransition.amount
+          : easeInOut(progress);
+        return mixColor(previous, current, amount);
       }
     }
     return renderLayerColor(layerKey, layerState, layerModules, x, y);

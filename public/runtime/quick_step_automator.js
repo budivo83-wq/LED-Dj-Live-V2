@@ -125,6 +125,8 @@
   let suppressSequencerCommand37BM = false;
   let lastSequencerCommandAt37BM = 0;
   let adaptiveTickTimer = 0;
+  let lastGlobalBeatPosition37AM = null;
+  let lastGlobalBeatAt37AM = 0;
   let deferredCommitTimer = 0;
   let deferredCommitRequestedAt = 0;
   let deferredHeavyTimer = 0;
@@ -141,6 +143,12 @@
   })();
 
   function managedTimeout37CE(name, fn, delayMs, opts = {}) {
+    // Sequencer transport is timing-critical. It must not inherit the
+    // live-output/UI throttling used by cosmetic timers; that throttling can
+    // stretch a 40 ms tick enough for the playhead to appear frozen.
+    if (name === 'adaptive-tick') {
+      return window.setTimeout(fn, Math.max(0, Number(delayMs) || 0));
+    }
     try {
       const loops = window.__budilightRuntimeLoopRegistry37CE;
       if (loops?.timeout) return loops.timeout(`quick-step:${name}`, fn, delayMs, { group: 'sequencer', ...opts });
@@ -1667,7 +1675,15 @@
     try {
       if (typeof window.getBeatPosition !== "function") return null;
       const value = Number(window.getBeatPosition());
-      return Number.isFinite(value) && value >= 0 ? value : null;
+      if (!Number.isFinite(value) || value < 0) return null;
+      const now = performance.now();
+      // A stale global clock must not permanently suppress the local
+      // monotonic fallback. This is especially important while the app is
+      // switching views or restoring the beat engine after startup.
+      if (lastGlobalBeatPosition37AM === value && now - lastGlobalBeatAt37AM > 180) return null;
+      lastGlobalBeatPosition37AM = value;
+      lastGlobalBeatAt37AM = now;
+      return value;
     } catch {
       return null;
     }
@@ -2297,6 +2313,11 @@
   function tick() {
     const globalBeat = readGlobalBeatPosition();
     if (globalBeat !== null) {
+      const bpm = readBpm();
+      // Keep the local recovery clock phase-locked to the authoritative clock
+      // so a temporary global-clock stall resumes on the correct cell.
+      state.beatZeroMs = performance.now() - globalBeat * (60000 / bpm);
+      state.lastBpm = bpm;
       syncBeatState(globalBeat);
     } else {
       const bpm = readBpm();

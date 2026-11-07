@@ -248,7 +248,9 @@ export function createRuntimeProfile() {
     telemetryStatsMs: selectInt("LED_RENDER_TELEMETRY_STATS_MS", 1200),
     metricsEmitMs: selectInt("LED_RENDER_METRICS_EMIT_MS", 750),
     outputPipelineStatsMs: selectInt("LED_OUTPUT_PIPELINE_STATS_MS", 750),
-    livePreviewFpsCap: selectInt("LED_LIVE_PREVIEW_FPS_CAP", raspi ? 4 : 6),
+    // Main visible preview cadence is operator-configurable. Keep the legacy
+    // live monitor fallback at a normal-PC rate instead of silently forcing 6 FPS.
+    livePreviewFpsCap: selectInt("LED_LIVE_PREVIEW_FPS_CAP", raspi ? 4 : 30),
     liveRawPreviewGapMs: selectInt("LED_LIVE_RAW_PREVIEW_GAP_MS", 900),
     // STEP37AI: cosmetic/operator UI is deliberately slower while live output
     // is active. These can be overridden from env if design work needs faster

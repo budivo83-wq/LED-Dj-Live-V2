@@ -1495,8 +1495,8 @@ async function warmupStoredShaderModules() {
   });
 }
 
-function scheduleNextDraw(now = performance.now()) {
-  renderPipeline?.scheduleNextDraw(now);
+function scheduleNextDraw(now = performance.now(), force = false) {
+  renderPipeline?.scheduleNextDraw(now, force);
 }
 
 function initBackgroundDrawWorker() {

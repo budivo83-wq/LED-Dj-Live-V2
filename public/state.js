@@ -102,7 +102,7 @@ export function createStateBridge(deps) {
         ? Math.max(0.6, Math.min(4.5, crossSensitivity))
         : 2.2;
       settings.crossfaderPlacement = stored?.crossfaderPlacement === "topbar" ? "topbar" : "normal";
-      settings.shaderPreviewFps = clampInt(stored?.shaderPreviewFps ?? settings.shaderPreviewFps ?? 20, 10, 30, 20);
+      settings.shaderPreviewFps = clampInt(stored?.shaderPreviewFps ?? settings.shaderPreviewFps ?? 20, 1, 60, 20);
       settings.layerPreviewEnabled = stored?.layerPreviewEnabled ?? settings.layerPreviewEnabled;
       settings.gpuMode = gpuModeValue(stored?.gpuMode ?? (stored?.gpuEnabled === false ? "cpu" : "auto"));
       settings.gpuEnabled = settings.gpuMode !== "cpu";

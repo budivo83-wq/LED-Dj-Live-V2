@@ -14,7 +14,8 @@ expect(/let previewBudgetPressureUntil = 0;/, "preview budget pressure state sho
 expect(/function isPreviewBudgetUnderPressure\(now = performance\.now\(\)\)/, "preview budget pressure helper should exist");
 expect(/function armPreviewBudgetPressure\(now, previewFrameMs, previewDrawMs, renderMs\)/, "preview budget pressure arm helper should exist");
 expect(/const previewBudgetPressured = isPreviewBudgetUnderPressure\(now\);/, "draw loop should sample the preview pressure state");
-expect(/\|\| \(previewBudgetPressured && previewMode !== "pixel"\);/, "non-pixel center previews should skip blits under pressure while pixel preview remains visible");
+expect(/const pixelPreviewActive = String\(previewMode \|\| ""\)\.startsWith\("pixel"\);/, "pixel BIG/SMALL modes should be recognized as pixel previews");
+expect(/\|\| \(previewBudgetPressured && !pixelPreviewActive\);/, "non-pixel center previews should skip blits under pressure while pixel preview remains visible");
 expect(/const shellRawPreviewAllowed = \(\!previewBudgetPressured\)/, "raw preview should stop during preview pressure");
 expect(/schedulerDebugState\.previewBudgetPressureUntil = Math\.max\(0, Math\.round\(previewBudgetPressureUntil\)\);/, "scheduler debug state should expose the pressure deadline");
 

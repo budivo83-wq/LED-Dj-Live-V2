@@ -16,10 +16,20 @@ function readStoredPreviewFps(runtimeProfile, fallback) {
       const stored = Number(parsed?.previewFps || 0);
       if (Number.isFinite(stored) && stored > 0) return Math.min(60, Math.max(1, Math.round(stored)));
     }
-    const cap = Number(globalThis?.localStorage?.getItem?.('budilightLivePreviewFpsCap') || globalThis?.localStorage?.getItem?.('budilightShellLivePreviewFpsCap') || 0);
-    if (Number.isFinite(cap) && cap > 0) return Math.min(60, Math.max(1, Math.round(cap)));
   } catch {}
-  return clampInt(runtimeProfile.previewFps, 1, 60, fallback);
+  return clampInt(fallback, 1, 60, 30);
+}
+
+function readStoredShaderPreviewFps(runtimeProfile, fallback) {
+  try {
+    const rawSettings = globalThis?.localStorage?.getItem?.('led-engine-settings-v1');
+    if (rawSettings) {
+      const parsed = JSON.parse(rawSettings);
+      const stored = Number(parsed?.shaderPreviewFps || 0);
+      if (Number.isFinite(stored) && stored > 0) return Math.min(60, Math.max(1, Math.round(stored)));
+    }
+  } catch {}
+  return clampInt(fallback, 1, 60, 24);
 }
 
 function nowMs() {
@@ -123,15 +133,15 @@ export function createFpsGovernor({ settings = {}, runtimeProfile = {}, document
     const hidden = documentRef?.hidden === true;
     if (hidden) return constrained ? 5 : 10;
     const cap = readStoredPreviewFps(runtimeProfile, constrained ? 24 : 30);
-    const min = clampInt(runtimeProfile.adaptiveFpsPreviewMin, 1, cap, constrained ? 8 : 12);
-    const adaptivePreview = adaptiveCap(cap, adaptive.level(), min, [1, 0.75, 0.55, 0.4]);
-    return Math.min(outputFps(), adaptivePreview);
+    // Preview cadence is owned only by Settings. Do not apply output,
+    // adaptive, pressure, or runtime-profile caps here.
+    return cap;
   }
 
   function shaderPreviewFps() {
-    const cap = clampInt(runtimeProfile.shaderPreviewFps, 1, 60, constrained ? 18 : 30);
-    const adaptiveShader = adaptiveCap(cap, adaptive.level(), constrained ? 6 : 10, [1, 0.7, 0.5, 0.35]);
-    return Math.min(previewFps(), adaptiveShader);
+    const cap = readStoredShaderPreviewFps(runtimeProfile, constrained ? 18 : 30);
+    // Shader Big/Small is its own Settings-owned cadence.
+    return cap;
   }
 
   function galleryFps() {

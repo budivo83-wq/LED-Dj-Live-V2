@@ -66,11 +66,18 @@ export async function runStartupSequence(deps) {
   initShaderInspectorToggle();
   initPreviewCollapseToggle();
   setPreferLocalStateOnBoot(restoreLocalState());
+  // STEP38W: Performance is the operator's default landing view after a
+  // restart. Always start its visible preview in the full shader canvas so a
+  // stale persisted pixel/debug mode cannot boot into an apparently empty UI.
+  state.previewMode = "shader";
+  state.shaderPreviewMode = "big";
   restoreTransitionSettings();
   ensureBeatClock();
   startupStep(12, "Starting render loop");
 
   syncControls();
+  resizePreviewCanvas();
+  renderPipeline?.draw?.(performance.now());
   if (!SHELL_VIEW_ONLY) initBackgroundDrawWorker();
   connectSocket();
   bindViewportLifecycle({

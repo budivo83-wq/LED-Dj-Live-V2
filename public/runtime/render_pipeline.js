@@ -66,7 +66,10 @@ export function createRenderPipeline(deps) {
   }
   function managedPreviewTimeout37CF(name, fn, delayMs, opts = {}) {
     const reg = runtimeLoopRegistry37CF();
-    if (reg?.timeout) return reg.timeout(name, fn, delayMs, { group: 'render-preview', liveFactor: 2, hiddenFactor: 4, maxMs: 1800, ...opts });
+    // Preview cadence is operator-visible. The shared live-output governor may
+    // slow housekeeping timers, but it must never double the configured pixel
+    // or shader preview interval and create visible input-to-canvas latency.
+    if (reg?.timeout) return reg.timeout(name, fn, delayMs, { group: 'render-preview', liveFactor: 1, hiddenFactor: 4, maxMs: 1200, ...opts });
     return windowRef.setTimeout(fn, Math.max(0, Math.round(Number(delayMs) || 0)));
   }
   function clearPreviewTimer37CF(id) {
@@ -74,6 +77,7 @@ export function createRenderPipeline(deps) {
     const reg = runtimeLoopRegistry37CF();
     if (typeof id === 'string' && reg?.clear) { try { reg.clear(id); return; } catch {} }
     try { windowRef.clearTimeout(id); } catch {}
+    try { windowRef.cancelAnimationFrame?.(id); } catch {}
   }
   let drawTimerId = 0;
   let outputTimerId = 0;
@@ -93,7 +97,6 @@ export function createRenderPipeline(deps) {
   let lastShellMonitorBlitAt = 0;
   let lastShellMonitorRenderAt = 0;
   let previewBudgetPressureUntil = 0;
-  const shellPreviewQuietUntil = shellViewOnly ? performance.now() + 4200 : 0;
   const shellRawPreviewQuietUntil = shellViewOnly ? performance.now() + 6200 : 0;
   let lastShellRawPreviewAt = 0;
   const outputClock = createOutputClockAuthority({ performanceRef: performance, runtimeProfile });
@@ -106,9 +109,19 @@ export function createRenderPipeline(deps) {
   let lastRenderMetricsAt = 0;
   let lastOutputMetricsAt = 0;
   let adaptiveSoftState = null;
+  function initialShellViewActive37CF() {
+    if (!shellViewOnly) return true;
+    try {
+      const frame = windowRef.frameElement;
+      if (!frame) return true;
+      return !frame.classList.contains("is-hidden") && frame.getAttribute("aria-hidden") !== "true";
+    } catch {
+      return true;
+    }
+  }
   const shellViewActivity = windowRef.__ledShellViewActivity = windowRef.__ledShellViewActivity || {
     version: "37BI",
-    active: !shellViewOnly,
+    active: initialShellViewActive37CF(),
     view: "",
     currentView: "",
     changedAt: performance.now(),
@@ -139,11 +152,14 @@ export function createRenderPipeline(deps) {
         documentRef?.documentElement?.classList.toggle("shell-view-inactive", !shellViewActivity.active);
         documentRef?.body?.classList.toggle("shell-view-inactive", !shellViewActivity.active);
       } catch {}
-      if (shellViewActivity.active && drawTimerId) {
-        clearPreviewTimer37CF(drawTimerId);
-        drawTimerId = 0;
-        setRenderSchedulerNextAt(performance.now());
-        scheduleNextDraw(performance.now());
+      if (shellViewActivity.active) {
+        const activeAt = performance.now();
+        if (drawTimerId) {
+          clearPreviewTimer37CF(drawTimerId);
+          drawTimerId = 0;
+        }
+        setRenderSchedulerNextAt(activeAt);
+        scheduleNextDraw(activeAt, true);
       }
     });
   } catch {}
@@ -215,6 +231,30 @@ export function createRenderPipeline(deps) {
     return previewSettingsCache;
   }
 
+  function invalidatePreviewSettingsCache37DZ() {
+    previewSettingsCacheAt = 0;
+    previewSettingsCache = null;
+    try {
+      if (isShellViewActive()) scheduleNextDraw(performance.now(), true);
+    } catch {}
+  }
+
+  try {
+    windowRef.addEventListener?.("budilight-preview-fps-changed", invalidatePreviewSettingsCache37DZ);
+    windowRef.addEventListener?.("storage", (event) => {
+      if (event?.key === "led-engine-settings-v1"
+        || String(event?.key || "").toLowerCase().includes("preview")) {
+        invalidatePreviewSettingsCache37DZ();
+      }
+    });
+    if (typeof windowRef.BroadcastChannel === "function") {
+      const channel = new windowRef.BroadcastChannel("budilight-settings");
+      channel.addEventListener?.("message", (event) => {
+        if (event?.data?.type === "preview-fps") invalidatePreviewSettingsCache37DZ();
+      });
+    }
+  } catch {}
+
   try {
     windowRef.addEventListener?.("led-adaptive-soft-state", (event) => {
       adaptiveSoftState = event?.detail || null;
@@ -285,8 +325,10 @@ export function createRenderPipeline(deps) {
     const cached = readPreviewSettingsCache();
     const stored = Number(cached.previewFps || 0);
     if (Number.isFinite(stored) && stored > 0) return Math.max(1, Math.min(60, Math.round(stored)));
-    const cap = Number(cached.livePreviewFpsCap || runtimeProfile.livePreviewFpsCap || fallback);
-    return Math.max(1, Math.min(60, Math.round(Number.isFinite(cap) && cap > 0 ? cap : fallback)));
+    // livePreviewFpsCap is a legacy safety profile value (historically 6 FPS)
+    // for monitor/raw previews. It must not override the operator's main
+    // preview cadence when the Settings value is temporarily unavailable.
+    return Math.max(1, Math.min(60, Math.round(Number(fallback) > 0 ? fallback : 30)));
   }
 
   function isOutputLockActive() {
@@ -310,9 +352,14 @@ export function createRenderPipeline(deps) {
     try {
       if (headless && Boolean(isOutputEnabled?.())) return 500;
     } catch {}
-    const softPreviewFps = Number(adaptiveSoftState?.recommendations?.previewFps || 0);
-    if (adaptiveSoftState?.active && softPreviewFps > 0) {
-      return 1000 / Math.max(1, softPreviewFps);
+    // STEP38X: the visible Shader Big canvas is an operator preview, not a
+    // raw LED monitor. Do not apply the live-output monitor cap (normally
+    // 6 FPS) to it; that cap made the shader animation look frozen even when
+    // the shader renderer itself was healthy.
+    const previewMode = String(getPreviewMode?.() || "").toLowerCase();
+    if (previewMode === "shader") {
+      const shaderFps = Number(getShaderPreviewFps?.() || 24);
+      if (Number.isFinite(shaderFps) && shaderFps > 0) return 1000 / Math.max(1, Math.min(60, shaderFps));
     }
     const base = Math.max(1, Number(getPreviewTargetFrameMs?.() || getTargetFrameMs?.() || previewTargetFrameMs || targetFrameMs || 16.67));
     // STEP22MD: když běží fyzický výstup, preview je jen monitor/consumer.
@@ -324,7 +371,7 @@ export function createRenderPipeline(deps) {
         // but it must never inherit the output transport FPS. Main Preview FPS
         // from Settings owns this monitor cadence; adaptive guidance may still
         // reduce it when the browser is under pressure.
-        const capFps = livePreviewFpsCap(Number(runtimeProfile.previewFps || 30));
+        const capFps = livePreviewFpsCap(30);
         schedulerDebugState.previewOutputPriority = true;
         schedulerDebugState.previewOutputPriorityFps = capFps;
         return 1000 / capFps;
@@ -334,11 +381,11 @@ export function createRenderPipeline(deps) {
         // Older live-output guard forced this monitor preview down to max 15 FPS,
         // so Settings > PREVIEW FPS appeared to do nothing during ArtNet/Serial output.
         // Output priority mode can still use its own safety cap above; otherwise obey Settings.
-        const capFps = livePreviewFpsCap(Number(runtimeProfile.previewFps || 30));
+        const capFps = livePreviewFpsCap(30);
         return 1000 / capFps;
       }
       if (isLiveOutputClockActive()) {
-        const capFps = livePreviewFpsCap(Number(runtimeProfile.previewFps || 30));
+        const capFps = livePreviewFpsCap(30);
         return 1000 / capFps;
       }
     } catch {}
@@ -575,9 +622,9 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
   function readStoredLiveMonitorFps(fallback = 4) {
     const cached = readPreviewSettingsCache();
     const stored = Number(cached.previewFps || 0);
-    if (Number.isFinite(stored) && stored > 0) return Math.max(1, Math.min(20, Math.round(stored)));
+    if (Number.isFinite(stored) && stored > 0) return Math.max(1, Math.min(60, Math.round(stored)));
     const raw = Number(cached.shellLiveMonitorRenderFps || fallback);
-    return Math.max(1, Math.min(20, Math.round(Number.isFinite(raw) ? raw : fallback)));
+    return Math.max(1, Math.min(60, Math.round(Number.isFinite(raw) ? raw : fallback)));
   }
 
   function readStoredLayerPreviewFps(fallback = 6) {
@@ -592,7 +639,7 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
   function shellCanvasMonitorGapMs() {
     const cached = readPreviewSettingsCache();
     const fps = Number(cached.shellLiveCanvasMonitorFps || readStoredLiveMonitorFps(4));
-    const safeFps = Math.max(1, Math.min(20, Math.round(Number.isFinite(fps) ? fps : 4)));
+    const safeFps = Math.max(1, Math.min(60, Math.round(Number.isFinite(fps) ? fps : 4)));
     return Math.max(80, Math.round(1000 / safeFps));
   }
 
@@ -638,7 +685,11 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
       let frame = latestComposedFrame;
       const previewMode = getPreviewMode();
       const previewStartedAt = performance.now();
-      const quietShellMount = shellViewOnly && now < shellPreviewQuietUntil;
+      // STEP38X: never suppress the first composed frame on the visible shell.
+      // The old 4.2 s quiet window left Performance on a black canvas until a
+      // page switch caused another redraw. Raw side previews remain throttled
+      // independently below, so startup can stay visually immediate.
+      const quietShellMount = false;
       const physicalOutputActive = Boolean(isOutputEnabled());
       const liveOutputClockActive = physicalOutputActive && !shellViewOnly;
       const previewBudgetPressured = isPreviewBudgetUnderPressure(now);
@@ -689,16 +740,20 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
       if (quietShellMount) {
         setLastPreviewRenderer("shell-quiet");
       } else if (previewMode === "shader") {
-        const softShaderFps = Number(adaptiveSoftState?.recommendations?.shaderPreviewFps || 0);
         const shaderLedFrame = documentRef?.body?.dataset?.shaderPreviewSize === "led";
         const shaderCap = shaderLedFrame ? (1000 / Math.max(1, previewFrameMs)) : 120;
         const shaderFps = Math.max(1, Math.min(shaderCap, Number(shaderLedFrame
           ? shaderCap
-          : ((adaptiveSoftState?.active && softShaderFps > 0) ? softShaderFps : (getShaderPreviewFps?.() || (1000 / previewFrameMs) || 20)))));
+          : (getShaderPreviewFps?.() || (1000 / previewFrameMs) || 20))));
         const shaderPreviewFrameMs = 1000 / shaderFps;
         const shaderDue = now - lastShaderPreviewAt >= shaderPreviewFrameMs;
         if (shaderDue) {
           resizeShaderPreviewCanvas();
+          // Shader Big/Small is animated independently from the throttled CPU
+          // LED monitor. Refresh the scene time before creating the GPU scene;
+          // otherwise shell/live mode can redraw at 24 FPS while reusing the
+          // old CPU-frame time and appear stuck at the monitor cadence.
+          setRenderTime(getBeatPosition());
           let usedGpuPreview = false;
           // STEP37EE: Shader tab is an inspector, not a pixel-output monitor.
           // Before this fix live output forced shader preview to draw the low
@@ -739,10 +794,11 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
         const shellMonitorDue = !shellLiveMonitorOnly
           || (allowShellCanvasMonitorDuringLiveOutput() && now - lastShellMonitorBlitAt >= shellCanvasMonitorGapMs())
           || (!allowShellCanvasMonitorDuringLiveOutput() && now - lastShellMonitorBlitAt >= shellCanvasMonitorGapMs());
+        const pixelPreviewActive = String(previewMode || "").startsWith("pixel");
         const skipMonitorBlit = headless
-          || (liveOutputClockActive && previewMode !== "pixel" && mirrorActual > 0 && mirrorActual < 55)
+          || (liveOutputClockActive && !pixelPreviewActive && mirrorActual > 0 && mirrorActual < 55)
           || !shellMonitorDue
-          || (previewBudgetPressured && previewMode !== "pixel");
+          || (previewBudgetPressured && !pixelPreviewActive);
         if (!skipMonitorBlit) {
           drawCenterPreviewCpu(frame);
           if (shellLiveMonitorOnly) lastShellMonitorBlitAt = now;
@@ -917,13 +973,14 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
     previewRenderer.draw(frame, W, H, isPreviewFrameEnabled());
   }
 
-  function scheduleNextDraw(now = performance.now()) {
+  function scheduleNextDraw(now = performance.now(), force = false) {
     const previewFrameMs = isShellViewActive() ? currentPreviewFrameMs() : shellInactivePreviewGapMs();
     if (drawTimerId) {
       clearPreviewTimer37CF(drawTimerId);
       drawTimerId = 0;
     }
-    if (!getRenderSchedulerNextAt()) setRenderSchedulerNextAt(now + previewFrameMs);
+    if (force) setRenderSchedulerNextAt(now);
+    else if (!getRenderSchedulerNextAt()) setRenderSchedulerNextAt(now + previewFrameMs);
     const delay = Math.max(0, getRenderSchedulerNextAt() - now);
     if (workerPreferred() && backgroundDrawWorker) {
       armBackgroundDrawWorker(delay);
@@ -1057,11 +1114,12 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
         // keeps the serial/BLX transport animated instead of replaying a stale
         // first frame or blinking between old frames.
         setRenderTime(getBeatPosition());
-        const outputPolicy = getOutputRenderPolicy();
+        const currentPacket = getAuthoritativeFramePacket();
+        const outputPolicy = getOutputRenderPolicy(currentPacket);
         schedulerDebugState.outputRenderPolicyDecision = String(outputPolicy.decision || "--");
         schedulerDebugState.outputRenderPolicyReason = String(outputPolicy.reason || "--");
         schedulerDebugState.outputRenderPolicyStaleLimitMs = Math.round(Number(outputPolicy.staleLimitMs || 0));
-        const packet = getOutputFramePacket({ policy: outputPolicy });
+        const packet = getOutputFramePacket({ policy: outputPolicy, packet: currentPacket });
         updateOutputConsumerGateDiagnostics(packet, "output-enabled");
         schedulerDebugState.outputFrameId = Number(packet?.frameId || 0);
         schedulerDebugState.outputFrameSource = String(packet?.source || "--");
@@ -1147,8 +1205,7 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
     });
   }
 
-  function getOutputRenderPolicy() {
-    const packet = getAuthoritativeFramePacket();
+  function getOutputRenderPolicy(packet = getAuthoritativeFramePacket()) {
     const hasUsableFrame = isUsableFramePacket(packet);
     const frameAgeMs = packet?.timestamp ? Math.max(0, performance.now() - Number(packet.timestamp)) : Number.POSITIVE_INFINITY;
     const policy = evaluateOutputRenderPolicy({
@@ -1189,7 +1246,7 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
     const policy = options?.policy || getOutputRenderPolicy();
     const transitionActive = hasActiveFadeTransition();
     const preferFresh = policy.decision === OUTPUT_RENDER_DECISIONS.RENDER_FRESH || transitionActive;
-    const packet = getAuthoritativeFramePacket();
+    const packet = options?.packet || getAuthoritativeFramePacket();
     if (!preferFresh && isUsableFramePacket(packet)) return packet;
 
     // STEP 13BU-AP: FADE ON is output-first. During any L1/L2/blend transition
@@ -1340,6 +1397,24 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
       clearPreviewTimer37CF(drawTimerId);
       drawTimerId = 0;
     }
+    // A visible canvas must be scheduled on the browser's paint clock. Timer
+    // callbacks at 16 ms drift against vsync and produce judder even when the
+    // configured FPS value is 60. Keep timer/worker scheduling for hidden and
+    // headless contexts only.
+    if (!headless && !documentRef.hidden && typeof windowRef.requestAnimationFrame === "function") {
+      const targetAt = performance.now() + Math.max(0, Number(delay) || 0);
+      const waitForPaint = (timestamp) => {
+        drawTimerId = 0;
+        const now = Number(timestamp) || performance.now();
+        if (now + 0.25 < targetAt || (getRenderSchedulerNextAt() && now + 0.25 < getRenderSchedulerNextAt())) {
+          drawTimerId = windowRef.requestAnimationFrame(waitForPaint);
+          return;
+        }
+        draw(now);
+      };
+      drawTimerId = windowRef.requestAnimationFrame(waitForPaint);
+      return;
+    }
     drawTimerId = managedPreviewTimeout37CF('render:preview-draw', () => {
       drawTimerId = 0;
       draw(performance.now());
@@ -1356,16 +1431,22 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
   }
 
   function reportShellPreviewFrame(now) {
+    if (headless) return;
+    const detail = {
+      renderer: getLastPreviewRenderer?.() || "--",
+      timestamp: now
+    };
+    // The local topbar needs the real preview cadence. Only the cross-frame
+    // shell relay is throttled; throttling this local event made PREVIEW FPS
+    // stay empty and hid the actual preview rate.
+    try { windowRef.dispatchEvent(new CustomEvent("led-preview-frame", { detail })); } catch {}
     if (!shellViewOnly || !windowRef.parent || windowRef.parent === windowRef) return;
     if (now - lastShellPreviewReportAt < 250) return;
     lastShellPreviewReportAt = now;
     try {
       windowRef.parent.postMessage({
         type: "led-preview-frame",
-        detail: {
-          renderer: getLastPreviewRenderer?.() || "--",
-          timestamp: now
-        }
+        detail
       }, "*");
     } catch {
       // ignore shell preview telemetry failures

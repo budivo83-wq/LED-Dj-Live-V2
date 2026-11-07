@@ -214,11 +214,12 @@ function writeStored() {
   localStorage.setItem('budilightShellLivePreviewFpsCap', String(previewFps));
   localStorage.setItem('budilightShellLiveMonitorRenderFps', String(previewFps));
   try {
+    const shaderPreviewFps = Math.max(1, Math.min(60, Number(state.shaderPreviewFps || 24)));
     window.__budilightPreviewFpsCap37DZ = previewFps;
-    window.dispatchEvent(new CustomEvent('budilight-preview-fps-changed', { detail: { previewFps } }));
+    window.dispatchEvent(new CustomEvent('budilight-preview-fps-changed', { detail: { previewFps, shaderPreviewFps } }));
     if ('BroadcastChannel' in window) {
       const ch = new BroadcastChannel('budilight-settings');
-      ch.postMessage({ type: 'preview-fps', previewFps, source: 'settings-37dz' });
+      ch.postMessage({ type: 'preview-fps', previewFps, shaderPreviewFps, source: 'settings-37dz' });
       ch.close();
     }
   } catch {}

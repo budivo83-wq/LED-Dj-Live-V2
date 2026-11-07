@@ -282,8 +282,10 @@ export function startFpsMeter() {
 
   let frames = 0;
   let uiFrames = 0;
+  let previewFrames = 0;
   let lastSample = performance.now();
   let lastFrameAt = 0;
+  let lastPreviewAt = 0;
   let lastDetail = null;
 
   const recordFrame = (detail = {}) => {
@@ -299,6 +301,10 @@ export function startFpsMeter() {
   window.addEventListener("led-output-frame", (event) => recordFrame(event.detail));
   window.addEventListener("message", (event) => {
     if (event.data?.type === "led-output-frame") recordFrame(event.data.detail);
+  });
+  window.addEventListener("led-preview-frame", () => {
+    previewFrames += 1;
+    lastPreviewAt = performance.now();
   });
 
   // STEP37CY: topbar FPS badge position is cosmetic. Raw scroll/resize
@@ -324,6 +330,7 @@ export function startFpsMeter() {
   }
 
   updateFpsPosition();
+  if (renderFpsValue) renderFpsValue.textContent = String(Math.round(renderFpsFromRuntime()));
   window.addEventListener("scroll", () => scheduleFpsPositionUpdate37CY("scroll"), { passive: true });
   window.addEventListener("resize", () => scheduleFpsPositionUpdate37CY("resize"), { passive: true });
 
@@ -336,7 +343,9 @@ export function startFpsMeter() {
     const live = lastFrameAt && now - lastFrameAt < 1600;
     const outputFps = outputFpsFromDetail(lastDetail);
     const relayFps = Math.round(frames * 1000 / elapsed);
-    const renderFps = renderFpsFromRuntime();
+    const previewLive = lastPreviewAt && now - lastPreviewAt < 1600;
+    const previewFps = Math.round(previewFrames * 1000 / elapsed);
+    const renderFps = previewLive && previewFps > 0 ? previewFps : renderFpsFromRuntime(lastDetail);
     const serialFps = serialFpsFromDetail(lastDetail);
     // STEP37AL: the topbar used to run its own requestAnimationFrame loop only
     // to update text once per second and estimate UI FPS. That extra RAF
@@ -368,6 +377,7 @@ export function startFpsMeter() {
       }
     } catch {}
     frames = 0;
+    previewFrames = 0;
     uiFrames = 0;
     lastSample = now;
   }
@@ -383,11 +393,34 @@ export function startFpsMeter() {
 }
 
 
-function renderFpsFromRuntime() {
+function renderFpsFromRuntime(detail = null) {
   const snapshot = window.__ledTelemetryStore?.getSnapshot?.() || {};
   const perf = snapshot.perf || {};
   const telemetry = snapshot.telemetry || {};
-  return Number(perf.renderFps || telemetry.renderFps || 0);
+  const storedDetail = snapshot.detail || {};
+  const source = (storedDetail && typeof storedDetail === "object" && Object.keys(storedDetail).length)
+    ? storedDetail
+    : ((detail && typeof detail === "object") ? detail : {});
+  const measured = Number(
+    perf.previewFps
+    || telemetry.previewFps
+    || source.previewFps
+    || source.perf?.previewFps
+    || perf.renderFps
+    || telemetry.renderFps
+    || 0
+  );
+  if (Number.isFinite(measured) && measured > 0) return measured;
+  try {
+    const settings = JSON.parse(localStorage.getItem("led-engine-settings-v1") || "{}");
+    const shaderMode = String(source.previewMode || "").toLowerCase() === "shader";
+    const configured = shaderMode
+      ? Number(settings.shaderPreviewFps || 24)
+      : Number(settings.previewFps || 30);
+    return Number.isFinite(configured) && configured > 0 ? configured : (shaderMode ? 24 : 30);
+  } catch {
+    return 30;
+  }
 }
 
 function serialFpsFromDetail(detail) {

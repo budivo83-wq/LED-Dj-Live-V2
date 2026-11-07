@@ -32,9 +32,19 @@ export function createRuntimeRefreshLoops({
     try { return new URLSearchParams(windowRef.location?.search || "").get("shellView") === "1"; }
     catch { return false; }
   })();
+  const initialShellViewActive37BI = (() => {
+    if (!shellViewOnly) return true;
+    try {
+      const frame = windowRef.frameElement;
+      if (!frame) return true;
+      return !frame.classList.contains("is-hidden") && frame.getAttribute("aria-hidden") !== "true";
+    } catch {
+      return true;
+    }
+  })();
   const shellViewActivity = windowRef.__ledShellViewActivity = windowRef.__ledShellViewActivity || {
     version: "37BI",
-    active: !shellViewOnly,
+    active: initialShellViewActive37BI,
     view: "",
     currentView: "",
     changedAt: performanceRef.now(),
