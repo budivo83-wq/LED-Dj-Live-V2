@@ -37,7 +37,9 @@ function buildRuntimeModeProfile(mode) {
   return {
     mode,
     uiFull: mode === "normal",
-    thumbsEnabled: false,
+    // NORMAL keeps selector thumbnails visible; constrained/burn-in modes can
+    // still disable them through their preset/runtime flags.
+    thumbsEnabled: mode === "normal" || mode === "raspi-stable",
     debugGraphsEnabled: false,
     outputPriority
   };

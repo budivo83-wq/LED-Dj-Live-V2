@@ -37,6 +37,7 @@ export function createLayerModuleSwitcher({
   let pendingUiFrame = 0;
   let pendingUiTimer = 0;
   let pendingCommitTimer = 0;
+  let warmupGeneration37EQ = 0;
 
   function managedTimeout37CE(name, fn, delayMs, opts = {}) {
     try {
@@ -80,6 +81,7 @@ export function createLayerModuleSwitcher({
 
   async function switchLayerModule(layer, stateKey, folder, moduleKey, file, options = {}) {
     if (!file) return;
+    const switchGeneration = ++warmupGeneration37EQ;
     const previousModules = captureLayerModules(layer);
     const previousState = cloneLayerState(state[layer]);
 
@@ -142,7 +144,10 @@ export function createLayerModuleSwitcher({
     // the visible 0.5-2s freeze and drops the ArtNet stream.  Commit the module
     // first, start the fade, and let warmups run later only when the browser is idle.
     const deferWarmup = (cb, delay = 650) => {
-      const run = () => { try { cb?.(); } catch (error) { console.warn("deferred switch warmup failed", error); } };
+      const run = () => {
+        if (switchGeneration !== warmupGeneration37EQ) return;
+        try { cb?.(); } catch (error) { console.warn("deferred switch warmup failed", error); }
+      };
       if (typeof requestIdleCallback === "function") managedTimeout37CE('deferred-warmup-idle', () => requestIdleCallback(run, { timeout: 1200 }), delay, { liveFactor: 1.8, hiddenFactor: 3, maxMs: 5000 });
       else managedTimeout37CE('deferred-warmup', run, delay, { liveFactor: 1.8, hiddenFactor: 3, maxMs: 5000 });
     };

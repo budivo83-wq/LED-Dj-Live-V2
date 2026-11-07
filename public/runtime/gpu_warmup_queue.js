@@ -47,6 +47,13 @@ export function createGpuWarmupQueueRuntime({
       schedulerDebugState.shaderWarmupHits += 1;
       return;
     }
+    // Warmup is speculative. Never let a backlog of obsolete scenes delay the
+    // currently selected shader; the live renderer can compile the latest
+    // scene lazily while this one-item queue warms it in the background.
+    if (gpuWarmupQueue.length) {
+      schedulerDebugState.shaderWarmupDropped = Number(schedulerDebugState.shaderWarmupDropped || 0) + gpuWarmupQueue.length;
+      gpuWarmupQueue.length = 0;
+    }
     gpuWarmupSeen.add(key);
     gpuWarmupQueue.push(scene);
     schedulerDebugState.warmupQueue = gpuWarmupQueue.length;
