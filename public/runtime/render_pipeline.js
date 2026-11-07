@@ -672,7 +672,7 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
       const needsFreshFrame = !quietShellMount
         && !liveOutputClockActive
         && (!shellLiveMonitorOnly || shellMonitorRenderDue)
-        && (!frame || shouldRefreshPreviewFrame?.() === true || (!shellViewOnly && isOutputEnabled()));
+        && (!frame || shouldRefreshPreviewFrame?.() === true || (!shellViewOnly && physicalOutputActive));
       if (needsFreshFrame) {
         setRenderTime(getBeatPosition());
         const rendered = renderCpuFrame();
@@ -759,7 +759,7 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
         // frame steals main-thread time from the output-owned render clock and
         // shows up as ArtNet jitter even when average FPS looks acceptable.
         // Keep them alive, but throttle them hard while live output owns timing.
-        const liveOutputActiveForRawPreview = isPhysicalOutputActive();
+        const liveOutputActiveForRawPreview = physicalOutputActive;
         const shellRawPreviewAllowed = (!previewBudgetPressured)
           && (!shellViewOnly || !liveOutputActiveForRawPreview || allowShellRawPreviewDuringLiveOutput());
         const shellRawPreviewFps = readStoredLayerPreviewFps(outputPriorityPreviewActive() ? 8 : 6);
