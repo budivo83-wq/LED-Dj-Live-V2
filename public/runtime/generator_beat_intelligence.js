@@ -71,8 +71,8 @@ export function saveGeneratorBeatConfig(input = {}, storage = globalThis.localSt
   return config;
 }
 
-export function createGeneratorBeatRuntime(input = {}) {
-  return Object.freeze({
+export function createGeneratorBeatRuntime(input = {}, options = {}) {
+  const runtime = {
     version: GENERATOR_BEAT_INTELLIGENCE_VERSION,
     phraseAnchorBeat: Number.isFinite(Number(input.phraseAnchorBeat)) ? Number(input.phraseAnchorBeat) : 0,
     lastTapWallAt: Number(input.lastTapWallAt || 0) || 0,
@@ -82,7 +82,15 @@ export function createGeneratorBeatRuntime(input = {}) {
     lastMarker: String(input.lastMarker || 'boot'),
     lastMarkerAt: Number(input.lastMarkerAt || 0) || 0,
     lastMeta: input.lastMeta || null
-  });
+  };
+  return options.freeze === false ? runtime : Object.freeze(runtime);
+}
+
+// The generator render loop owns this instance and updates it in place. All
+// public/control-plane callers continue to receive the immutable runtime from
+// createGeneratorBeatRuntime().
+export function createMutableGeneratorBeatRuntime(input = {}) {
+  return createGeneratorBeatRuntime(input, { freeze: false });
 }
 
 export function tapGeneratorBeat(runtime = createGeneratorBeatRuntime(), context = {}) {
@@ -179,12 +187,20 @@ export function applyGeneratorBeatIntelligence(runtime = createGeneratorBeatRunt
     lastMarker: runtime.lastMarker || 'none',
     suggestedBpm: Number(runtime.suggestedBpm || 0) || 0
   });
-  const nextRuntime = createGeneratorBeatRuntime({
-    ...runtime,
-    phraseAnchorBeat,
-    lastMarker: phraseCycles > 0 ? 'auto-phrase-reset' : runtime.lastMarker,
-    lastMeta: meta
-  });
+  const nextMarker = phraseCycles > 0 ? 'auto-phrase-reset' : runtime.lastMarker;
+  const nextRuntime = context.reuseRuntime === true && runtime && !Object.isFrozen(runtime)
+    ? runtime
+    : createGeneratorBeatRuntime({
+      ...runtime,
+      phraseAnchorBeat,
+      lastMarker: nextMarker,
+      lastMeta: meta
+    });
+  if (nextRuntime === runtime) {
+    runtime.phraseAnchorBeat = phraseAnchorBeat;
+    runtime.lastMarker = nextMarker;
+    runtime.lastMeta = meta;
+  }
   return Object.freeze({ runtime: nextRuntime, values: Object.freeze(next), meta });
 }
 

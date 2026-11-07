@@ -5,6 +5,7 @@ import {
   readGeneratorBeatConfig,
   saveGeneratorBeatConfig,
   createGeneratorBeatRuntime,
+  createMutableGeneratorBeatRuntime,
   tapGeneratorBeat,
   markGeneratorBeatDrop,
   resetGeneratorBeatPhrase,
@@ -56,6 +57,9 @@ runtime = markGeneratorBeatDrop(runtime, config, { beat: 20, nowWall: 2000 });
 assert.ok(runtime.dropUntilBeat > 20);
 
 const baseValues = { energy: 0.4, density: 0.4, speed: 0.4, colorShift: 0.4, feedback: 0.4, warp: 0.4, pulse: 0.4, shimmer: 0.4 };
+const mutableRuntime = createMutableGeneratorBeatRuntime();
+const mutableResult = applyGeneratorBeatIntelligence(mutableRuntime, config, baseValues, { beat: 1.25, bpm: 120, time: 0.625, reuseRuntime: true });
+assert.equal(mutableResult.runtime, mutableRuntime, 'render runtime should be reusable when explicitly requested');
 const beatResult = applyGeneratorBeatIntelligence(runtime, config, baseValues, { beat: 20.01, bpm: 120, time: 8 });
 assert.ok(beatResult.meta.dropActive, 'drop marker creates active drop accent');
 assert.ok(beatResult.values.pulse > baseValues.pulse, 'beat intelligence raises pulse');

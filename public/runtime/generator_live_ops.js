@@ -150,6 +150,10 @@ export function createGeneratorLiveMetricsRuntime() {
   return {
     version: GENERATOR_LIVE_OPS_VERSION,
     frames: 0,
+    composeSamples: 0,
+    lastComposeMs: 0,
+    avgComposeMs: 0,
+    maxComposeMs: 0,
     publishSamples: 0,
     lastRenderMs: 0,
     avgRenderMs: 0,
@@ -166,10 +170,17 @@ export function createGeneratorLiveMetricsRuntime() {
 
 export function updateGeneratorLiveMetrics(runtime = createGeneratorLiveMetricsRuntime(), sample = {}) {
   const next = { ...runtime };
+  const composeMs = Number(sample.composeMs);
   const renderMs = Number(sample.renderMs);
   const publishMs = Number(sample.publishMs);
   const serverMs = Number(sample.serverMs ?? sample.bridge?.lastServerMs);
   next.frames += 1;
+  if (Number.isFinite(composeMs)) {
+    next.composeSamples += 1;
+    next.lastComposeMs = Math.max(0, composeMs);
+    next.avgComposeMs = ema(next.avgComposeMs, next.lastComposeMs, 0.12);
+    next.maxComposeMs = Math.max(Number(next.maxComposeMs || 0), next.lastComposeMs);
+  }
   if (Number.isFinite(renderMs)) {
     next.lastRenderMs = Math.max(0, renderMs);
     next.avgRenderMs = ema(next.avgRenderMs, next.lastRenderMs, 0.12);
@@ -194,6 +205,7 @@ export function updateGeneratorLiveMetrics(runtime = createGeneratorLiveMetricsR
 
 export function summarizeGeneratorLiveMetrics(runtime = {}) {
   const renderAvg = Number(runtime.avgRenderMs || 0);
+  const composeAvg = Number(runtime.avgComposeMs || 0);
   const publishAvg = Number(runtime.avgPublishMs || 0);
   const serverAvg = Number(runtime.avgServerMs || 0);
   let status = 'GOOD';
@@ -201,6 +213,7 @@ export function summarizeGeneratorLiveMetrics(runtime = {}) {
   if (renderAvg > 24 || publishAvg > 10 || serverAvg > 40 || Number(runtime.serverErrors || 0) > 0) status = 'HOT';
   return Object.freeze({
     status,
+    compose: composeAvg > 0 ? `${composeAvg.toFixed(1)} / ${Number(runtime.maxComposeMs || 0).toFixed(1)}` : '--',
     render: `${renderAvg.toFixed(1)} / ${Number(runtime.maxRenderMs || 0).toFixed(1)}`,
     publish: publishAvg > 0 ? publishAvg.toFixed(1) : '--',
     server: serverAvg > 0 ? serverAvg.toFixed(1) : '--',

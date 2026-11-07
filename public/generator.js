@@ -161,6 +161,7 @@ import {
   normalizeGeneratorBeatConfig,
   saveGeneratorBeatConfig,
   createGeneratorBeatRuntime,
+  createMutableGeneratorBeatRuntime,
   tapGeneratorBeat,
   markGeneratorBeatDrop,
   resetGeneratorBeatPhrase,
@@ -265,6 +266,7 @@ const stabilityCardsNode = $('generatorStabilityCards');
 const stabilityVerdictNode = $('generatorStabilityVerdict');
 const stabilityNextNode = $('generatorStabilityNext');
 const stabilityHintsNode = $('generatorStabilityHints');
+const metricComposeNode = $('generatorMetricCompose');
 const metricRenderNode = $('generatorMetricRender');
 const metricPublishNode = $('generatorMetricPublish');
 const metricServerNode = $('generatorMetricServer');
@@ -359,7 +361,7 @@ let lastJourneySnapshotAt = 0;
 let midiConfig = readGeneratorMidiConfig(localStorage);
 let midiRuntime = createGeneratorMidiRuntime();
 let beatIntelConfig = readGeneratorBeatConfig(localStorage);
-let beatIntelRuntime = createGeneratorBeatRuntime();
+let beatIntelRuntime = createMutableGeneratorBeatRuntime();
 let lastBeatIntelMeta = null;
 let lastBeatIntelSnapshotAt = 0;
 let midiAccess = null;
@@ -367,6 +369,8 @@ let midiInput = null;
 let midiSnapshot = null;
 let activeFieldTest = null;
 let lastFieldTestReport = '';
+const pendingGeneratorSnapshotJobs = new Map();
+let generatorSnapshotFlushScheduled = false;
 const liveBridge = createGeneratorLiveBridge({ width: patch.width, height: patch.height, fps: liveFps, directServerMirror: true, localFrameBus: true });
 
 function clamp01(value, fallback = 0) {
@@ -378,6 +382,23 @@ function clamp01(value, fallback = 0) {
 function log(message) {
   const line = `[${new Date().toLocaleTimeString()}] ${message}`;
   if (logNode) logNode.textContent = `${line}\n${String(logNode.textContent || '').split('\n').slice(0, 11).join('\n')}`;
+}
+
+function queueGeneratorSnapshot(key, writer) {
+  if (typeof writer !== 'function') return;
+  pendingGeneratorSnapshotJobs.set(String(key), writer);
+  if (generatorSnapshotFlushScheduled) return;
+  generatorSnapshotFlushScheduled = true;
+  const flush = () => {
+    generatorSnapshotFlushScheduled = false;
+    const jobs = Array.from(pendingGeneratorSnapshotJobs.values());
+    pendingGeneratorSnapshotJobs.clear();
+    for (const job of jobs) {
+      try { job(); } catch {}
+    }
+  };
+  if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(flush, { timeout: 250 });
+  else window.setTimeout(flush, 0);
 }
 
 function saveAll() {
@@ -621,11 +642,11 @@ function toggleBeatIntelligence() {
 
 function tapBeatIntelligence() {
   const clock = getGeneratorBeatNow();
-  beatIntelRuntime = tapGeneratorBeat(beatIntelRuntime, {
+  beatIntelRuntime = createMutableGeneratorBeatRuntime(tapGeneratorBeat(beatIntelRuntime, {
     nowWall: clock.nowWall,
     beat: clock.beat,
     bpm: clock.bpm
-  });
+  }));
   const changed = applyBeatIntelBpmSuggestion('tap');
   lastBeatIntelMeta = beatIntelRuntime.lastMeta || lastBeatIntelMeta;
   renderBeatIntelligencePanel('tap');
@@ -634,10 +655,10 @@ function tapBeatIntelligence() {
 
 function resetBeatPhrase() {
   const clock = getGeneratorBeatNow();
-  beatIntelRuntime = resetGeneratorBeatPhrase(beatIntelRuntime, {
+  beatIntelRuntime = createMutableGeneratorBeatRuntime(resetGeneratorBeatPhrase(beatIntelRuntime, {
     nowWall: clock.nowWall,
     beat: clock.beat
-  });
+  }));
   lastBeatIntelMeta = beatIntelRuntime.lastMeta || lastBeatIntelMeta;
   renderBeatIntelligencePanel('phrase-reset');
   log('Beat phrase reset na aktuĂˇlnĂ­ beat.');
@@ -645,10 +666,10 @@ function resetBeatPhrase() {
 
 function markBeatDrop() {
   const clock = getGeneratorBeatNow();
-  beatIntelRuntime = markGeneratorBeatDrop(beatIntelRuntime, beatIntelConfig, {
+  beatIntelRuntime = createMutableGeneratorBeatRuntime(markGeneratorBeatDrop(beatIntelRuntime, beatIntelConfig, {
     nowWall: clock.nowWall,
     beat: clock.beat
-  });
+  }));
   lastBeatIntelMeta = beatIntelRuntime.lastMeta || lastBeatIntelMeta;
   renderBeatIntelligencePanel('drop-mark');
   log(`Beat drop mark aktivnĂ­ na ${beatIntelConfig.dropHoldBeats} beatĹŻ.`);
@@ -1317,6 +1338,7 @@ function renderOperatorMetricsState(summary) {
     operatorBadgeNode.textContent = mode === 'live' ? summary.status : (mode === 'preview' ? 'PREVIEW' : 'SAFE');
     operatorBadgeNode.className = summary.status === 'HOT' ? 'hot' : (summary.status === 'WATCH' ? 'watch' : 'ok');
   }
+  if (metricComposeNode) metricComposeNode.textContent = summary.compose;
   if (metricRenderNode) metricRenderNode.textContent = summary.render;
   if (metricPublishNode) metricPublishNode.textContent = summary.publish;
   if (metricServerNode) metricServerNode.textContent = summary.server;
@@ -1961,21 +1983,32 @@ function draw(now) {
     lastSettingsFpsPollAt = now;
   }
   const time = now / 1000;
+  const composeStarted = performance.now();
   const baseBpm = Number(patch.bpm || 145) || 145;
   const beat = time * baseBpm / 60;
   const curveTargets = evaluateGeneratorCurves(curves, time, { bpm: baseBpm, beat });
   const curveValues = smoothGeneratorCurveValues(curves, curveTargets, curveRuntime, time);
-  const beatIntel = applyGeneratorBeatIntelligence(beatIntelRuntime, beatIntelConfig, curveValues, { enabled: beatIntelConfig.enabled, bpm: baseBpm, beat, time });
+  const beatIntel = applyGeneratorBeatIntelligence(beatIntelRuntime, beatIntelConfig, curveValues, { enabled: beatIntelConfig.enabled, bpm: baseBpm, beat, time, reuseRuntime: true });
   beatIntelRuntime = beatIntel.runtime;
   lastBeatIntelMeta = beatIntel.meta;
   if (now - lastBeatIntelSnapshotAt > 500) {
-    writeGeneratorBeatSnapshot(beatIntelRuntime, beatIntel.meta, localStorage);
+    queueGeneratorSnapshot('beat-intelligence', () => writeGeneratorBeatSnapshot(beatIntelRuntime, lastBeatIntelMeta, localStorage));
     lastBeatIntelSnapshotAt = now;
   }
   const musicRuntime = applyGeneratorMusicModeRuntimeValues(activeMusicModeId, beatIntel.values, { enabled: musicModeRuntimeEnabled, bpm: baseBpm, beat, time, beatIntelligence: beatIntel.meta });
   lastMusicModeMeta = musicRuntime.meta || lastMusicModeMeta;
   let renderGraph = graph;
-  let livePatch = normalizeGeneratorPatch({ ...patch, ...musicRuntime.values, musicMode: activeMusicModeId, beatContext: beatIntel.meta, modules: getGraphModuleFlags(), graph });
+  // `patch` and `musicRuntime.values` are already normalized at their control
+  // boundaries. Re-running full patch normalization here would allocate a new
+  // modules object and macros array on every animation frame.
+  let livePatch = {
+    ...patch,
+    ...musicRuntime.values,
+    musicMode: activeMusicModeId,
+    beatContext: beatIntel.meta,
+    modules: getGraphModuleFlags(),
+    graph
+  };
   let liveGraphPlan = getRenderGraphPlan();
   if (sceneMorphRuntime.active) {
     const morphResult = applyGeneratorSceneMorph(sceneMorphRuntime, { patch: livePatch, graph: renderGraph, curves }, {
@@ -1983,10 +2016,13 @@ function draw(now) {
       now,
       beat,
       storage: localStorage,
-      writeSnapshot: now - lastSceneMorphSnapshotAt > 500
+      writeSnapshot: false
     });
     sceneMorphRuntime = morphResult.runtime;
-    if (now - lastSceneMorphSnapshotAt > 500) lastSceneMorphSnapshotAt = now;
+    if (now - lastSceneMorphSnapshotAt > 500) {
+      queueGeneratorSnapshot('scene-morph', () => writeGeneratorSceneMorphSnapshot(sceneMorphRuntime, localStorage));
+      lastSceneMorphSnapshotAt = now;
+    }
     if (morphResult.state?.graph) renderGraph = normalizeGeneratorGraph(morphResult.state.graph);
     if (morphResult.state?.patch) livePatch = normalizeGeneratorPatch({ ...morphResult.state.patch, beatContext: beatIntel.meta, modules: graphToModuleFlags(renderGraph), graph: renderGraph });
     if (morphResult.done) {
@@ -2007,11 +2043,12 @@ function draw(now) {
     if (tick.action?.type === 'arm-morph') handleJourneyAction(tick.action, beat, time, 'draw');
     if (tick.action?.type === 'done') log(`Journey DONE: ${journeyConfig.name}.`);
     if (now - lastJourneySnapshotAt > 500) {
-      writeGeneratorJourneySnapshot(journeyRuntime, localStorage);
-      renderJourneyPanel('snapshot');
+      queueGeneratorSnapshot('journey', () => writeGeneratorJourneySnapshot(journeyRuntime, localStorage));
+      renderJourneyPanel('draw');
       lastJourneySnapshotAt = now;
     }
   }
+  const composeMs = Math.max(0, performance.now() - composeStarted);
   if (renderGraph !== graph) liveGraphPlan = graphToRenderPlan(renderGraph);
   if (mode === 'preview' || mode === 'live') {
     let releaseCompleteAfterPublish = '';
@@ -2054,7 +2091,7 @@ function draw(now) {
       const result = liveBridge.publish(publishFrame, { patch: contextPatch, bpm: livePatch.bpm, beat: publishFrame.meta.beat, renderMs: publishFrame.meta.renderMs });
       const publishMs = Number(result?.publishMs ?? (performance.now() - publishStarted));
       if (result?.snapshot && !result.skipped) latestBridgeSnapshot = result.snapshot;
-      liveMetrics = updateGeneratorLiveMetrics(liveMetrics, { renderMs: publishFrame.meta.renderMs, publishMs, bridge: latestBridgeSnapshot });
+      liveMetrics = updateGeneratorLiveMetrics(liveMetrics, { composeMs, renderMs: publishFrame.meta.renderMs, publishMs, bridge: latestBridgeSnapshot });
       if (fieldRendered) {
         lastFieldTestReport = buildGeneratorFieldTestReport(activeFieldTest?.options || {}, publishFieldTest
           ? { live: true, ok: result?.ok, skipped: result?.skipped, reason: result?.reason }
