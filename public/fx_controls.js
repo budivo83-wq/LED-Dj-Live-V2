@@ -60,7 +60,6 @@ export function applySingleFxRuntime(deps, color, fx, x, y, phaseOffset) {
 
 export function blendWithModeRuntime(deps, a, b, mode) {
   const { clamp01, getBeatPosition, state } = deps;
-  const beat = getBeatPosition();
   switch (mode) {
     case "fade":
     case "add":
@@ -99,11 +98,16 @@ export function blendWithModeRuntime(deps, a, b, mode) {
         a[2] * keep + b[2] * luma
       ];
     }
-    case "strobeGate":
+    case "strobeGate": {
+      const beat = getBeatPosition();
       return Math.floor(beat * 4) % 2 === 0 ? a : b;
-    case "beatCut":
+    }
+    case "beatCut": {
+      const beat = getBeatPosition();
       return Math.floor(beat) % 2 === 0 ? a : b;
+    }
     case "glitchMix": {
+      const beat = getBeatPosition();
       const gate = Math.sin(Math.floor(beat * 8) * 12.9898) > 0 ? 1 : 0;
       return gate
         ? [Math.abs(a[0] - b[1]), Math.abs(a[1] - b[2]), Math.abs(a[2] - b[0])]
