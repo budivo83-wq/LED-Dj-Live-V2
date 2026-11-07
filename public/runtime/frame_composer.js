@@ -23,11 +23,17 @@ export function createFrameComposer(deps) {
   let frameLayerRuntime = null;
   let frameLayerStates = null;
   let frameLayerVisibility = null;
+  let frameBeat = null;
+  const fxRuntimeDeps = {
+    clamp01,
+    getBeatPosition: () => frameBeat == null ? getBeatPosition() : frameBeat
+  };
 
   function beginFrame() {
     frameLayerRuntime = getLayerRuntime();
     frameLayerRuntime?.beginFrame?.();
     const state = getState();
+    frameBeat = getBeatPosition();
     frameLayerStates = {
       l1: getLayerState("l1"),
       l2: getLayerState("l2")
@@ -64,7 +70,7 @@ export function createFrameComposer(deps) {
   }
 
   function applySingleFx(color, fx, x, y, phaseOffset) {
-    return applySingleFxRuntime({ clamp01, getBeatPosition }, color, fx, x, y, phaseOffset);
+    return applySingleFxRuntime(fxRuntimeDeps, color, fx, x, y, phaseOffset);
   }
 
   function blend(a, b) {
