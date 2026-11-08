@@ -1,4 +1,4 @@
 ﻿export const PREVIEW_DEFAULTS = {
-  fps: 20,
+  fps: 60,
   mode: 'pixel'
 };

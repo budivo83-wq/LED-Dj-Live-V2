@@ -310,7 +310,7 @@
 
           <label class="field settings-main-preview-fps-field">
             <span>MAIN PREVIEW FPS</span>
-            <input id="previewFps" type="number" min="1" max="60" step="1" value="30" list="mainPreviewFpsPresets" />
+            <input id="previewFps" type="number" min="1" max="60" step="1" value="60" list="mainPreviewFpsPresets" />
             <small>Velký Performance preview canvas. Neovlivňuje LED/ArtNet output ani malé layer náhledy.</small>
           </label>
           <datalist id="mainPreviewFpsPresets">
@@ -327,7 +327,7 @@
 
           <label class="field settings-shader-preview-fps-field">
             <span>SHADER PREVIEW FPS</span>
-            <input id="shaderPreviewFps" type="number" min="1" max="60" step="1" value="24" />
+            <input id="shaderPreviewFps" type="number" min="1" max="60" step="1" value="60" />
             <small>Full-resolution SHADER inspector. Neovlivňuje LED output ani SHADER LED FRAME.</small>
           </label>
 
@@ -405,7 +405,7 @@
 
           <label class="field">
             <span>LAYER PREW FPS</span>
-            <input id="layerPreviewFps" type="number" min="1" max="20" step="1" value="6" />
+              <input id="layerPreviewFps" type="number" min="1" max="60" step="1" value="60" />
           </label>
 
           <label class="field">
@@ -549,7 +549,7 @@ SERIAL: waiting</pre>
 
             <label class="field">
               <span>FPS LIMIT</span>
-              <input id="serialFps" type="number" min="1" max="60" step="1" value="25" />
+              <input id="serialFps" type="number" min="1" max="60" step="1" value="60" />
             </label>
 
             <div class="field serial-contract-lock" role="status" aria-live="polite">

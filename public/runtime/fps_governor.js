@@ -17,7 +17,7 @@ function readStoredPreviewFps(runtimeProfile, fallback) {
       if (Number.isFinite(stored) && stored > 0) return Math.min(60, Math.max(1, Math.round(stored)));
     }
   } catch {}
-  return clampInt(fallback, 1, 60, 30);
+  return clampInt(fallback, 1, 60, 60);
 }
 
 function readStoredShaderPreviewFps(runtimeProfile, fallback) {
@@ -29,7 +29,7 @@ function readStoredShaderPreviewFps(runtimeProfile, fallback) {
       if (Number.isFinite(stored) && stored > 0) return Math.min(60, Math.max(1, Math.round(stored)));
     }
   } catch {}
-  return clampInt(fallback, 1, 60, 24);
+  return clampInt(fallback, 1, 60, 60);
 }
 
 function nowMs() {

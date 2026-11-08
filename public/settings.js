@@ -37,8 +37,8 @@ const ARTNET_SYNC_LIVE_API = Object.freeze({
 
 const defaults = {
   fps: ARTNET_LIVE_DEFAULTS.fps,
-  previewFps: 30,
-  layerPreviewFps: 6,
+  previewFps: 60,
+  layerPreviewFps: 60,
   gamma: 2.2,
   contrast: 1.35,
   brightnessLimit: 1,
@@ -50,7 +50,8 @@ const defaults = {
   outputMode: 'preview',
   serialPort: '',
   serialBaud: 1000000,
-  serialFps: 30,
+  serialFps: 60,
+  shaderPreviewFps: 60,
   serialProtocol: 'aa_len_rgb',
   targetIp: ARTNET_LIVE_DEFAULTS.outputIp,
   bindIp: ARTNET_LIVE_DEFAULTS.bindIp,
@@ -195,7 +196,7 @@ function readStored() {
   if (storedSettings.layerPreviewFps == null) {
     const legacyGap = Number(localStorage.getItem('budilightShellLiveRawPreviewGapMs') || localStorage.getItem('budilightLiveRawPreviewGapMs') || 0);
     if (Number.isFinite(legacyGap) && legacyGap > 0) {
-      storedSettings.layerPreviewFps = Math.max(1, Math.min(20, Math.round(1000 / legacyGap)));
+      storedSettings.layerPreviewFps = Math.max(1, Math.min(60, Math.round(1000 / legacyGap)));
     }
   }
   return {
@@ -208,13 +209,13 @@ function readStored() {
 function writeStored() {
   const settings = { ...state, savedAt: new Date().toISOString() };
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-  const previewFps = Math.max(1, Math.min(60, Number(state.previewFps || 30)));
-  const layerPreviewFps = Math.max(1, Math.min(20, Number(state.layerPreviewFps || defaults.layerPreviewFps || 6)));
+  const previewFps = Math.max(1, Math.min(60, Number(state.previewFps || 60)));
+  const layerPreviewFps = Math.max(1, Math.min(60, Number(state.layerPreviewFps || defaults.layerPreviewFps || 60)));
   localStorage.setItem('budilightLivePreviewFpsCap', String(previewFps));
   localStorage.setItem('budilightShellLivePreviewFpsCap', String(previewFps));
   localStorage.setItem('budilightShellLiveMonitorRenderFps', String(previewFps));
   try {
-    const shaderPreviewFps = Math.max(1, Math.min(60, Number(state.shaderPreviewFps || 24)));
+    const shaderPreviewFps = Math.max(1, Math.min(60, Number(state.shaderPreviewFps || 60)));
     window.__budilightPreviewFpsCap37DZ = previewFps;
     window.dispatchEvent(new CustomEvent('budilight-preview-fps-changed', { detail: { previewFps, shaderPreviewFps } }));
     if ('BroadcastChannel' in window) {
@@ -271,9 +272,9 @@ function collectStateFromDom() {
   state.routerSerialEnabled = toBool(state.routerSerialEnabled);
   state.routerArtnetEnabled = toBool(state.routerArtnetEnabled || state.artnetEnabled);
   state.artnetEnabled = toBool(state.artnetEnabled || state.routerArtnetEnabled);
-  state.previewFps = Math.max(1, Math.min(60, Math.round(Number(state.previewFps || defaults.previewFps || 30))));
-  state.layerPreviewFps = Math.max(1, Math.min(20, Math.round(Number(state.layerPreviewFps || defaults.layerPreviewFps || 6))));
-  state.shaderPreviewFps = Math.max(1, Math.min(60, Math.round(Number(state.shaderPreviewFps || 24))));
+  state.previewFps = Math.max(1, Math.min(60, Math.round(Number(state.previewFps || defaults.previewFps || 60))));
+  state.layerPreviewFps = Math.max(1, Math.min(60, Math.round(Number(state.layerPreviewFps || defaults.layerPreviewFps || 60))));
+  state.shaderPreviewFps = Math.max(1, Math.min(60, Math.round(Number(state.shaderPreviewFps || 60))));
   clampGlobalCorrection37CT();
   state.routerUsbDmxEnabled = false;
   state.networkAdapter = String(state.networkAdapter || '').trim();

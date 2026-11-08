@@ -27,7 +27,7 @@
   ui: {
     screen: 'performance',
     previewMode: 'pixel',
-    previewFps: 20,
+    previewFps: 60,
     debugOpen: false
   }
 };

@@ -17,15 +17,15 @@ function reject(pattern, note) {
   if (pattern.test(source)) failures.push(note);
 }
 
-expect(/const capFps = livePreviewFpsCap\(30\);/, "visible preview should use the Settings main preview FPS");
+expect(/const capFps = livePreviewFpsCap\(60\);/, "visible preview should use the Settings main preview FPS");
 expect(/const shaderLedFrame = documentRef\?\.body\?\.dataset\?\.shaderPreviewSize === "led";/, "shader LED frame mode should be explicit");
 expect(/const shaderCap = shaderLedFrame \? \(1000 \/ Math\.max\(1, previewFrameMs\)\) : 120;/, "shader LED frame should follow the main preview FPS");
 expect(/const gpuScene = !shaderLedFrame && now >= getForceCpuPreviewUntil\(\) \? createGpuScene\(\) : null;/, "shader LED frame should bypass the full-resolution shader scene");
 reject(/const shaderCapDuringOutput = outputPriorityPreviewActive\(\) \? 15 : 120;/, "legacy shader output cap must be removed");
-expect(/const shellRawPreviewFps = readStoredLayerPreviewFps\(outputPriorityPreviewActive\(\) \? 8 : 6\);/, "raw layer preview should use the 8 FPS output cap");
+expect(/const shellRawPreviewFps = readStoredLayerPreviewFps\(outputPriorityPreviewActive\(\) \? 8 : 60\);/, "raw layer preview should use the Settings 60 FPS default");
 expect(/const previewMode = String\(getPreviewMode\?\.\(\) \|\| ""\)\.toLowerCase\(\);/, "preview cadence should inspect the active mode");
 expect(/if \(previewMode === "shader"\)/, "shader preview should not inherit the low live-output monitor cap");
-expect(/const shaderFps = Number\(getShaderPreviewFps\?\.\(\) \|\| 24\);/, "shader cadence should use the configured shader FPS");
+expect(/const shaderFps = Number\(getShaderPreviewFps\?\.\(\) \|\| 60\);/, "shader cadence should use the configured shader FPS");
 expect(/setRenderTime\(getBeatPosition\(\)\);/, "shader draws should refresh animation time independently of the CPU monitor frame");
 expect(/Math\.min\(60, Math\.round\(stored\)\)/, "main Performance preview should allow the configured 60 FPS");
 expect(/const safeFps = Math\.max\(1, Math\.min\(60, Math\.round\(Number\.isFinite\(fps\) \? fps : 4\)\)\);/, "shell canvas monitor should allow the configured 60 FPS");

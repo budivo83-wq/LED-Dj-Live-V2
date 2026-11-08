@@ -321,14 +321,14 @@ export function createRenderPipeline(deps) {
   }
 
 
-  function livePreviewFpsCap(fallback = 30) {
+  function livePreviewFpsCap(fallback = 60) {
     const cached = readPreviewSettingsCache();
     const stored = Number(cached.previewFps || 0);
     if (Number.isFinite(stored) && stored > 0) return Math.max(1, Math.min(60, Math.round(stored)));
     // livePreviewFpsCap is a legacy safety profile value (historically 6 FPS)
     // for monitor/raw previews. It must not override the operator's main
     // preview cadence when the Settings value is temporarily unavailable.
-    return Math.max(1, Math.min(60, Math.round(Number(fallback) > 0 ? fallback : 30)));
+    return Math.max(1, Math.min(60, Math.round(Number(fallback) > 0 ? fallback : 60)));
   }
 
   function isOutputLockActive() {
@@ -358,7 +358,7 @@ export function createRenderPipeline(deps) {
     // the shader renderer itself was healthy.
     const previewMode = String(getPreviewMode?.() || "").toLowerCase();
     if (previewMode === "shader") {
-      const shaderFps = Number(getShaderPreviewFps?.() || 24);
+      const shaderFps = Number(getShaderPreviewFps?.() || 60);
       if (Number.isFinite(shaderFps) && shaderFps > 0) return 1000 / Math.max(1, Math.min(60, shaderFps));
     }
     const base = Math.max(1, Number(getPreviewTargetFrameMs?.() || getTargetFrameMs?.() || previewTargetFrameMs || targetFrameMs || 16.67));
@@ -371,7 +371,7 @@ export function createRenderPipeline(deps) {
         // but it must never inherit the output transport FPS. Main Preview FPS
         // from Settings owns this monitor cadence; adaptive guidance may still
         // reduce it when the browser is under pressure.
-        const capFps = livePreviewFpsCap(30);
+        const capFps = livePreviewFpsCap(60);
         schedulerDebugState.previewOutputPriority = true;
         schedulerDebugState.previewOutputPriorityFps = capFps;
         return 1000 / capFps;
@@ -381,11 +381,11 @@ export function createRenderPipeline(deps) {
         // Older live-output guard forced this monitor preview down to max 15 FPS,
         // so Settings > PREVIEW FPS appeared to do nothing during ArtNet/Serial output.
         // Output priority mode can still use its own safety cap above; otherwise obey Settings.
-        const capFps = livePreviewFpsCap(30);
+        const capFps = livePreviewFpsCap(60);
         return 1000 / capFps;
       }
       if (isLiveOutputClockActive()) {
-        const capFps = livePreviewFpsCap(30);
+        const capFps = livePreviewFpsCap(60);
         return 1000 / capFps;
       }
     } catch {}
@@ -627,12 +627,12 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
     return Math.max(1, Math.min(60, Math.round(Number.isFinite(raw) ? raw : fallback)));
   }
 
-  function readStoredLayerPreviewFps(fallback = 6) {
+  function readStoredLayerPreviewFps(fallback = 60) {
     const cached = readPreviewSettingsCache();
     const stored = Number(cached.layerPreviewFps || 0);
-    if (Number.isFinite(stored) && stored > 0) return Math.max(1, Math.min(20, Math.round(stored)));
+    if (Number.isFinite(stored) && stored > 0) return Math.max(1, Math.min(60, Math.round(stored)));
     const gapMs = Number(cached.shellLiveRawPreviewGapMs || 0);
-    if (Number.isFinite(gapMs) && gapMs > 0) return Math.max(1, Math.min(20, Math.round(1000 / gapMs)));
+    if (Number.isFinite(gapMs) && gapMs > 0) return Math.max(1, Math.min(60, Math.round(1000 / gapMs)));
     return fallback;
   }
 
@@ -744,7 +744,7 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
         const shaderCap = shaderLedFrame ? (1000 / Math.max(1, previewFrameMs)) : 120;
         const shaderFps = Math.max(1, Math.min(shaderCap, Number(shaderLedFrame
           ? shaderCap
-          : (getShaderPreviewFps?.() || (1000 / previewFrameMs) || 20))));
+          : (getShaderPreviewFps?.() || (1000 / previewFrameMs) || 60))));
         const shaderPreviewFrameMs = 1000 / shaderFps;
         const shaderDue = now - lastShaderPreviewAt >= shaderPreviewFrameMs;
         if (shaderDue) {
@@ -818,7 +818,7 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
         const liveOutputActiveForRawPreview = physicalOutputActive;
         const shellRawPreviewAllowed = (!previewBudgetPressured)
           && (!shellViewOnly || !liveOutputActiveForRawPreview || allowShellRawPreviewDuringLiveOutput());
-        const shellRawPreviewFps = readStoredLayerPreviewFps(outputPriorityPreviewActive() ? 8 : 6);
+        const shellRawPreviewFps = readStoredLayerPreviewFps(outputPriorityPreviewActive() ? 8 : 60);
         const rawPreviewMinGapMs = headless
           ? 1000000
           : (liveOutputActiveForRawPreview && shellViewOnly)
