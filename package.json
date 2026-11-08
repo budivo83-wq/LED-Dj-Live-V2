@@ -16,6 +16,7 @@
     "test:output-route-registry": "node scripts/test-output-route-registry.mjs",
     "test:serial-zero-copy-write": "node scripts/test-serial-zero-copy-write.mjs",
     "test:preview-fps-contract": "node scripts/test-preview-fps-contract.mjs",
+    "test:quit-contract": "node scripts/test-quit-contract.mjs",
     "test:preview-budget-pressure-contract": "node scripts/test-preview-budget-pressure-contract.mjs",
     "test:live-output-driver-bridge-plan": "node scripts/test-live-output-driver-bridge-plan.mjs",
     "test:ui-staged-boundary": "node scripts/test-ui-staged-boundary.mjs",
