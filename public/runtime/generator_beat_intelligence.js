@@ -4,6 +4,7 @@ export const GENERATOR_BEAT_INTELLIGENCE_STORAGE_KEY = 'budilight.generator.beat
 export const GENERATOR_BEAT_INTELLIGENCE_SNAPSHOT_KEY = 'budilight.generator.beat.intelligence.snapshot.v1';
 
 export const GENERATOR_BEAT_DEFAULT_CONFIG = Object.freeze({
+  version: GENERATOR_BEAT_INTELLIGENCE_VERSION,
   enabled: true,
   phraseBeats: 16,
   accentAmount: 0.46,

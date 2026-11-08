@@ -11,6 +11,7 @@ Use this page as the top-level map for the project docs.
 - [Animation Studio](ANIMATIONS_STUDIO.md)
 - [Migration Plan](MIGRATION_PLAN.md)
 - [Legacy Inventory](LEGACY_INVENTORY.md)
+- [Refactor a optimalizace — pracovní backlog](REFACTOR_OPTIMIZATION_BACKLOG.md)
 
 ## Runtime and Operations
 
