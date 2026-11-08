@@ -4,7 +4,9 @@
 export function createDefaultLayerState(colors) {
   return {
     animFile: "",
-    paletteFile: "",
+    // Keep the first-run output coherent with the cool shader look. Existing
+    // persisted selections are restored unchanged by state.js.
+    paletteFile: "ocean_glow.js",
     params: [0.5, 0.5, 0.5, 0.5],
     master: 1,
     enabled: true,
@@ -40,8 +42,8 @@ export function createDefaultState() {
     fx2: { mode: "none", amount: 0, rate: 0.5, flash: false, hold: false },
     fxMaster: { mode: "none", amount: 0, rate: 0.5, flash: false, hold: false },
     fxMaster2: { mode: "none", amount: 0, rate: 0.5, flash: false, hold: false },
-    l1: createDefaultLayerState(["#ff003c", "#12d6ff", "#ffe600"]),
-    l2: createDefaultLayerState(["#00d6ff", "#ff43c8", "#f8ff00"])
+    l1: createDefaultLayerState(["#06233f", "#00b8e6", "#9ffcff"]),
+    l2: createDefaultLayerState(["#07152f", "#176cff", "#b4f7ff"])
   };
 }
 

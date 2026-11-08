@@ -5962,6 +5962,24 @@ body.performance-page[data-preview-mode="pixel-small"] #ledCanvas {
   max-height: 3cm !important;
 }
 
+/* STEP37AB: keep the large shader/pixel previews on the physical 30x10
+   matrix aspect. The old viewport-height sizing turned the 3:1 canvas into a
+   ~2.5:1 box, producing black bands and a visibly different crop. */
+body.performance-page[data-preview-mode="shader"][data-shader-preview-size="big"] .preview-box,
+body.performance-page[data-preview-mode="shader"][data-shader-preview-size="big"] #shaderPreviewCanvas,
+body.performance-page[data-preview-mode="pixel-big"] .preview-box,
+body.performance-page[data-preview-mode="pixel-big"] #ledCanvas {
+  aspect-ratio: 3 / 1 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+body.performance-page[data-preview-mode="shader"][data-shader-preview-size="big"] #shaderPreviewCanvas,
+body.performance-page[data-preview-mode="pixel-big"] #ledCanvas {
+  width: 100% !important;
+  object-fit: fill;
+}
+
 /* STEP37AA: lightweight preview/sequencer diagnostics. Passive UI only. */
 .preview-mode-status {
   display: inline-flex;
