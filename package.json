@@ -43,6 +43,7 @@
     "test:generator-step38t": "node scripts/test-generator-step38t.mjs",
     "test:generator-step38u": "node scripts/test-generator-step38u.mjs",
     "test:generator-step38v": "node scripts/test-generator-step38v.mjs",
+    "test:output-pipeline-scheduler": "node scripts/test-output-pipeline-scheduler.mjs",
     "test:artnet-output-fps-stability": "node scripts/test-artnet-output-fps-stability.mjs"
   },
   "dependencies": {

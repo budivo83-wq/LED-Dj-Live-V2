@@ -289,7 +289,10 @@ export function createOutputPipeline(deps) {
     const now = getNow();
     const pauseRemaining = Math.max(0, Number(getPauseUntil?.() || 0) - now);
     if (queuedFrame || pauseRemaining > 0 || sending) {
-      scheduleNextWake();
+      // drain() may already have armed the next wake when a newer frame was
+      // queued while sendFrame() was running. Do not clear and re-arm that
+      // timer again in the same scheduler turn.
+      if (!timerId) scheduleNextWake();
       return;
     }
     schedulerActive = false;
