@@ -42,6 +42,16 @@ export const LOCAL_MODULE_MANIFEST = Object.freeze({
     "shader_electric_storm.js",
     "shader_photon_tunnel.js",
     "shader_bloom_pulse.js"
+    ,"shader_melodic_constellation.js"
+    ,"shader_polyrhythm_ribbons.js"
+    ,"shader_chordal_bloom.js"
+    ,"shader_golden_arpeggio.js"
+    ,"shader_synthwave_tides.js"
+    ,"shader_echo_chimes.js"
+    ,"shader_broken_beat_orbits.js"
+    ,"shader_harmonic_veil.js"
+    ,"shader_luminous_counterpoint.js"
+    ,"shader_dream_sequence.js"
   ],
   "l1_palettes": [
     "arctic_sunrise.js",
@@ -123,6 +133,16 @@ export const LOCAL_MODULE_MANIFEST = Object.freeze({
     "shader_electric_storm.js",
     "shader_photon_tunnel.js",
     "shader_bloom_pulse.js"
+    ,"shader_melodic_constellation.js"
+    ,"shader_polyrhythm_ribbons.js"
+    ,"shader_chordal_bloom.js"
+    ,"shader_golden_arpeggio.js"
+    ,"shader_synthwave_tides.js"
+    ,"shader_echo_chimes.js"
+    ,"shader_broken_beat_orbits.js"
+    ,"shader_harmonic_veil.js"
+    ,"shader_luminous_counterpoint.js"
+    ,"shader_dream_sequence.js"
   ],
   "l2_palettes": [
     "arctic_sunrise.js",
