@@ -260,8 +260,10 @@ menuFullscreenBtn?.addEventListener("click", async () => {
 });
 
 menuQuitBtn?.addEventListener("click", async () => {
-  await fetch("/api/device/quit", { method: "POST" }).catch(() => {});
-  window.close();
+  menuQuitBtn.disabled = true;
+  menuQuitBtn.textContent = "UKONČUJI…";
+  await fetch("/api/device/quit", { method: "POST", keepalive: true }).catch(() => {});
+  window.setTimeout(() => window.close(), 150);
 });
 
 document.addEventListener("fullscreenchange", () => syncFullscreenButtonLabel(menuFullscreenBtn, document));

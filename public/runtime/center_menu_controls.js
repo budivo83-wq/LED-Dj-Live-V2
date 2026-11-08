@@ -34,8 +34,10 @@ export function initCenterMenuControlsRuntime(deps) {
     syncFullscreenButtonLabel?.(controls.menuFullscreenBtn, documentRef);
   });
   controls.menuQuitBtn?.addEventListener("click", async () => {
-    await fetchRef("/api/device/quit", { method: "POST" }).catch(() => {});
-    windowRef.close?.();
+    controls.menuQuitBtn.disabled = true;
+    controls.menuQuitBtn.textContent = "UKONČUJI…";
+    await fetchRef("/api/device/quit", { method: "POST", keepalive: true }).catch(() => {});
+    windowRef.setTimeout?.(() => windowRef.close?.(), 150);
   });
   const syncFullscreenLabel = () => {
     syncFullscreenButtonLabel?.(controls.menuFullscreenBtn, documentRef);

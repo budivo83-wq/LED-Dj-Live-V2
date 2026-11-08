@@ -1406,7 +1406,12 @@ function bind() {
   ui.resetGlobalOutputCorrection37CT?.addEventListener('click', resetGlobalOutputCorrection37CT);
   ui.menuBtn?.addEventListener('click', () => ui.centerMenu?.classList.toggle('open'));
   ui.menuFullscreen?.addEventListener('click', async () => { await toggleFullscreen(); syncFullscreenButtonLabel(ui.menuFullscreen); });
-  ui.menuQuit?.addEventListener('click', () => window.close());
+  ui.menuQuit?.addEventListener('click', async () => {
+    ui.menuQuit.disabled = true;
+    ui.menuQuit.textContent = 'UKONČUJI…';
+    await fetch('/api/device/quit', { method: 'POST', keepalive: true }).catch(() => {});
+    window.setTimeout(() => window.close(), 150);
+  });
   ui.reboot?.addEventListener('click', () => devicePower('reboot'));
   ui.shutdown?.addEventListener('click', () => devicePower('shutdown'));
   qsa('[data-proxy-click]').forEach((button) => {

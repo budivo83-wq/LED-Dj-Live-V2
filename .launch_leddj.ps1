@@ -90,7 +90,10 @@ try {
 
   $script:edgeProc = Start-Process -FilePath $edge -ArgumentList $args -PassThru
   Write-LauncherLog ('Edge started with PID ' + $script:edgeProc.Id)
-  Wait-Process -Id $script:edgeProc.Id
+  while ($script:edgeProc -and -not $script:edgeProc.HasExited) {
+    if ($script:node -and $script:node.HasExited) { break }
+    Start-Sleep -Milliseconds 250
+  }
 } catch {
   $err = $_.Exception.Message
   Write-LauncherLog ('ERROR: ' + $err)

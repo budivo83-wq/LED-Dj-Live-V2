@@ -94,7 +94,10 @@ psCode = psCode & "  )" & vbCrLf
 psCode = psCode & "" & vbCrLf
 psCode = psCode & "  $script:edgeProc = Start-Process -FilePath $edge -ArgumentList $args -PassThru" & vbCrLf
 psCode = psCode & "  Write-LauncherLog ('Edge started with PID ' + $script:edgeProc.Id)" & vbCrLf
-psCode = psCode & "  Wait-Process -Id $script:edgeProc.Id" & vbCrLf
+psCode = psCode & "  while ($script:edgeProc -and -not $script:edgeProc.HasExited) {" & vbCrLf
+psCode = psCode & "    if ($script:node -and $script:node.HasExited) { break }" & vbCrLf
+psCode = psCode & "    Start-Sleep -Milliseconds 250" & vbCrLf
+psCode = psCode & "  }" & vbCrLf
 psCode = psCode & "} catch {" & vbCrLf
 psCode = psCode & "  $err = $_.Exception.Message" & vbCrLf
 psCode = psCode & "  Write-LauncherLog ('ERROR: ' + $err)" & vbCrLf
