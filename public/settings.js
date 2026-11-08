@@ -1409,8 +1409,11 @@ function bind() {
   ui.menuQuit?.addEventListener('click', async () => {
     ui.menuQuit.disabled = true;
     ui.menuQuit.textContent = 'UKONČUJI…';
-    await fetch('/api/device/quit', { method: 'POST', keepalive: true }).catch(() => {});
-    window.setTimeout(() => window.close(), 150);
+    const body = new Blob(['{}'], { type: 'application/json' });
+    let sent = false;
+    try { sent = Boolean(navigator.sendBeacon?.('/api/device/quit', body)); } catch {}
+    if (!sent) await fetch('/api/device/quit', { method: 'POST', body: '{}', keepalive: true, headers: { 'Content-Type': 'application/json' } }).catch(() => {});
+    window.setTimeout(() => window.close(), 50);
   });
   ui.reboot?.addEventListener('click', () => devicePower('reboot'));
   ui.shutdown?.addEventListener('click', () => devicePower('shutdown'));

@@ -36,8 +36,11 @@ export function initCenterMenuControlsRuntime(deps) {
   controls.menuQuitBtn?.addEventListener("click", async () => {
     controls.menuQuitBtn.disabled = true;
     controls.menuQuitBtn.textContent = "UKONČUJI…";
-    await fetchRef("/api/device/quit", { method: "POST", keepalive: true }).catch(() => {});
-    windowRef.setTimeout?.(() => windowRef.close?.(), 150);
+    const body = new Blob(["{}"], { type: "application/json" });
+    let sent = false;
+    try { sent = Boolean(windowRef.navigator?.sendBeacon?.("/api/device/quit", body)); } catch {}
+    if (!sent) await fetchRef("/api/device/quit", { method: "POST", body: "{}", keepalive: true, headers: { "Content-Type": "application/json" } }).catch(() => {});
+    windowRef.setTimeout?.(() => windowRef.close?.(), 50);
   });
   const syncFullscreenLabel = () => {
     syncFullscreenButtonLabel?.(controls.menuFullscreenBtn, documentRef);

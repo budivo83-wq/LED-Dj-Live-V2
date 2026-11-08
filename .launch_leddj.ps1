@@ -15,8 +15,7 @@ function Write-LauncherLog([string]$message) {
 
 function Stop-ProcessTree([int]$pid) {
   if (-not $pid) { return }
-  Get-CimInstance Win32_Process -Filter "ParentProcessId = $pid" | ForEach-Object { Stop-ProcessTree $_.ProcessId }
-  Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
+  & taskkill.exe /PID $pid /T /F *> $null
 }
 
 function Cleanup {
@@ -91,7 +90,7 @@ try {
   $script:edgeProc = Start-Process -FilePath $edge -ArgumentList $args -PassThru
   Write-LauncherLog ('Edge started with PID ' + $script:edgeProc.Id)
   while ($script:edgeProc -and -not $script:edgeProc.HasExited) {
-    if ($script:node -and $script:node.HasExited) { break }
+    if ($script:node -and -not (Get-Process -Id $script:node.Id -ErrorAction SilentlyContinue)) { break }
     Start-Sleep -Milliseconds 250
   }
 } catch {

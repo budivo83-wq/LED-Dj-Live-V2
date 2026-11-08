@@ -28,8 +28,7 @@ psCode = psCode & "" & vbCrLf
 
 psCode = psCode & "function Stop-ProcessTree([int]$pid) {" & vbCrLf
 psCode = psCode & "  if (-not $pid) { return }" & vbCrLf
-psCode = psCode & "  Get-CimInstance Win32_Process -Filter ""ParentProcessId = $pid"" | ForEach-Object { Stop-ProcessTree $_.ProcessId }" & vbCrLf
-psCode = psCode & "  Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue" & vbCrLf
+psCode = psCode & "  & taskkill.exe /PID $pid /T /F *> $null" & vbCrLf
 psCode = psCode & "}" & vbCrLf
 psCode = psCode & "" & vbCrLf
 psCode = psCode & "function Cleanup {" & vbCrLf
@@ -95,7 +94,7 @@ psCode = psCode & "" & vbCrLf
 psCode = psCode & "  $script:edgeProc = Start-Process -FilePath $edge -ArgumentList $args -PassThru" & vbCrLf
 psCode = psCode & "  Write-LauncherLog ('Edge started with PID ' + $script:edgeProc.Id)" & vbCrLf
 psCode = psCode & "  while ($script:edgeProc -and -not $script:edgeProc.HasExited) {" & vbCrLf
-psCode = psCode & "    if ($script:node -and $script:node.HasExited) { break }" & vbCrLf
+psCode = psCode & "    if ($script:node -and -not (Get-Process -Id $script:node.Id -ErrorAction SilentlyContinue)) { break }" & vbCrLf
 psCode = psCode & "    Start-Sleep -Milliseconds 250" & vbCrLf
 psCode = psCode & "  }" & vbCrLf
 psCode = psCode & "} catch {" & vbCrLf
