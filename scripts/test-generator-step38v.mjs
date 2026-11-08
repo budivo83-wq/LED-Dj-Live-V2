@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {
   GENERATOR_BEAT_INTELLIGENCE_VERSION,
+  GENERATOR_BEAT_DEFAULT_CONFIG,
   normalizeGeneratorBeatConfig,
   readGeneratorBeatConfig,
   saveGeneratorBeatConfig,
@@ -34,6 +35,11 @@ function makeStorage() {
 assert.match(GENERATOR_BEAT_INTELLIGENCE_VERSION, /STEP38V/);
 assert.match(GENERATOR_ENGINE_VERSION, /STEP38V/);
 
+assert.equal(
+  normalizeGeneratorBeatConfig(GENERATOR_BEAT_DEFAULT_CONFIG),
+  GENERATOR_BEAT_DEFAULT_CONFIG,
+  'default beat config should be reused in the frame hot path'
+);
 const config = normalizeGeneratorBeatConfig({ enabled: true, phraseBeats: 32, accentAmount: 0.7, dropHoldBeats: 12 });
 assert.equal(normalizeGeneratorBeatConfig(config), config, 'normalized beat config should be reused in the frame hot path');
 assert.equal(config.phraseBeats, 32);
