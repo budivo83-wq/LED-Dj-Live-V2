@@ -17,6 +17,7 @@ function managedSettingsInterval37CG(name, fn, baseMs, opts = {}) {
 }
 
 const SETTINGS_KEY = 'led-engine-settings-v1';
+const FPS_DEFAULTS_60_MIGRATION_KEY = 'led-engine-fps-defaults-60-v1';
 const SERIAL_KEY = 'led-engine-serial-v1';
 const ROUTER_KEY = 'led-engine-parallel-output-router-v1';
 const ARTNET_MASTER_PATCH_STORAGE_KEY = 'led-engine-artnet-master-patch-v1';
@@ -1415,6 +1416,19 @@ function bind() {
 
 async function boot() {
   Object.assign(state, defaults, readStored());
+  // One-time migration for installations that already persisted the older
+  // 30/20/6 FPS defaults. Future operator changes remain persistent.
+  if (localStorage.getItem(FPS_DEFAULTS_60_MIGRATION_KEY) !== '1') {
+    state.fps = 60;
+    state.previewFps = 60;
+    state.layerPreviewFps = 60;
+    state.shaderPreviewFps = 60;
+    state.serialFps = 60;
+    state.artnetMirrorFps = 60;
+    state.maxLiveFps = 60;
+    localStorage.setItem(FPS_DEFAULTS_60_MIGRATION_KEY, '1');
+    writeStored();
+  }
   loadMultiOutConfig();
   await loadArtnetLiveConfig();
   await refreshNetworkAdapters37CM({ autoPick: false });
