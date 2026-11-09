@@ -174,7 +174,10 @@ function presetDefaults(preset, raspi) {
     thumbnailCacheEntries: raspi ? 256 : 192,
     thumbnailCacheBytes: raspi ? 12000000 : 9000000,
     disableShaderPrewarm: true,
-    disableThumbWarmup: true,
+    // NORMAL-PC owns the visible picker experience. Keep the thumbnail cache
+    // warm from startup so opening a shader selector never performs the first
+    // bulk import/render burst on the UI click.
+    disableThumbWarmup: false,
     relaxedHealth: true,
     frameLossWarn: raspi ? 16 : 12,
     frameLossBad: raspi ? 140 : 120,

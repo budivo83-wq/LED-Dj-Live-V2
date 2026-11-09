@@ -12,6 +12,7 @@ psCode = ""
 psCode = psCode & "$ErrorActionPreference = 'SilentlyContinue'" & vbCrLf
 psCode = psCode & "$project = '" & Replace(projectPath, "'", "''") & "'" & vbCrLf
 psCode = psCode & "$url = 'http://localhost:3000'" & vbCrLf
+psCode = psCode & "$healthUrl = 'http://127.0.0.1:3000/api/health'" & vbCrLf
 psCode = psCode & "$logPath = Join-Path $project 'launcher.log'" & vbCrLf
 psCode = psCode & "$script:cleanedUp = $false" & vbCrLf
 psCode = psCode & "$script:node = $null" & vbCrLf
@@ -43,8 +44,8 @@ psCode = psCode & "function Wait-ForHttpReady([string]$targetUrl, [int]$timeoutS
 psCode = psCode & "  $deadline = (Get-Date).AddSeconds($timeoutSec)" & vbCrLf
 psCode = psCode & "  while ((Get-Date) -lt $deadline) {" & vbCrLf
 psCode = psCode & "    try {" & vbCrLf
-psCode = psCode & "      Invoke-WebRequest -Uri $targetUrl -UseBasicParsing -TimeoutSec 2 -MaximumRedirection 0 -ErrorAction Stop | Out-Null" & vbCrLf
-psCode = psCode & "      return $true" & vbCrLf
+psCode = psCode & "      $response = Invoke-WebRequest -Uri $targetUrl -UseBasicParsing -TimeoutSec 2 -MaximumRedirection 0 -ErrorAction Stop" & vbCrLf
+psCode = psCode & "      if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 500) { return $true }" & vbCrLf
 psCode = psCode & "    } catch {" & vbCrLf
 psCode = psCode & "      if ($_.Exception.Response) { return $true }" & vbCrLf
 psCode = psCode & "      Start-Sleep -Milliseconds 250" & vbCrLf
@@ -60,14 +61,19 @@ psCode = psCode & "" & vbCrLf
 psCode = psCode & "Register-EngineEvent PowerShell.Exiting -Action { Cleanup } | Out-Null" & vbCrLf
 psCode = psCode & "try {" & vbCrLf
 psCode = psCode & "  Write-LauncherLog 'Starting backend node.exe server.js'" & vbCrLf
-psCode = psCode & "  $script:node = Start-Process -FilePath 'node.exe' -ArgumentList 'server.js' -WorkingDirectory $project -WindowStyle Hidden -PassThru" & vbCrLf
+psCode = psCode & "  $stdoutPath = Join-Path $project 'server.stdout.log'" & vbCrLf
+psCode = psCode & "  $stderrPath = Join-Path $project 'server.err.log'" & vbCrLf
+psCode = psCode & "  $script:node = Start-Process -FilePath 'node.exe' -ArgumentList 'server.js' -WorkingDirectory $project -WindowStyle Hidden -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath -PassThru" & vbCrLf
 psCode = psCode & "  Write-LauncherLog ('node.exe started with PID ' + $script:node.Id)" & vbCrLf
-psCode = psCode & "  if (-not (Wait-ForHttpReady $url 30)) { throw 'Server did not become ready on http://localhost:3000' }" & vbCrLf
+psCode = psCode & "  if (-not (Wait-ForHttpReady $healthUrl 30)) {" & vbCrLf
+psCode = psCode & "    $exitCode = if ($script:node.HasExited) { $script:node.ExitCode } else { 'running' }" & vbCrLf
+psCode = psCode & "    throw ('Server did not become ready on ' + $healthUrl + ' (node=' + $exitCode + ')')" & vbCrLf
+psCode = psCode & "  }" & vbCrLf
 psCode = psCode & "  Write-LauncherLog 'Server ready on http://localhost:3000'" & vbCrLf
 psCode = psCode & "" & vbCrLf
 psCode = psCode & "  $edgePaths = @(" & vbCrLf
-psCode = psCode & "    $env:ProgramFiles + '\\Microsoft\\Edge\\Application\\msedge.exe'," & vbCrLf
-psCode = psCode & "    ${env:ProgramFiles(x86)} + '\\Microsoft\\Edge\\Application\\msedge.exe'" & vbCrLf
+psCode = psCode & "    $env:ProgramFiles + '\Microsoft\Edge\Application\msedge.exe'," & vbCrLf
+psCode = psCode & "    ${env:ProgramFiles(x86)} + '\Microsoft\Edge\Application\msedge.exe'" & vbCrLf
 psCode = psCode & "  )" & vbCrLf
 psCode = psCode & "  $edge = $edgePaths | Where-Object { Test-Path $_ } | Select-Object -First 1" & vbCrLf
 psCode = psCode & "  if (-not $edge) { $edge = 'msedge.exe' }" & vbCrLf
