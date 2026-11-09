@@ -883,10 +883,12 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
   function renderCpuFrame() {
     const renderStartedAt = performance.now();
     beginFrameComposition?.();
-    const frame = acquireCpuFrameBuffer();
-    frame.fill(0);
     const state = getState();
     const { width: W, height: H } = getDimensions();
+    // STEP37AC: dimensions are already required by the composition loop;
+    // reuse them for buffer sizing instead of reading the viewport twice.
+    const frame = acquireCpuFrameBuffer(W, H);
+    frame.fill(0);
     const fx1 = state.fx1 || NO_FX_STATE;
     const fx2 = state.fx2 || NO_FX_STATE;
     const fxMaster = state.fxMaster || NO_FX_STATE;
@@ -924,8 +926,9 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
     return { frame, renderMs: Math.max(0, performance.now() - renderStartedAt) };
   }
 
-  function acquireCpuFrameBuffer() {
-    const { width: W, height: H } = getDimensions();
+  function acquireCpuFrameBuffer(width, height) {
+    const W = Number(width) || 1;
+    const H = Number(height) || 1;
     const size = W * H * 3;
     if (cpuFrameBufferSize !== size) {
       cpuFrameBufferSize = size;
