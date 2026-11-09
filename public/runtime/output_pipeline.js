@@ -188,17 +188,21 @@ export function createOutputPipeline(deps) {
 
   function emitMetrics(options = {}) {
     updateWindowRates();
-    const snapshot = snapshotMetrics();
+    // STEP37BW: update the scalar metrics first and delay the spread snapshot
+    // until a publish is actually needed. At output FPS this avoids allocating
+    // a complete diagnostics object for every throttled scheduler wake.
+    updateLiveMetrics();
     const now = getNow();
-    snapshot.sentDelta = Math.max(0, Number(snapshot.sent || 0) - lastPublishedSent);
-    snapshot.droppedDelta = Math.max(0, Number(snapshot.dropped || 0) - lastPublishedDropped);
+    const sentDelta = Math.max(0, Number(metrics.sent || 0) - lastPublishedSent);
+    const droppedDelta = Math.max(0, Number(metrics.dropped || 0) - lastPublishedDropped);
     const important = options.force === true
-      || snapshot.droppedDelta > 0
-      || Number(snapshot.lateFrames || 0) > lastPublishedLateFrames
-      || String(snapshot.health || "") !== lastPublishedHealth
-      || String(snapshot.pressure || "") !== lastPublishedPressure
-      || String(snapshot.lastError || "") !== lastPublishedError;
-    if (!important && now - lastPublishedAt < publishIntervalMs) return snapshot;
+      || droppedDelta > 0
+      || Number(metrics.lateFrames || 0) > lastPublishedLateFrames
+      || String(metrics.health || "") !== lastPublishedHealth
+      || String(metrics.pressure || "") !== lastPublishedPressure
+      || String(metrics.lastError || "") !== lastPublishedError;
+    if (!important && now - lastPublishedAt < publishIntervalMs) return metrics;
+    const snapshot = { ...metrics, sentDelta, droppedDelta };
     lastPublishedAt = now;
     lastPublishedSent = Number(snapshot.sent || 0);
     lastPublishedDropped = Number(snapshot.dropped || 0);
