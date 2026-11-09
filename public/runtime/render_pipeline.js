@@ -172,6 +172,7 @@ export function createRenderPipeline(deps) {
   let previewSettingsCache = null;
   let networkOutputRouteCacheAt = 0;
   let networkOutputRouteCache = null;
+  let settingsChannel = null;
   let lastSerialConsumerDiagAt = 0;
   let lastOutputGateDiagAt = 0;
   let cachedOutputGateDetail = null;
@@ -248,8 +249,8 @@ export function createRenderPipeline(deps) {
       }
     });
     if (typeof windowRef.BroadcastChannel === "function") {
-      const channel = new windowRef.BroadcastChannel("budilight-settings");
-      channel.addEventListener?.("message", (event) => {
+      settingsChannel = new windowRef.BroadcastChannel("budilight-settings");
+      settingsChannel.addEventListener?.("message", (event) => {
         if (event?.data?.type === "preview-fps") invalidatePreviewSettingsCache37DZ();
       });
     }
@@ -1395,6 +1396,27 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
     backgroundDrawWorker.postMessage({ cmd: "stop" });
   }
 
+  function dispose() {
+    if (drawTimerId) {
+      clearPreviewTimer37CF(drawTimerId);
+      drawTimerId = 0;
+    }
+    if (outputTimerId) {
+      windowRef.clearTimeout(outputTimerId);
+      outputTimerId = 0;
+    }
+    stopBackgroundOutputWorker();
+    stopBackgroundDrawWorker();
+    try { backgroundOutputWorker?.terminate?.(); } catch {}
+    try { backgroundDrawWorker?.terminate?.(); } catch {}
+    backgroundOutputWorker = null;
+    backgroundDrawWorker = null;
+    try { settingsChannel?.close?.(); } catch {}
+    settingsChannel = null;
+  }
+
+  try { windowRef.addEventListener?.("pagehide", dispose, { once: true }); } catch {}
+
   function armFrameTimer(delay) {
     if (drawTimerId) {
       clearPreviewTimer37CF(drawTimerId);
@@ -1463,6 +1485,7 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
     stopBackgroundDrawWorker,
     startOutputLoop,
     stopOutputLoop,
+    dispose,
     getNextEngineShadowStatus: () => getNextEngineShadowAdapter().getStatus()
   };
 }
