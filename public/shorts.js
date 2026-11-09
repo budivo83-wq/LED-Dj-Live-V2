@@ -263,10 +263,10 @@ menuQuitBtn?.addEventListener("click", async () => {
   menuQuitBtn.disabled = true;
   menuQuitBtn.textContent = "UKONČUJI…";
   const body = new Blob(["{}"], { type: "application/json" });
-  let sent = false;
-  try { sent = Boolean(navigator.sendBeacon?.("/api/device/quit", body)); } catch {}
-  if (!sent) await fetch("/api/device/quit", { method: "POST", body: "{}", keepalive: true, headers: { "Content-Type": "application/json" } }).catch(() => {});
-  window.setTimeout(() => window.close(), 50);
+  try { navigator.sendBeacon?.("/api/device/quit", body); } catch {}
+  void fetch("/api/device/quit", { method: "POST", body: "{}", keepalive: true, headers: { "Content-Type": "application/json" } }).catch(() => {});
+  try { window.top?.postMessage?.({ type: "led-shell-quit" }, "*"); } catch {}
+  window.setTimeout(() => { try { window.top?.close?.(); } catch {} try { window.close(); } catch {} }, 80);
 });
 
 document.addEventListener("fullscreenchange", () => syncFullscreenButtonLabel(menuFullscreenBtn, document));

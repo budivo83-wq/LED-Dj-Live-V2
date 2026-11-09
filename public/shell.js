@@ -414,6 +414,13 @@ armLoadTimeout();
 startRunnerWatchdog();
 
 window.addEventListener("message", (event) => {
+  if (event.source === uiFrame.contentWindow && event.data?.type === "led-shell-quit") {
+    setLoading(100, "Ukončuji aplikaci");
+    try { navigator.sendBeacon?.("/api/device/quit", new Blob(["{}"], { type: "application/json" })); } catch {}
+    void fetch("/api/device/quit", { method: "POST", body: "{}", keepalive: true, headers: { "Content-Type": "application/json" } }).catch(() => {});
+    window.setTimeout(() => { try { window.close(); } catch {} }, 120);
+    return;
+  }
   if (event.source === uiFrame.contentWindow && event.data?.type === "led-preview-frame") {
     if (navPerf && !navPerf.firstPreviewAt) {
       navPerf.firstPreviewAt = performance.now();

@@ -22,8 +22,10 @@ assert.match(ops, /shutdown\("api:quit"\)/);
 for (const file of uiFiles) {
   const source = read(file);
   assert.match(source, /sendBeacon/);
+  assert.match(source, /void fetch/);
   assert.match(source, /\/api\/device\/quit/);
-  assert.match(source, /taskkill|fetch/);
 }
+assert.match(read("public/shell.js"), /led-shell-quit/);
+assert.match(read("public/runtime/center_menu_controls.js"), /led-shell-quit/);
 
 console.log(`Quit contract passed (${uiFiles.length} UI entry points, launcher cleanup, server route).`);
