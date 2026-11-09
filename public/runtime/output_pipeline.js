@@ -32,6 +32,7 @@ export function createOutputPipeline(deps) {
   let lastPublishedPressure = "";
   let lastPublishedError = "";
   let lastPublishedLateFrames = 0;
+  let lastGlobalStatsAt = 0;
   const publishIntervalMs = Math.max(
     120,
     Number(globalThis?.RUNTIME_PROFILE?.outputPipelineStatsMs || 250)
@@ -148,9 +149,10 @@ export function createOutputPipeline(deps) {
     else if (metrics.droppedFps > 0 || overloadCount >= 2 || metrics.queueDepth > 0 && sending) metrics.pressure = "MED";
     else metrics.pressure = "LOW";
 
-    try {
-      window.__ledOutputPipelineStats = { ...metrics };
-    } catch {}
+    if (!lastGlobalStatsAt || now - lastGlobalStatsAt >= publishIntervalMs) {
+      lastGlobalStatsAt = now;
+      try { window.__ledOutputPipelineStats = { ...metrics }; } catch {}
+    }
   }
 
   // STEP37AX: metrics events wake adaptive/debug listeners. Keep globals and
