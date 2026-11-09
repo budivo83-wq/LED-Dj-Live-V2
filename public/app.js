@@ -454,6 +454,7 @@ const gpuWarmupQueueRuntime = createGpuWarmupQueueRuntime({
   schedulerDebugState,
   rememberShaderWarmupScene,
   warmupScene: (scene) => previewRenderer.warmupShaderScene?.(scene),
+  isTransitionActive: () => Object.values(transitions).some(Boolean),
   canAutoEnableGpu: () => !DISABLE_LIVE_GPU_AUTOSWITCH || !startupOverlayClosed,
   isGpuEnabled: () => Boolean(settings.gpuEnabled),
   onGpuReady: () => {

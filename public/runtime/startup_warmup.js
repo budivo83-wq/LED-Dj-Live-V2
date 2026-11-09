@@ -111,7 +111,11 @@ export async function runStartupWarmupFlow(deps) {
   }
 
   startupStep?.(90, runtimeProfile.startupThumbPreload === true ? "Preloading thumbnails" : "Scheduling warmup");
-  if (runtimeProfile.startupThumbPreload === true && !skipStartupLoading && !embeddedRuntime) {
+  // Thumbnail readiness is part of the normal desktop startup contract. The
+  // fast-return flag skips the visual overlay, not the cache preparation;
+  // otherwise the first picker open becomes an avoidable blocking import/render
+  // burst.
+  if (runtimeProfile.startupThumbPreload === true && !embeddedRuntime) {
     await safeAwait("thumbnail cache", safePreloadThumbnailCache);
   }
   if (!embeddedRuntime) {

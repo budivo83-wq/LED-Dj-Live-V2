@@ -9,11 +9,20 @@ export function createGpuWarmupQueueRuntime({
   canAutoEnableGpu,
   isGpuEnabled,
   onGpuReady,
+  isTransitionActive = () => false,
   getGpuWarmupScheduled,
   setGpuWarmupScheduled
 }) {
   function processGpuWarmupQueue() {
     setGpuWarmupScheduled(false);
+    if (gpuWarmupQueue.length && isTransitionActive()) {
+      // A fade owns the render budget. Defer speculative GPU compilation until
+      // the transition ends so shader changes cannot stall the visible blend.
+      schedulerDebugState.gpuWarmupDeferred = Number(schedulerDebugState.gpuWarmupDeferred || 0) + 1;
+      setGpuWarmupScheduled(true);
+      windowRef.setTimeout(processGpuWarmupQueue, 180);
+      return;
+    }
     while (gpuWarmupQueue.length) {
       const scene = gpuWarmupQueue.shift();
       schedulerDebugState.warmupQueue = gpuWarmupQueue.length;
