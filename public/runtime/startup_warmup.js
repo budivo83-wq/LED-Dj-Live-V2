@@ -90,6 +90,10 @@ export async function runStartupWarmupFlow(deps) {
   }
 
   if (shellViewOnly) {
+    // Import every listed module before READY so the first shader/palette
+    // change never performs a blocking dynamic import inside the click path.
+    startupStep?.(78, "Caching UI modules");
+    await safeAwait("shell module cache", preloadShellViewStartup);
     // The shell view does not own hardware output, but it does own the visible
     // shader/palette pickers. Build their cache before READY; otherwise opening
     // a picker becomes the first expensive import/render burst.
