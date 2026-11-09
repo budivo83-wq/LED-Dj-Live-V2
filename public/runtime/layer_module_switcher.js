@@ -30,6 +30,7 @@ export function createLayerModuleSwitcher({
   scheduleCpuPrewarm,
   scheduleNearbyWarmup,
   startLayerTransition,
+  isTransitionActive = () => false,
   renderPipeline,
   shellViewOnly = false,
   isOutputEnabled = () => false
@@ -146,6 +147,10 @@ export function createLayerModuleSwitcher({
     const deferWarmup = (cb, delay = 650) => {
       const run = () => {
         if (switchGeneration !== warmupGeneration37EQ) return;
+        if (isTransitionActive()) {
+          managedTimeout37CE('deferred-warmup-after-transition', run, 350, { liveFactor: 1.5, hiddenFactor: 2, maxMs: 2500 });
+          return;
+        }
         try { cb?.(); } catch (error) { console.warn("deferred switch warmup failed", error); }
       };
       if (typeof requestIdleCallback === "function") managedTimeout37CE('deferred-warmup-idle', () => requestIdleCallback(run, { timeout: 1200 }), delay, { liveFactor: 1.8, hiddenFactor: 3, maxMs: 5000 });

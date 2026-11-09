@@ -631,6 +631,11 @@ layerModuleSwitcher = createLayerModuleSwitcher({
   scheduleCpuPrewarm,
   scheduleNearbyWarmup,
   startLayerTransition,
+  isTransitionActive: () => Object.values(transitions).some((entry) => {
+    if (!entry) return false;
+    const duration = Math.max(1, Number(entry.duration || 0));
+    return performance.now() - Number(entry.startedAt || 0) < duration;
+  }),
   renderPipeline: () => renderPipeline,
   shellViewOnly: SHELL_VIEW_ONLY,
   isOutputEnabled: () => isProtocolOutputEnabled()

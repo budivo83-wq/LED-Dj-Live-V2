@@ -90,10 +90,12 @@ export async function runStartupWarmupFlow(deps) {
   }
 
   if (shellViewOnly) {
-    // Shell UI must report READY quickly and stay passive after view navigation.
-    // The hidden runner owns output; visible view-only frames should not spend
-    // main-thread time on cache or thumbnail warmups while a live show is running.
-    startupStep?.(88, "Starting UI runtime");
+    // The shell view does not own hardware output, but it does own the visible
+    // shader/palette pickers. Build their cache before READY; otherwise opening
+    // a picker becomes the first expensive import/render burst.
+    startupStep?.(88, "Preparing picker thumbnails");
+    await safeAwait("shell thumbnail cache", safePreloadThumbnailCache);
+    startupStep?.(91, "Starting UI runtime");
     return;
   }
 
