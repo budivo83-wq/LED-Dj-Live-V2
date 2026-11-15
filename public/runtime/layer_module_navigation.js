@@ -2,6 +2,7 @@ export function createLayerModuleNavigation({
   lists,
   state,
   randomItem,
+  hasModule,
   switchLayerModule
 }) {
   if (!lists || !state || typeof switchLayerModule !== "function") {
@@ -96,7 +97,14 @@ export function createLayerModuleNavigation({
     if (typeof randomItem !== "function") return;
 
     await runQueuedSwitch(layer, moduleKey, async () => {
-      await switchLayerModule(layer, stateKey, folder, moduleKey, randomItem(files), { ...options, files });
+      let candidates = files;
+      if (options.preferLoaded === true && typeof hasModule === "function") {
+        const loaded = files.filter((file) => hasModule(`${folder}/${file}`));
+        if (loaded.length) candidates = loaded;
+      }
+      const current = state[layer]?.[stateKey];
+      const withoutCurrent = candidates.length > 1 ? candidates.filter((file) => file !== current) : candidates;
+      await switchLayerModule(layer, stateKey, folder, moduleKey, randomItem(withoutCurrent.length ? withoutCurrent : candidates), { ...options, files });
     }, options);
   }
 

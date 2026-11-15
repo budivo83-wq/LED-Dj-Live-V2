@@ -90,6 +90,7 @@ export function createUiBindings(deps) {
           try {
             randomizeSingleFile(layer, "animFile", listKey, `${layer}_anims`, "anim", {
               warmup: false,
+              preferLoaded: true,
               coalesce: true,
               dropIfBusy: true,
               debounceMs: 0,
