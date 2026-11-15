@@ -39,6 +39,7 @@ export function bindAppControlsRuntime(deps) {
     gpuModeValue,
     setGpuReady,
     drawRenderPipeline,
+    requestFreshPreviewFrame,
     adjustBpm,
     tapBpm,
     performanceRef,
@@ -138,7 +139,8 @@ export function bindAppControlsRuntime(deps) {
     syncControls,
     commitState,
     syncTransitionControls,
-    saveTransitionSettings
+    saveTransitionSettings,
+    requestFreshPreviewFrame
   });
 
   bindSelect(controls.l1Anim, "l1", "animFile", "l1_anims", "anim");

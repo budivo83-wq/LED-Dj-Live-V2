@@ -93,11 +93,18 @@ export function createFrameComposer(deps) {
     const current = blendWithMode(a, b, state.blendMode);
     const amount = easeInOut(progress);
     const keep = 1 - amount;
-    return [
+    const transitioned = [
       previous[0] * keep + current[0] * amount,
       previous[1] * keep + current[1] * amount,
       previous[2] * keep + current[2] * amount
     ];
+    // A failed/empty previous blend result must not black out Pixel preview
+    // while the GPU shader already has a valid current result.
+    if (current.some((value) => Number.isFinite(value) && value > 0)
+      && !transitioned.some((value) => Number.isFinite(value) && value > 0)) {
+      return current;
+    }
+    return transitioned;
   }
 
   function blendWithMode(a, b, mode) {

@@ -11,24 +11,29 @@ export function bindBlendTransitionControlsRuntime(deps = {}) {
     syncControls,
     commitState,
     syncTransitionControls,
-    saveTransitionSettings
+    saveTransitionSettings,
+    requestFreshPreviewFrame
   } = deps;
+
+  const invalidatePreview = () => requestFreshPreviewFrame?.();
 
   controls.blend?.addEventListener("change", (event) => {
     const previous = state.blendMode;
     state.blendMode = event.target.value;
     startBlendTransition?.(previous);
     commitState?.();
+    invalidatePreview();
   });
 
-  controls.blendPrev?.addEventListener("click", () => stepBlend?.(-1));
-  controls.blendNext?.addEventListener("click", () => stepBlend?.(1));
+  controls.blendPrev?.addEventListener("click", () => { stepBlend?.(-1); invalidatePreview(); });
+  controls.blendNext?.addEventListener("click", () => { stepBlend?.(1); invalidatePreview(); });
   controls.blendRandom?.addEventListener("click", () => {
     const previous = state.blendMode;
     state.blendMode = randomItem?.(blendModes) ?? state.blendMode;
     startBlendTransition?.(previous);
     syncControls?.();
     commitState?.();
+    invalidatePreview();
   });
 
   controls.transitionToggle?.addEventListener("click", () => {
