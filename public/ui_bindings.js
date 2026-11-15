@@ -110,11 +110,19 @@ export function createUiBindings(deps) {
         requestAnimationFrame(() => {
           try { randomizeLayerParamsLiveSafe("l1"); } catch {}
           try { randomizeLayerParamsLiveSafe("l2"); } catch {}
-          if (dropPadCommitTimer) window.clearTimeout(dropPadCommitTimer);
-          dropPadCommitTimer = window.setTimeout(() => {
+          if (dropPadCommitTimer) {
+            window.clearTimeout(dropPadCommitTimer);
+            try { window.cancelIdleCallback?.(dropPadCommitTimer); } catch {}
+          }
+          const commitDropState = () => {
             dropPadCommitTimer = 0;
             try { commitState(); } catch {}
-          }, 700);
+          };
+          if (typeof window.requestIdleCallback === "function") {
+            dropPadCommitTimer = window.requestIdleCallback(commitDropState, { timeout: 1400 });
+          } else {
+            dropPadCommitTimer = window.setTimeout(commitDropState, 900);
+          }
         });
       } catch {
         try { randomizeLayerParamsLiveSafe("l1"); randomizeLayerParamsLiveSafe("l2"); } catch {}
