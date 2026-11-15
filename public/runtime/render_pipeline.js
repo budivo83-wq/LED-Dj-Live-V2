@@ -41,6 +41,7 @@ export function createRenderPipeline(deps) {
     isOutputEnabled,
     shouldRefreshPreviewFrame,
     renderPixelColor,
+    renderGpuFrame,
     enqueueOutputFrame,
     reportOutputFrame,
     drawLayerRawPreview,
@@ -92,11 +93,13 @@ export function createRenderPipeline(deps) {
   let cpuFrameBufferIndex = 0;
   let latestComposedFrame = null;
   let latestComposedFrameSize = 0;
+  let previewFrameInvalidated = true;
   let lastShaderPreviewAt = 0;
   let lastShellPreviewReportAt = 0;
   let lastShellMonitorBlitAt = 0;
   let lastShellMonitorRenderAt = 0;
   let previewBudgetPressureUntil = 0;
+  let fadeTransitionWasActive = false;
   const shellRawPreviewQuietUntil = shellViewOnly ? performance.now() + 6200 : 0;
   let lastShellRawPreviewAt = 0;
   const outputClock = createOutputClockAuthority({ performanceRef: performance, runtimeProfile });
@@ -685,6 +688,7 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
     try {
       let frame = latestComposedFrame;
       const previewMode = getPreviewMode();
+      const pixelPreviewActive = String(previewMode || "").startsWith("pixel");
       const previewStartedAt = performance.now();
       // STEP38X: never suppress the first composed frame on the visible shell.
       // The old 4.2 s quiet window left Performance on a black canvas until a
@@ -696,6 +700,10 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
       const previewBudgetPressured = isPreviewBudgetUnderPressure(now);
       const shellLiveMonitorOnly = shellViewOnly && physicalOutputActive;
       const shellMonitorRenderDue = !shellLiveMonitorOnly || (now - lastShellMonitorRenderAt >= shellMonitorRenderGapMs());
+      const fadeTransitionActive = hasActiveFadeTransition();
+      const fadeTransitionFinished = fadeTransitionWasActive && !fadeTransitionActive;
+      fadeTransitionWasActive = fadeTransitionActive;
+      if (fadeTransitionFinished) previewFrameInvalidated = true;
 
       // STEP 13BU-AQ: when real LED output is active, the visible preview must
       // mirror the authoritative output-clock frame instead of rendering its own
@@ -705,7 +713,10 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
       // output is not active does preview render its own fresh frame.
       if (liveOutputClockActive || shellLiveMonitorOnly) {
         const packet = getAuthoritativeFramePacket();
-        if (isUsableFramePacket(packet)) {
+        // During Fade ON the output path can publish one transient empty
+        // packet while ownership moves back to the CPU compositor. Never let
+        // that packet overwrite a valid Pixel preview frame.
+        if (isUsableFramePacket(packet) && (!pixelPreviewActive || hasVisibleFrame(packet.frame))) {
           frame = packet.frame;
           updateLatestComposedFrame(frame);
           schedulerDebugState.previewClockSource = String(packet.source || "output-authority");
@@ -715,14 +726,15 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
       }
 
       const needsFreshFrame = !quietShellMount
-        && !liveOutputClockActive
+        && (!liveOutputClockActive || (pixelPreviewActive && previewFrameInvalidated))
         && (!shellLiveMonitorOnly || shellMonitorRenderDue)
-        && (!frame || shouldRefreshPreviewFrame?.() === true || (!shellViewOnly && physicalOutputActive));
+        && (previewFrameInvalidated || !frame || shouldRefreshPreviewFrame?.() === true || (!shellViewOnly && physicalOutputActive));
       if (needsFreshFrame) {
         setRenderTime(getBeatPosition());
-        const rendered = renderCpuFrame();
+        const rendered = renderFreshFrame();
         frame = rendered.frame;
         updateLatestComposedFrame(frame);
+        previewFrameInvalidated = false;
         if (shellLiveMonitorOnly) lastShellMonitorRenderAt = now;
         // STEP22OE: shell-view is monitor-only. Publishing its preview frames
         // into Frame Authority lets the visible UI compete with the headless
@@ -776,14 +788,17 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
               ? (shaderPreviewRenderer.kind === "webgl" ? "webgl:shader-original-live" : "gpu-shader-original-live")
               : (shaderPreviewRenderer.kind === "webgl" ? "webgl:shader" : "gpu-shader"));
           } else if (liveOutputClockActive) {
-            // A single failed/CPU-only module must not make Perform look dead.
-            // Keep the shader canvas alive with the authoritative CPU frame
-            // until the GPU scene becomes available again.
+            // Keep the last valid shader frame while a transition scene is
+            // compiling. Clearing here made the shader preview disappear when
+            // the pixel preview was invalidated by a blend-mode change.
             drawShaderPreview(frame, null);
-            setLastPreviewRenderer("2d:shader-cpu-fallback-live");
+            setLastPreviewRenderer("gpu-shader-unavailable-live");
           } else {
+            // Keep the shader tab visible even while the GPU scene is warming
+            // up. The CPU frame is only a temporary fallback and is replaced
+            // by drawShaderScene() as soon as the scene becomes available.
             drawShaderPreview(frame, null);
-            setLastPreviewRenderer("2d:shader-buffer");
+            setLastPreviewRenderer("gpu-shader-unavailable");
           }
           lastShaderPreviewAt = now;
         }
@@ -881,6 +896,32 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
     }
   }
 
+  function renderFreshFrame() {
+    try {
+      const gpuRendered = renderGpuFrame?.();
+      if (gpuRendered?.frame instanceof Uint8Array) return gpuRendered;
+    } catch (error) {
+      console.warn("GPU frame render failed, using CPU compatibility path", error);
+    }
+    const cpuRendered = renderCpuFrame();
+    // A transition must never replace a valid visible frame with an entirely
+    // empty CPU buffer. This can happen for one tick while Fade ON hands the
+    // authoritative frame back from the output loop to the preview loop.
+    if (!hasVisibleFrame(cpuRendered.frame) && hasVisibleFrame(latestComposedFrame)) {
+      return { ...cpuRendered, frame: latestComposedFrame };
+    }
+    return cpuRendered;
+  }
+
+  function hasVisibleFrame(frame) {
+    if (!(frame instanceof Uint8Array) || frame.byteLength === 0) return false;
+    const step = Math.max(3, Math.floor(frame.byteLength / 96));
+    for (let i = 0; i + 2 < frame.byteLength; i += step) {
+      if (frame[i] !== 0 || frame[i + 1] !== 0 || frame[i + 2] !== 0) return true;
+    }
+    return false;
+  }
+
   function renderCpuFrame() {
     const renderStartedAt = performance.now();
     beginFrameComposition?.();
@@ -972,6 +1013,14 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
     }
   }
 
+  function clearShaderPreview() {
+    if (shaderPreviewRenderer?.drawShaderScene) {
+      shaderPreviewRenderer.drawShaderScene({ enabled: false });
+      return true;
+    }
+    return false;
+  }
+
   function drawCenterPreviewCpu(frame) {
     const { width: W, height: H } = getDimensions();
     previewRenderer.draw(frame, W, H, isPreviewFrameEnabled());
@@ -1001,6 +1050,12 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
     // cache only feeds the next preview draw path.
     latestComposedFrame = frame;
     latestComposedFrameSize = frame.byteLength;
+  }
+
+  function requestFreshPreviewFrame() {
+    previewFrameInvalidated = true;
+    lastPreviewFrameAt = 0;
+    scheduleNextDraw(performance.now(), true);
   }
 
   function publishComposedFrame(frame, options = {}) {
@@ -1263,7 +1318,7 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
     // frame when the visible preview is sleeping. STEP 8D centralizes that
     // decision in evaluateOutputRenderPolicy(), while the published frame still
     // passes through Frame Authority and receives one shared frameId.
-    const rendered = renderCpuFrame();
+    const rendered = renderFreshFrame();
     const { frame } = rendered;
     updateLatestComposedFrame(frame);
     return publishComposedFrame(frame, {
@@ -1480,6 +1535,7 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
 
   return {
     draw,
+    requestFreshPreviewFrame,
     scheduleNextDraw,
     initBackgroundDrawWorker,
     stopBackgroundDrawWorker,
