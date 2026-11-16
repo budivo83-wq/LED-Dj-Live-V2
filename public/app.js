@@ -164,6 +164,7 @@ import {
   createGpuSceneCandidateRuntime,
   shouldTryGpuAutoSwitchRuntime
 } from "./runtime/gpu_scene_orchestration.js";
+import { decideRenderBackend } from "./runtime/render_backend_policy.js";
 import { createAppDomRefs } from "./runtime/app_dom_refs.js";
 import { bindAppControlsRuntime } from "./runtime/app_control_binder.js";
 import { createLayerModuleSwitcher } from "./runtime/layer_module_switcher.js";
@@ -1742,17 +1743,20 @@ function createGpuScene() {
 }
 
 function renderGpuFrame() {
-  if (FORCE_CPU_RENDER) return null;
   const outputActive = Boolean(isOutputEnabled());
   const previewMode = String(document.body?.dataset?.previewMode || "").toLowerCase();
-  const previewNeedsFrame = outputActive
-    || previewMode.startsWith("pixel")
-    || previewMode === "stage"
-    || previewMode === "debug";
+  const backend = decideRenderBackend({
+    forceCpuRender: FORCE_CPU_RENDER,
+    gpuAllowed: canUseGpuRender(),
+    gpuSceneAvailable: Boolean(gpuOutputRenderer || shaderPreviewRenderer),
+    outputActive,
+    previewMode,
+    shaderPreviewSize: document.body?.dataset?.shaderPreviewSize
+  });
+  if (!backend.needsCpuFrame || !backend.useGpuScene) return null;
   // Shader-only preview can draw directly to its WebGL canvas. Pixel and Stage
   // views need a composed RGB frame, so use the GPU readback path there too;
   // otherwise every animation switch falls back to a synchronous CPU render.
-  if (!previewNeedsFrame) return null;
   const now = performance.now();
   if (!gpuOutputRenderer) {
     const canvas = document.createElement("canvas");
