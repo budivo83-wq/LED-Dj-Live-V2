@@ -103,6 +103,8 @@ let lastRunnerHeartbeatAt = 0;
 let lastRunnerFrameAt = 0;
 let lastRunnerReadyAt = 0;
 let lastRunnerHeartbeatDetail = null;
+let runnerLoadingActive = false;
+let runnerLoadingStartedAt = 0;
 const UI_TELEMETRY_RELAY_MS = 250;
 const UI_TELEMETRY_RELAY_SECONDARY_MS = 1000;
 const UI_TOPBAR_FPS_DOM_MS = 500;
@@ -418,7 +420,7 @@ window.addEventListener("message", (event) => {
     setLoading(100, "Ukončuji aplikaci");
     try { navigator.sendBeacon?.("/api/device/quit", new Blob(["{}"], { type: "application/json" })); } catch {}
     void fetch("/api/device/quit", { method: "POST", body: "{}", keepalive: true, headers: { "Content-Type": "application/json" } }).catch(() => {});
-    window.setTimeout(() => { try { window.close(); } catch {} }, 120);
+    window.setTimeout(() => { try { window.close(); } catch {} }, 160);
     return;
   }
   if (event.source === uiFrame.contentWindow && event.data?.type === "led-preview-frame") {
@@ -472,6 +474,8 @@ window.addEventListener("message", (event) => {
   if (classification.action === SHELL_MESSAGE_ACTIONS.RUNNER_LOADING) {
     touchRunnerSignal();
     const detail = classification.detail || {};
+    runnerLoadingActive = true;
+    if (!runnerLoadingStartedAt) runnerLoadingStartedAt = performance.now();
     recordBootEvent("runner", "loading", `${detail.percent || 0}% ${detail.label || ""}`.trim());
     setLoading(Math.min(96, detail.percent || 0), detail.label || "Compiling");
     setStatus(`RUNNER LOAD ${detail.percent || 0}%`);
@@ -481,6 +485,8 @@ window.addEventListener("message", (event) => {
   if (classification.action === SHELL_MESSAGE_ACTIONS.RUNNER_READY) {
     touchRunnerSignal();
     runnerReady = true;
+    runnerLoadingActive = false;
+    runnerLoadingStartedAt = 0;
     lastRunnerReadyAt = performance.now();
     recordBootEvent("runner", "ready", formatReadyDetail(classification.detail));
     updateBootDiag();
@@ -673,6 +679,13 @@ function armBootGuard() {
   bootGuardStartedAt = performance.now();
   recordBootEvent("shell", "guard-armed", `${BOOT_GUARD_MS}ms`);
   bootGuardTimer = managedTimeout37CE('boot-guard', () => {
+    bootGuardTimer = null;
+    const loadingFor = runnerLoadingStartedAt ? performance.now() - runnerLoadingStartedAt : 0;
+    if (runnerLoadingActive && loadingFor < 120000) {
+      recordBootEvent("shell", "guard-extended", `${Math.round(loadingFor)}ms`);
+      armBootGuard();
+      return;
+    }
     fallbackLoadedButNotReady();
     updateBootDiag();
     maybeShowUi();
@@ -683,6 +696,13 @@ function armBootGuard() {
 function armLoadTimeout() {
   if (bootFinishedAt || bootLoadTimer) return;
   bootLoadTimer = managedTimeout37CE('boot-load', () => {
+    bootLoadTimer = null;
+    const loadingFor = runnerLoadingStartedAt ? performance.now() - runnerLoadingStartedAt : 0;
+    if (runnerLoadingActive && loadingFor < 120000) {
+      recordBootEvent("shell", "load-timeout-extended", `${Math.round(loadingFor)}ms`);
+      armLoadTimeout();
+      return;
+    }
     buildLoadTimeoutActions({ uiLoaded, runnerLoaded }, BOOT_LOAD_TIMEOUT_MS)
       .forEach(({ scope, event, detail }) => markDegraded(scope, event, detail));
     fallbackLoadedButNotReady();

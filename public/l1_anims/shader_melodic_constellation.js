@@ -1,4 +1,6 @@
+import { gpuFor } from '../shader_anim_engine.js';
 export const meta = { name: "Melodic Constellation", description: "slow constellation phrases with drifting harmonic stars", params: ["Density", "Tempo", "Drift", "Glow"] };
+export const gpu = gpuFor('shader_melodic_constellation');
 export const prewarm = { priority: 64, samplePoints: 96, warmOnSelect: true, warmNeighbors: true };
 const TAU = Math.PI * 2;
 const sat = (v) => Math.max(0, Math.min(1, v));

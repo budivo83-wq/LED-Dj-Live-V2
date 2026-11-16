@@ -1,6 +1,12 @@
 export function createAppPreviewCanvasResize({
   canvas,
   previewRenderer,
+  stagePreviewCanvas,
+  stagePreviewRenderer,
+  stagePixelPreviewCanvas,
+  stagePixelPreviewRenderer,
+  stageShaderPreviewCanvas,
+  stageShaderPreviewRenderer,
   shaderPreviewCanvas,
   shaderPreviewRenderer,
   previewBox,
@@ -225,6 +231,33 @@ export function createAppPreviewCanvasResize({
       lastPreviewMatrixHeight = matrixHeight;
       stats.appliedPreview += 1;
     }
+    if (stagePreviewCanvas && stagePreviewRenderer) {
+      const rect = previewBox?.getBoundingClientRect?.();
+      const stageRect = stagePreviewCanvas.getBoundingClientRect?.();
+      const dpr = Math.max(1, getDevicePixelRatio() || 1);
+      const stageWidth = Math.max(1, Math.round((stageRect?.width || rect?.width || stagePreviewCanvas.clientWidth || width) * dpr));
+      const stageHeight = Math.max(1, Math.round((stageRect?.height || rect?.height || stagePreviewCanvas.clientHeight || height) * dpr));
+      stagePreviewRenderer.resize(stageWidth, stageHeight);
+    }
+    const resizeStageMini = (miniCanvas, miniRenderer) => {
+      if (!miniCanvas || !miniRenderer || miniCanvas.offsetParent === null) return;
+      if (miniRenderer === stagePixelPreviewRenderer) {
+        const pixelWidth = Math.max(1, Math.round(matrixWidth * getCellSize()));
+        const pixelHeight = Math.max(1, Math.round(matrixHeight * getCellSize()));
+        if (miniCanvas.width !== pixelWidth) miniCanvas.width = pixelWidth;
+        if (miniCanvas.height !== pixelHeight) miniCanvas.height = pixelHeight;
+        return;
+      }
+      const rect = miniCanvas.getBoundingClientRect?.();
+      const dpr = Math.max(1, getDevicePixelRatio() || 1);
+      const miniWidth = Math.max(1, Math.round((rect?.width || miniCanvas.clientWidth || width) * dpr));
+      const miniHeight = Math.max(1, Math.round((rect?.height || miniCanvas.clientHeight || height) * dpr));
+      if (miniCanvas.width !== miniWidth) miniCanvas.width = miniWidth;
+      if (miniCanvas.height !== miniHeight) miniCanvas.height = miniHeight;
+      miniRenderer.resize?.(miniWidth, miniHeight, matrixWidth, matrixHeight);
+    };
+    resizeStageMini(stagePixelPreviewCanvas, stagePixelPreviewRenderer);
+    resizeStageMini(stageShaderPreviewCanvas, stageShaderPreviewRenderer);
     stats.lastPreviewMs = Math.round((nowMs() - t0) * 10) / 10;
     // Shader resize is the expensive layout/WebGL part; coalesce it especially
     // while output lock is active. Initial render still applies quickly because

@@ -173,7 +173,10 @@ function presetDefaults(preset, raspi) {
     thumbnailFps: raspi ? 3 : 6,
     thumbnailCacheEntries: raspi ? 256 : 192,
     thumbnailCacheBytes: raspi ? 12000000 : 9000000,
-    disableShaderPrewarm: true,
+    // NORMAL-PC must compile the full GPU scene bank before READY. Leaving
+    // this enabled made every first random/fade combination compile on the
+    // live render thread and caused the large intermittent stalls.
+    disableShaderPrewarm: false,
     // NORMAL-PC owns the visible picker experience. Keep the thumbnail cache
     // warm from startup so opening a shader selector never performs the first
     // bulk import/render burst on the UI click.

@@ -40,7 +40,7 @@ export function createUiPickers(deps) {
   })();
   const runtimeThumbRenderEnabled = runtimeProfile.runtimeThumbRender !== false && runtimeProfile.thumbsEnabled !== false;
   let thumbRenderSession = 0;
-  const thumbSessionCache = createSessionBitmapCache("led-thumb-v8-sharp-selector", { // STEP37ED: fresh high-resolution selector thumbnails; ignore older blurry 72x40 cache.
+  const thumbSessionCache = createSessionBitmapCache("led-thumb-v9-cpu-authoritative", { // Force regeneration after aligning thumbnails with the LED CPU render path.
     maxEntries: Number(runtimeProfile.thumbnailCacheEntries || 256),
     maxBytes: Number(runtimeProfile.thumbnailCacheBytes || 18_000_000),
     documentRef
@@ -171,6 +171,10 @@ export function createUiPickers(deps) {
   async function selectAnimationFile(layer, file, folder) {
     await switchLayerModule(layer, "animFile", folder, "anim", file, {
       files: lists[`${layer}Anims`],
+      // Interactive changes must not start delayed shader/CPU warmups. Those
+      // speculative compiles were firing 0.75–1.8s after the click and caused
+      // a second visible freeze during the next animation frame.
+      warmup: false,
       closePicker: true
     });
   }
@@ -183,23 +187,23 @@ export function createUiPickers(deps) {
     const sampleTime = getBeatPosition() + 0.35;
     const seedText = `anim:${layer}:${resolvedSource}`;
 
-    if (anim?.gpu && renderShaderLayerCanvas(canvas, anim.gpu, {
-      time: sampleTime,
-      beat: getBeatPosition(),
-      params,
-      paletteFile: layerState?.paletteFile,
-      manualPalette: layerState?.manualPalette,
-      flip: layerState?.reverse,
-      mirrorX: layerState?.mirrorX,
-      mirrorY: layerState?.mirrorY
-      })) {
-      const context = canvas.getContext("2d");
-      if (context) {
-        const test = context.getImageData(0, 0, canvas.width, canvas.height);
-        if (imageHasVisibleColor(test)) return;
-      } else {
-        return;
-      }
+    // GPU is authoritative for shader modules. The CPU renderer is retained
+    // only for legacy modules that do not expose a GPU descriptor.
+    if (anim?.gpu) {
+      const gpuOptions = {
+        time: sampleTime,
+        beat: getBeatPosition(),
+        params,
+        paletteFile: layerState?.paletteFile,
+        manualPalette: layerState?.manualPalette,
+        flip: layerState?.reverse,
+        mirrorX: layerState?.mirrorX,
+        mirrorY: layerState?.mirrorY
+      };
+      if (renderShaderLayerCanvas(canvas, anim.gpu, gpuOptions)) return;
+      const failedContext = canvas.getContext("2d");
+      if (failedContext) drawFallbackThumbnail(failedContext, canvas.width, canvas.height, seedText);
+      return;
     }
 
     const context = canvas.getContext("2d");

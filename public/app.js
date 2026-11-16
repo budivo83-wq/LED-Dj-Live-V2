@@ -36,7 +36,7 @@ function clearManagedTimer37CF(id) {
 }
 const DISABLE_SHADER_PREWARM = RUNTIME_PROFILE.disableShaderPrewarm === true || RUNTIME_ONLY;
 import { startFpsMeter } from "./topbar.js";
-import { createLedRenderer, createShaderSceneRenderer, getGpuShaderStats, gpuSceneBankId, renderShaderLayerCanvas, warmupLayerPreviewShaders } from "./gpu_renderer.js";
+import { createLedRenderer, createShaderSceneRenderer, getGpuShaderStats, gpuSceneBankId, renderShaderLayerCanvas, warmupLayerPreviewShaders } from "./gpu_renderer.js?v=20261109-gpu-shader-runtime";
 import { createFixedClock } from "./core/fixed_clock.js";
 import {
   BLEND_GROUPS,
@@ -129,6 +129,7 @@ import { getRuntimeFrameAuthority } from "./runtime/frame_authority.js";
 import { installRuntimeDebugHook } from "./runtime/runtime_debug.js";
 import { createFrameComposer } from "./runtime/frame_composer.js";
 import { createPreviewModeRuntime } from "./runtime/preview_mode_runtime.js";
+import { createStagePreviewRenderer } from "./runtime/stage_preview.js";
 import { createShaderPreloadManager } from "./runtime/shader_preload_manager.js";
 import { createRuntimeBoundaryBridge } from "./runtime/src_bridge.js";
 import { runStartupWarmupFlow } from "./runtime/startup_warmup.js";
@@ -227,6 +228,9 @@ import {
 import { initLiveArmPanel } from "./runtime/live_arm_panel.js";
 
 const canvas = document.getElementById("ledCanvas");
+const stagePreviewCanvas = document.getElementById("stagePreviewCanvas");
+const stagePixelPreviewCanvas = document.getElementById("stagePixelPreviewCanvas");
+const stageShaderPreviewCanvas = document.getElementById("stageShaderPreviewCanvas");
 const shaderPreviewCanvas = document.getElementById("shaderPreviewCanvas");
 const previewBox = document.getElementById("previewBox");
 const { headless: HEADLESS, shellViewOnly: SHELL_VIEW_ONLY, safeBoot: SAFE_BOOT } = readAppRuntimeContext({
@@ -238,15 +242,31 @@ let W = MATRIX_DEFAULT_WIDTH;
 let H = MATRIX_DEFAULT_HEIGHT;
 const S = LED_PREVIEW_CELL_SIZE;
 const previewRenderer = createLedRenderer(canvas, S, { force2d: SHELL_VIEW_ONLY, flipY: SHELL_VIEW_ONLY });
+const stagePreviewRenderer = createStagePreviewRenderer({ canvas: stagePreviewCanvas });
+const stagePixelPreviewRenderer = createLedRenderer(stagePixelPreviewCanvas, S, { force2d: true });
+// Keep the output WebGL context alive from boot so its scene-program cache is
+// warmed together with the visible preview contexts instead of being created
+// on the first random transition.
+let gpuOutputRenderer = createShaderSceneRenderer(document.createElement("canvas"));
+let gpuTransitionFallbackUntil = 0;
+let gpuOutputBlendMode = null;
+let gpuReadbackFallbackUntil = 0;
 const isTypingTarget = isTypingTargetRuntime;
 const shaderSwitchCpuFallbackMs = createShaderSwitchCpuFallbackMs({ headless: HEADLESS, shellViewOnly: SHELL_VIEW_ONLY });
 function initPostLoginTransition() {
   initPostLoginTransitionRuntime({ sessionStorageRef: sessionStorage, documentRef: document, windowRef: window });
 }
 const shaderPreviewRenderer = shaderPreviewCanvas ? createShaderSceneRenderer(shaderPreviewCanvas) : null;
+const stageShaderPreviewRenderer = stageShaderPreviewCanvas ? createShaderSceneRenderer(stageShaderPreviewCanvas) : null;
 const previewCanvasResize = createAppPreviewCanvasResize({
   canvas,
   previewRenderer,
+  stagePreviewCanvas,
+  stagePreviewRenderer,
+  stagePixelPreviewCanvas,
+  stagePixelPreviewRenderer,
+  stageShaderPreviewCanvas,
+  stageShaderPreviewRenderer,
   shaderPreviewCanvas,
   shaderPreviewRenderer,
   previewBox,
@@ -265,7 +285,11 @@ window.addEventListener("led-preview-mode-changed", () => {
   try { resizeShaderPreviewCanvas(); } catch {}
   try { renderPipeline?.draw?.(performance.now()); } catch {}
 });
-
+window.addEventListener("led-preview-layout-changed", () => {
+  try { resizePreviewCanvas(); } catch {}
+  try { resizeShaderPreviewCanvas(); } catch {}
+  try { renderPipeline?.draw?.(performance.now()); } catch {}
+});
 const { state, settings, transitionSettings, modules, transitions } = createAppState();
 const renderLoopState = createRendererLoopState();
 let t = renderLoopState.getTime();
@@ -453,7 +477,15 @@ const gpuWarmupQueueRuntime = createGpuWarmupQueueRuntime({
   gpuWarmupClock,
   schedulerDebugState,
   rememberShaderWarmupScene,
-  warmupScene: (scene) => previewRenderer.warmupShaderScene?.(scene),
+  warmupScene: (scene) => {
+    // The visible Shader tab has its own WebGL renderer. Keep the output
+    // renderer as a fallback for headless/live paths, but do not warm only the
+    // hidden canvas or the first Shader frame can still hit a cold program.
+    const renderers = [shaderPreviewRenderer, previewRenderer, gpuOutputRenderer]
+      .filter(Boolean)
+      .filter((renderer, index, list) => list.indexOf(renderer) === index);
+    return renderers.some((renderer) => renderer.warmupShaderScene?.(scene) === true);
+  },
   isTransitionActive: () => Object.values(transitions).some(Boolean),
   canAutoEnableGpu: () => !DISABLE_LIVE_GPU_AUTOSWITCH || !startupOverlayClosed,
   isGpuEnabled: () => Boolean(settings.gpuEnabled),
@@ -572,6 +604,7 @@ layerModuleNavigation = createLayerModuleNavigation({
   lists,
   state,
   randomItem,
+  hasModule,
   switchLayerModule
 });
 
@@ -642,7 +675,7 @@ layerModuleSwitcher = createLayerModuleSwitcher({
 });
 
 managedTimeout37CF('app:startup-guard-failsafe', () => {
-  if (!startupFrameGuard) return;
+  if (startupOverlayClosed || !startupOverlay?.root) return;
   startupFrameGuard = false;
   if (!startupOverlayClosed) {
     startupOverlayClosed = true;
@@ -697,6 +730,7 @@ const appStartupFlow = createAppStartupFlow({
   notifyShellRuntimeLoading,
   startupStepRuntime,
   shaderPreloadManagerRef: () => shaderPreloadManager,
+  prewarmAllCpuModules: () => moduleWarmup?.prewarmAllCpuModules?.(),
   loadHeadlessShaderModulesRef: () => loadHeadlessShaderModules(),
   prewarmAllGpuCombos,
   pathsForFolder,
@@ -735,6 +769,7 @@ const gpuPrewarmHelpers = createGpuPrewarmHelpers({
   shellViewOnly: SHELL_VIEW_ONLY,
   forceCpuRender: FORCE_CPU_RENDER,
   previewRenderer,
+  previewRenderers: [shaderPreviewRenderer, stageShaderPreviewRenderer, gpuOutputRenderer],
   loadModule,
   gpuSceneBankId,
   createGpuWarmupSceneDeps: {
@@ -1014,12 +1049,16 @@ async function init() {
     resizeShaderPreviewCanvas,
     shaderPreviewRenderer,
     previewRenderer,
+    stagePreviewRenderer,
+    stagePixelPreviewRenderer,
+    stageShaderPreviewRenderer,
     headless: HEADLESS,
     getDimensions: () => ({ width: W, height: H }),
     isOutputEnabled: () => isProtocolOutputEnabled(),
     shellViewOnly: SHELL_VIEW_ONLY,
     shouldRefreshPreviewFrame: () => SHELL_VIEW_ONLY,
     renderPixelColor,
+    renderGpuFrame,
     enqueueOutputFrame: (frame) => outputPipeline?.enqueue(frame),
     reportOutputFrame,
     drawLayerRawPreview,
@@ -1039,7 +1078,10 @@ async function init() {
     onMetrics: captureRenderPipelineMetric,
     onGpuDrawFailed: (kind) => {
       gpuReady = false;
-      forceCpuPreviewUntil = performance.now() + 4000;
+      // A failed draw must not lock the preview onto the expensive CPU path
+      // for seconds. Keep the last visible frame and let the next GPU tick
+      // retry after the already-prewarmed scene is available.
+      forceCpuPreviewUntil = 0;
       lastGpuFaultAt = performance.now();
       lastGpuFaultKind = String(kind || "gpu");
     }
@@ -1137,6 +1179,7 @@ async function init() {
     warmupStoredShaderScenes,
     warmupStoredShaderModules,
     preloadEverythingForStartup,
+    scheduleFullGpuPrewarm,
     runtimeProfile: RUNTIME_PROFILE,
     startupFrameGuardRef: (value) => { startupFrameGuard = value; },
     startupReadyAtRef: (value) => { startupReadyAt = value; },
@@ -1192,6 +1235,7 @@ function bindControls() {
     gpuModeValue,
     setGpuReady: (value) => { gpuReady = value; },
     drawRenderPipeline: (now) => renderPipeline?.draw(now),
+    requestFreshPreviewFrame: () => renderPipeline?.requestFreshPreviewFrame?.(),
     adjustBpm,
     tapBpm,
     performanceRef: performance,
@@ -1317,6 +1361,10 @@ async function switchLayerModule(layer, stateKey, folder, moduleKey, file, optio
 
 function scheduleCpuPrewarm() {
   moduleWarmup?.scheduleCpuPrewarm();
+}
+
+async function prewarmAllCpuModules() {
+  return moduleWarmup?.prewarmAllCpuModules?.();
 }
 
 function randomizeLayerParams(layer) {
@@ -1681,25 +1729,73 @@ function syncShaderInspector(detail = null) {
 function createGpuScene() {
   if (startupFrameGuard) return null;
   if (!canUseGpuRender()) return null;
-  const mode = gpuModeValue(settings.gpuMode, "auto");
-  if (mode === "auto" && !gpuReady) {
+  if (!gpuReady) {
     const now = performance.now();
     const scene = createGpuSceneCandidate();
     if (scene && shouldTryGpuAutoSwitch(now)) {
       gpuWarmupAttemptAt = now;
       scheduleGpuWarmup(scene);
     }
-    // In AUTO allow direct GPU attempt; renderer may compile lazily.
     return scene;
   }
   return createGpuSceneCandidate();
+}
+
+function renderGpuFrame() {
+  if (FORCE_CPU_RENDER) return null;
+  const outputActive = Boolean(isOutputEnabled());
+  const previewMode = String(document.body?.dataset?.previewMode || "").toLowerCase();
+  const previewNeedsFrame = outputActive
+    || previewMode.startsWith("pixel")
+    || previewMode === "stage"
+    || previewMode === "debug";
+  // Shader-only preview can draw directly to its WebGL canvas. Pixel and Stage
+  // views need a composed RGB frame, so use the GPU readback path there too;
+  // otherwise every animation switch falls back to a synchronous CPU render.
+  if (!previewNeedsFrame) return null;
+  const now = performance.now();
+  if (!gpuOutputRenderer) {
+    const canvas = document.createElement("canvas");
+    gpuOutputRenderer = createShaderSceneRenderer(canvas);
+  }
+  if (!gpuOutputRenderer?.drawShaderScene || !gpuOutputRenderer?.readFrame) return null;
+  const gpuRenderStartedAt = performance.now();
+  // Keep the fullscreen GPU scene driven by the live render clock. The CPU
+  // compositor intentionally caches its layer timestamp, which is not safe
+  // to reuse for the synchronous GPU readback path.
+  t = getBeatPosition();
+  renderLoopState.setTime(t);
+  const scene = createGpuSceneCandidate({ forceEnabled: true });
+  if (!scene) return null;
+  const transitionScene = Boolean(scene.blendTransition)
+    || scene.layers?.some((layer) => Boolean(layer?.transition));
+  // Keep fade transitions on the GPU as well. Falling back to the CPU here
+  // renders both the previous and current animation for every matrix pixel and
+  // was the main source of the multi-second hitch during fades.
+  if (transitionScene) gpuTransitionFallbackUntil = 0;
+  const blendMode = String(scene.blendMode || "");
+  gpuOutputBlendMode = blendMode;
+  gpuOutputRenderer.resize?.(W, H);
+  const drawn = gpuOutputRenderer.drawShaderScene(scene);
+  if (drawn === false) return null;
+  const frame = gpuOutputRenderer.readFrame();
+  if (!(frame instanceof Uint8Array) || frame.byteLength !== W * H * 3) return null;
+  const renderMs = Math.max(0, performance.now() - gpuRenderStartedAt);
+  return {
+    frame,
+    renderMs,
+    renderer: "gpu-readback"
+  };
 }
 
 function createGpuSceneCandidate(options = {}) {
   return createGpuSceneCandidateRuntime({
     forceCpuRender: FORCE_CPU_RENDER,
     state,
-    previewRenderer,
+    // Shell mode intentionally keeps the LED canvas 2D, but Shader/Stage
+    // preview use their own WebGL renderer. GPU scene eligibility must follow
+    // that renderer instead of the monitor canvas.
+    previewRenderer: shaderPreviewRenderer || previewRenderer,
     modules,
     transitions,
     transitionProgress,
@@ -2172,6 +2268,7 @@ const stepSeqAutomationBridge = (() => {
             commit: options.commit,
             commitDelayMs: options.delayMs,
             warmup: false,
+            transition: options.transition === true,
             coalesce: options.coalesce !== false,
             debounceMs: Math.max(0, Number(options.debounceMs ?? 12))
           }
@@ -2205,6 +2302,7 @@ const stepSeqAutomationBridge = (() => {
             commit: options.commit,
             commitDelayMs: options.delayMs,
             warmup: false,
+            transition: options.transition === true,
             coalesce: options.coalesce !== false,
             debounceMs: Math.max(0, Number(options.debounceMs ?? 18))
           }

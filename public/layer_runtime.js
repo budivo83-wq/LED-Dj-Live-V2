@@ -177,7 +177,16 @@ export function createLayerRuntime(deps) {
       // looked like broken scale in selectors/output. Keep scalar shaders on the
       // palette path, but pass RGB shaders through as real colors.
       if (Array.isArray(rendered) || ArrayBuffer.isView(rendered)) {
-        return [clamp(rendered[0]), clamp(rendered[1]), clamp(rendered[2])];
+        // RGB-returning musical shaders must still pass through the selected
+        // layer palette. Treat shader luminance as the palette coordinate so
+        // palette selection remains authoritative for every animation type.
+        const red = clamp(rendered[0]);
+        const green = clamp(rendered[1]);
+        const blue = clamp(rendered[2]);
+        const paletteValue = clamp01((red * 0.2126 + green * 0.7152 + blue * 0.0722) / 255);
+        if (layerState.manualPalette?.enabled) return manualPaletteColor(layerState.manualPalette, paletteValue);
+        const color = layerModules.palette?.color?.(paletteValue);
+        return color ? [clamp(color[0]), clamp(color[1]), clamp(color[2])] : [red, green, blue];
       }
       const value = normalizeValue(rendered);
       if (layerState.manualPalette?.enabled) return manualPaletteColor(layerState.manualPalette, value);

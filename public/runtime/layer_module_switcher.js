@@ -94,16 +94,27 @@ export function createLayerModuleSwitcher({
     const shouldCommit = options.commit !== false;
     const boundaryDelayMs = Math.max(0, Number(options.commitDelayMs ?? options.delayMs ?? 0));
     const liveOutputMonitorMode = Boolean(shellViewOnly && isOutputEnabled?.());
-    const allowWarmup = options.warmup !== false && !liveOutputMonitorMode;
+    // All module/GPU/CPU preparation is completed during startup. Runtime
+    // switches must only swap the already-loaded module; delayed neighbour,
+    // scene and CPU warmups were able to wake up later and stall the render
+    // loop several changes after the original click.
+    const allowWarmup = options.allowRuntimeWarmup === true
+      && options.warmup !== false
+      && !liveOutputMonitorMode;
     rawPreviewSignature[layer] = "";
     rawPreviewLastAt[layer] = 0;
-    if (!strictStartupPrewarm) {
-      setForceCpuPreviewUntil(performanceRef.now() + shaderSwitchCpuFallbackMs());
-    }
+    // Startup prewarm covers the selected scene. Never force a CPU preview
+    // window here; that synchronous fallback was visible as a hitch on every
+    // random switch when the matrix was large.
+    setForceCpuPreviewUntil(0);
     setLastOutputFrameAt(0);
     state[layer][stateKey] = file;
     if (shouldCommit) scheduleCommit(boundaryDelayMs);
-    if (shouldSyncUi) scheduleUiSync(boundaryDelayMs);
+    // Sequencer changes use ui:false to avoid a full UI refresh, but the
+    // palette field must still follow the new palette immediately. Otherwise
+    // the rendered colors change while the layer selector keeps the old file.
+    const shouldSyncPaletteUi = moduleKey === "palette";
+    if (shouldSyncUi || shouldSyncPaletteUi) scheduleUiSync(boundaryDelayMs);
 
     const loadId = (pendingModuleLoads[layer][moduleKey] || 0) + 1;
     pendingModuleLoads[layer][moduleKey] = loadId;
@@ -131,9 +142,10 @@ export function createLayerModuleSwitcher({
       if (options.closePalettePicker) closePalettePicker();
       return;
     }
-
     modules[layer][moduleKey] = loadedModule;
-    if (moduleKey === "anim" && !strictStartupPrewarm) setGpuReady(false);
+    // Do not invalidate the startup-prewarmed GPU state on every animation
+    // switch. Doing so re-queued speculative warmups and caused intermittent
+    // stalls after several random changes.
     if (moduleKey === "anim") {
       const switchedAt = performanceRef.now();
       getShaderPreloadManager?.()?.markShaderSwitch?.(switchedAt);
@@ -170,15 +182,19 @@ export function createLayerModuleSwitcher({
     if (allowWarmup && options.files && typeof scheduleNearbyWarmup === "function") {
       deferWarmup(() => scheduleNearbyWarmup(folder, options.files, file), 1800);
     }
-    // Run configured fade transition between previous and newly loaded module.
-    startLayerTransition(layer, previousModules, previousState);
+    // Run the configured fade unless a live performance action explicitly
+    // requests an immediate switch (DROP uses this to avoid compiling a cold
+    // transition shader twice while changing both layers).
+    if (options.transition !== false) {
+      startLayerTransition(layer, previousModules, previousState);
+    } else {
+      startLayerTransition(layer, null, null);
+    }
     rawPreviewSignature[layer] = "";
     rawPreviewLastAt[layer] = 0;
-    if (!strictStartupPrewarm) {
-      setForceCpuPreviewUntil(performanceRef.now() + shaderSwitchCpuFallbackMs());
-    }
+    setForceCpuPreviewUntil(0);
     setLastOutputFrameAt(0);
-    if (shouldSyncUi) scheduleUiSync();
+    if (shouldSyncUi || shouldSyncPaletteUi) scheduleUiSync();
     // Do not force an immediate full preview draw inside the animation switch.
     // The output loop owns the next frame and the preview loop will catch up on
     // its own throttled cadence.

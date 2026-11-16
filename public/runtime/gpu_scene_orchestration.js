@@ -28,12 +28,14 @@ export function createGpuSceneCandidateRuntime(deps, options = {}) {
   if (!previewRenderer.drawShaderScene) return null;
   if (!modules.l1.anim?.gpu || !modules.l2.anim?.gpu) return null;
 
+  const transitionSource = options.transitionOverrides || transitions;
   const l1Transition = gpuLayerTransitionScene("l1", {
-    transitions,
+    transitions: transitionSource,
     transitionProgress,
     easeInOut,
     normalizedParams,
     layerTime,
+    time,
     manualPalette: (palette) => gpuManualPalettePayload(palette, {
       normalizeManualPalette,
       normalizeManualPaletteActive,
@@ -44,11 +46,12 @@ export function createGpuSceneCandidateRuntime(deps, options = {}) {
     })
   });
   const l2Transition = gpuLayerTransitionScene("l2", {
-    transitions,
+    transitions: transitionSource,
     transitionProgress,
     easeInOut,
     normalizedParams,
     layerTime,
+    time,
     manualPalette: (palette) => gpuManualPalettePayload(palette, {
       normalizeManualPalette,
       normalizeManualPaletteActive,
@@ -60,7 +63,7 @@ export function createGpuSceneCandidateRuntime(deps, options = {}) {
   });
   if (l1Transition === false || l2Transition === false) return null;
 
-  const blendTransition = gpuBlendTransitionScene({ transitions, transitionProgress, easeInOut });
+  const blendTransition = gpuBlendTransitionScene({ transitions: transitionSource, transitionProgress, easeInOut });
 
   const safeBrightnessLimit = Number(globalThis?.__ledRaspiSafeLiveState?.brightnessLimit || 0);
   const brightnessLimit = safeBrightnessLimit > 0
@@ -88,6 +91,7 @@ export function createGpuSceneCandidateRuntime(deps, options = {}) {
         modules,
         normalizedParams,
         layerTime,
+        time,
         getLayerVisibility,
         manualPalette: (palette) => gpuManualPalettePayload(palette, {
           normalizeManualPalette,
@@ -103,6 +107,7 @@ export function createGpuSceneCandidateRuntime(deps, options = {}) {
         modules,
         normalizedParams,
         layerTime,
+        time,
         getLayerVisibility,
         manualPalette: (palette) => gpuManualPalettePayload(palette, {
           normalizeManualPalette,
@@ -133,12 +138,14 @@ export function shouldTryGpuAutoSwitchRuntime(deps, now) {
 }
 
 function gpuLayerScene(layerKey, crossMix, forceFullMix, transition, deps) {
-  const { state, modules, normalizedParams, layerTime, getLayerVisibility, manualPalette } = deps;
+  const { state, modules, normalizedParams, layerTime, time, getLayerVisibility, manualPalette } = deps;
   const layerState = state[layerKey];
   return {
     gpu: modules[layerKey].anim.gpu,
     params: normalizedParams(layerState.params),
-    time: layerTime(layerState),
+    // GPU rendering must use the live render tick. layerTime() is also used
+    // by the CPU compositor and may contain a cached frame timestamp.
+    time: layerState.beatSync ? Math.floor(time) : time,
     master: layerState.master,
     visibility: getLayerVisibility(layerState),
     mix: forceFullMix ? 1 : crossMix,
@@ -152,7 +159,7 @@ function gpuLayerScene(layerKey, crossMix, forceFullMix, transition, deps) {
 }
 
 function gpuLayerTransitionScene(layerKey, deps) {
-  const { transitions, transitionProgress, easeInOut, normalizedParams, layerTime, manualPalette } = deps;
+  const { transitions, transitionProgress, easeInOut, normalizedParams, layerTime, time, manualPalette } = deps;
   const transition = transitions[layerKey];
   if (!transition) return null;
 
@@ -164,7 +171,7 @@ function gpuLayerTransitionScene(layerKey, deps) {
   return {
     gpu: transition.modules.anim.gpu,
     params: normalizedParams(transition.state.params),
-    time: layerTime(transition.state),
+    time: transition.state.beatSync ? Math.floor(time) : time,
     paletteFile: transition.state.paletteFile,
     manualPalette: manualPalette(transition.state.manualPalette),
     flip: transition.state.reverse,

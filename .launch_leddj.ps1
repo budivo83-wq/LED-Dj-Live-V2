@@ -1,6 +1,7 @@
 $ErrorActionPreference = 'SilentlyContinue'
-$project = Split-Path -Parent $MyInvocation.MyCommand.Path
+$project = 'C:\Users\budiv\Documents\BudiSoft studio\BudiSoft studio\LED Dj live\v1.5.2\LED_Dj_live_clean_STEP38V_GENERATOR_BEAT_INTELLIGENCE'
 $url = 'http://localhost:3000'
+$healthUrl = 'http://127.0.0.1:3000/api/health'
 $logPath = Join-Path $project 'launcher.log'
 $script:cleanedUp = $false
 $script:node = $null
@@ -24,14 +25,16 @@ function Cleanup {
   if ($script:edgeProc) { Stop-ProcessTree $script:edgeProc.Id }
   if ($script:node) { Stop-ProcessTree $script:node.Id }
   Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -and $_.CommandLine -like ('*' + $project.Replace('\\','\\\\') + '*') } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+  $edgeProfile = Join-Path $project '.edge-app-profile'
+  Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'msedge.exe' -and $_.CommandLine -and $_.CommandLine -like ('*--user-data-dir=' + $edgeProfile + '*') } | ForEach-Object { Stop-ProcessTree $_.ProcessId }
 }
 
 function Wait-ForHttpReady([string]$targetUrl, [int]$timeoutSec = 30) {
   $deadline = (Get-Date).AddSeconds($timeoutSec)
   while ((Get-Date) -lt $deadline) {
     try {
-      Invoke-WebRequest -Uri $targetUrl -UseBasicParsing -TimeoutSec 2 -MaximumRedirection 0 -ErrorAction Stop | Out-Null
-      return $true
+      $response = Invoke-WebRequest -Uri $targetUrl -UseBasicParsing -TimeoutSec 2 -MaximumRedirection 0 -ErrorAction Stop
+      if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 500) { return $true }
     } catch {
       if ($_.Exception.Response) { return $true }
       Start-Sleep -Milliseconds 250
@@ -46,19 +49,15 @@ function Show-LauncherError([string]$message) {
 
 Register-EngineEvent PowerShell.Exiting -Action { Cleanup } | Out-Null
 try {
-  Write-LauncherLog ('Project folder: ' + $project)
-
-  if (-not (Test-Path (Join-Path $project 'node_modules'))) {
-    Write-LauncherLog 'node_modules missing, running npm install'
-    $npm = Start-Process -FilePath 'npm.cmd' -ArgumentList 'install' -WorkingDirectory $project -WindowStyle Hidden -Wait -PassThru
-    Write-LauncherLog ('npm install exit code: ' + $npm.ExitCode)
-    if ($npm.ExitCode -ne 0) { throw 'npm install failed. Spusť ručně: npm install' }
-  }
-
   Write-LauncherLog 'Starting backend node.exe server.js'
-  $script:node = Start-Process -FilePath 'node.exe' -ArgumentList 'server.js' -WorkingDirectory $project -WindowStyle Hidden -PassThru
+  $stdoutPath = Join-Path $project 'server.stdout.log'
+  $stderrPath = Join-Path $project 'server.err.log'
+  $script:node = Start-Process -FilePath 'node.exe' -ArgumentList 'server.js' -WorkingDirectory $project -WindowStyle Hidden -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath -PassThru
   Write-LauncherLog ('node.exe started with PID ' + $script:node.Id)
-  if (-not (Wait-ForHttpReady $url 30)) { throw 'Server did not become ready on http://localhost:3000' }
+  if (-not (Wait-ForHttpReady $healthUrl 30)) {
+    $exitCode = if ($script:node.HasExited) { $script:node.ExitCode } else { 'running' }
+    throw ('Server did not become ready on ' + $healthUrl + ' (node=' + $exitCode + ')')
+  }
   Write-LauncherLog 'Server ready on http://localhost:3000'
 
   $edgePaths = @(
@@ -82,7 +81,7 @@ try {
     '--window-position=' + $x + ',' + $y,
     '--disable-infobars',
     '--disable-session-crashed-bubble',
-    '--no-firs t-run',
+    '--no-first-run',
     '--disable-pinch',
     '--overscroll-history-navigation=0'
   )
@@ -96,7 +95,7 @@ try {
 } catch {
   $err = $_.Exception.Message
   Write-LauncherLog ('ERROR: ' + $err)
-  Show-LauncherError ($err + [Environment]::NewLine + 'Zkontroluj launcher.log ve slozce projektu.')
+  Show-LauncherError ($err + [Environment]::NewLine + 'Zkontroluj launcher.log a server.err.log ve slozce projektu.')
 } finally {
   Cleanup
 }

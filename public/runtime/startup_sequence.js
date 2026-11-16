@@ -57,6 +57,7 @@ export async function runStartupSequence(deps) {
     warmupStoredShaderScenes,
     warmupStoredShaderModules,
     preloadEverythingForStartup,
+    scheduleFullGpuPrewarm,
     startupFrameGuardRef,
     startupReadyAtRef,
     setPreferLocalStateOnBoot
@@ -66,11 +67,12 @@ export async function runStartupSequence(deps) {
   initShaderInspectorToggle();
   initPreviewCollapseToggle();
   setPreferLocalStateOnBoot(restoreLocalState());
-  // STEP38W: Performance is the operator's default landing view after a
-  // restart. Always start its visible preview in the full shader canvas so a
-  // stale persisted pixel/debug mode cannot boot into an apparently empty UI.
-  state.previewMode = "shader";
-  state.shaderPreviewMode = "big";
+  // Preserve the operator's current preview after a restart. The old forced
+  // Shader Big assignment made any reload/recovery jump away from Stage or
+  // Pixel preview, which was especially visible after a render stall.
+  if (!["stage", "pixel", "shader", "debug"].includes(String(state.previewMode || "").toLowerCase())) {
+    state.previewMode = "pixel";
+  }
   restoreTransitionSettings();
   ensureBeatClock();
   startupStep(12, "Starting render loop");
@@ -202,6 +204,8 @@ export async function runStartupSequence(deps) {
   sessionStorageRef.setItem("led-main-booted", "1");
   finishStartupProfiling();
   notifyShellRuntimeReady();
+  // All GPU banks are compiled before READY; no post-loading CPU/fake path is
+  // needed when DROP selects another valid animation.
 }
 
 function deferShellViewModuleLoad({

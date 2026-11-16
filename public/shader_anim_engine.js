@@ -93,6 +93,123 @@ export function renderByName(name, x, y, t, p) {
       return shaderProcedural("shader_sonic_spikes", x, y, t, scale, speed, shape, intensity);
     case "shader_hologram_grid":
       return shaderProcedural("shader_hologram_grid", x, y, t, scale, speed, shape, intensity);
+    case "shader_polyrhythm_orbit":
+      return shaderProcedural("shader_polyrhythm_orbit", x, y, t, scale, speed, shape, intensity);
+    case "shader_harmonic_spiral":
+      return shaderProcedural("shader_harmonic_spiral", x, y, t, scale, speed, shape, intensity);
+    case "shader_fractal_chorus":
+      return shaderProcedural("shader_fractal_chorus", x, y, t, scale, speed, shape, intensity);
+    case "shader_breakbeat_prism":
+      return shaderProcedural("shader_breakbeat_prism", x, y, t, scale, speed, shape, intensity);
+    case "shader_liquid_chords":
+      return shaderProcedural("shader_liquid_chords", x, y, t, scale, speed, shape, intensity);
+    case "shader_syncopated_cells":
+      return shaderProcedural("shader_syncopated_cells", x, y, t, scale, speed, shape, intensity);
+    case "shader_bass_choir":
+      return shaderProcedural("shader_bass_choir", x, y, t, scale, speed, shape, intensity);
+    case "shader_melodic_smoke":
+      return shaderProcedural("shader_melodic_smoke", x, y, t, scale, speed, shape, intensity);
+    case "shader_euclidean_stars":
+      return shaderProcedural("shader_euclidean_stars", x, y, t, scale, speed, shape, intensity);
+    case "shader_echo_cathedral":
+      return shaderProcedural("shader_echo_cathedral", x, y, t, scale, speed, shape, intensity);
+    case "shader_melodic_constellation":
+      return shaderProcedural("shader_melodic_constellation", x, y, t, scale, speed, shape, intensity);
+    case "shader_polyrhythm_ribbons":
+      return shaderProcedural("shader_polyrhythm_ribbons", x, y, t, scale, speed, shape, intensity);
+    case "shader_chordal_bloom":
+      return shaderProcedural("shader_chordal_bloom", x, y, t, scale, speed, shape, intensity);
+    case "shader_golden_arpeggio":
+      return shaderProcedural("shader_golden_arpeggio", x, y, t, scale, speed, shape, intensity);
+    case "shader_synthwave_tides":
+      return shaderProcedural("shader_synthwave_tides", x, y, t, scale, speed, shape, intensity);
+    case "shader_echo_chimes":
+      return shaderProcedural("shader_echo_chimes", x, y, t, scale, speed, shape, intensity);
+    case "shader_broken_beat_orbits":
+      return shaderProcedural("shader_broken_beat_orbits", x, y, t, scale, speed, shape, intensity);
+    case "shader_harmonic_veil":
+      return shaderProcedural("shader_harmonic_veil", x, y, t, scale, speed, shape, intensity);
+    case "shader_luminous_counterpoint":
+      return shaderProcedural("shader_luminous_counterpoint", x, y, t, scale, speed, shape, intensity);
+    case "shader_dream_sequence":
+      return shaderProcedural("shader_dream_sequence", x, y, t, scale, speed, shape, intensity);
+    case "shader_harmonic_radar": {
+      const dx = x - 0.5;
+      const dy = y - 0.5;
+      const r = Math.sqrt(dx * dx + dy * dy) + 0.001;
+      const a = Math.atan2(dy, dx);
+      const spd = 0.15 + speed * 2.5;
+      const sweep = Math.sin(a * (3 + scale * 8) - t * spd);
+      const ring = Math.sin(r * (18 + shape * 50) - t * 2);
+      return clamp01(.35 + sweep * .25 + ring * .2 + Math.exp(-Math.abs(sweep - ring) * (3 + intensity * 9)) * .5);
+    }
+    case "shader_kick_mandala": {
+      const dx = x - 0.5;
+      const dy = y - 0.5;
+      const r = Math.sqrt(dx * dx + dy * dy) + 0.001;
+      const a = Math.atan2(dy, dx);
+      const kick = Math.pow(Math.max(0, Math.sin(t * (1 + speed * 5))), 5 + intensity * 8);
+      const spokes = Math.abs(Math.sin(a * (4 + shape * 18) + t * 1.2));
+      return clamp01(Math.exp(-r * (3 + kick * 12)) * (.35 + kick) + spokes * .2);
+    }
+    case "shader_resonant_mesh": {
+      const dx = (x - 0.5) * (4 + scale * 12);
+      const dy = (y - 0.5) * (4 + scale * 12);
+      const spd = 0.15 + speed * 2.5;
+      const aa = Math.sin(dx + Math.sin(dy * (2 + shape * 5) + t * spd));
+      const bb = Math.cos(dy + Math.cos(dx * 1.7 - t * (0.25 + speed * .8)));
+      return clamp01((.5 + .5 * Math.sin((aa + bb) * (4 + intensity * 12) + t)) * .55 + Math.abs(aa * bb) * .45);
+    }
+    case "shader_offbeat_orbits": {
+      let v = 0;
+      for (let i = 0; i < 7; i++) { const ph = t * (.17 + speed * 1.4) * (1 + (i % 3) * .13) + i * 2.17 + Math.sin(t * .31 + i) * shape; const cx = .5 + Math.cos(ph) * (.12 + scale * .3); const cy = .5 + Math.sin(ph * 1.37) * (.1 + intensity * .25); v += Math.exp(-Math.hypot(x - cx, y - cy) * (24 + intensity * 20)) / (i + 1); }
+      return clamp01(v * 1.6);
+    }
+    case "shader_spectral_bloom": {
+      let v = 0;
+      for (let i = 1; i < 6; i++) { const wave = Math.sin(x * (3 + i * (2 + scale * 4)) + t * (.2 + speed * i)); v += Math.exp(-Math.abs(y - wave * (.08 + shape * .18)) * (15 + intensity * 28)) / i; }
+      return clamp01(v * (.35 + intensity * .55));
+    }
+    case "shader_subbass_waves": {
+      const dx = x - 0.5;
+      const dy = y - 0.5;
+      const r = Math.sqrt(dx * dx + dy * dy);
+      const spd = 0.15 + speed * 2.5;
+      const wave = Math.sin(dy * (8 + scale * 35) + Math.sin(dx * 4 + t * spd) * (3 + shape * 8) - t * spd * 5);
+      const pressure = Math.pow(Math.max(0, Math.sin(t * spd * 2.1)), 3 + intensity * 6);
+      return clamp01(wave * .25 + .42 + pressure * Math.exp(-r * 3) * .7);
+    }
+    case "shader_polymeter_spiral": {
+      const dx = x - 0.5;
+      const dy = y - 0.5;
+      const r = Math.sqrt(dx * dx + dy * dy) + 0.001;
+      const a = Math.atan2(dy, dx);
+      const aa = Math.sin(a * (3 + shape * 9) + r * (18 + scale * 45) - t * (.3 + speed * 2));
+      const bb = Math.cos(a * (5 + intensity * 11) - r * 22 + t * (.17 + speed));
+      return clamp01(aa * bb * .35 + .5 + Math.exp(-r * 4) * .25);
+    }
+    case "shader_chord_rain": {
+      let v = 0;
+      for (let i = 0; i < 6; i++) { const fx = ((i * .173 + t * (.04 + speed * .35) * (1 + (i % 3) * .17)) % 1 + 1) % 1; const fy = ((i * .317 - t * (.06 + speed * .42)) % 1 + 1) % 1; v += Math.exp(-Math.hypot(x - fx, y - fy) * (35 + intensity * 45)) * (.5 + .5 * Math.sin(t * (1 + shape * 3) + i)); }
+      return clamp01(v * (.7 + scale));
+    }
+    case "shader_glitch_sync": {
+      const slices = 5 + scale * 24;
+      const row = Math.floor(y * slices);
+      const jitter = Math.sin(row * 12.7 + Math.floor(t * (2 + speed * 8))) * intensity * .08;
+      const scan = Math.sin((x + jitter) * (18 + shape * 80) + t * 2);
+      const gate = Math.sin(t * (3 + speed * 9) + row * 1.7) * .5 + .5;
+      return clamp01((scan * .5 + .5) * (.25 + gate * .75));
+    }
+    case "shader_melodic_prism": {
+      const dx = x - 0.5;
+      const dy = y - 0.5;
+      const r = Math.sqrt(dx * dx + dy * dy) + 0.001;
+      const a = Math.atan2(dy, dx);
+      const prism = Math.abs(Math.sin(a * (3 + shape * 8) + t * (.12 + speed)));
+      const notes = Math.sin(r * (24 + scale * 50) - t * (1 + speed * 4)) * .5 + .5;
+      return clamp01(Math.exp(-Math.abs(prism - notes) * (4 + intensity * 10)) * .75 + notes * .18);
+    }
     default:
       return shaderNebula(x, y, t, scale, speed, shape, intensity);
   }
@@ -136,7 +253,37 @@ function paramsFor(name) {
     shader_digital_rain: ["Scale", "Speed", "Columns", "Glow"],
     shader_helix_drive: ["Scale", "Speed", "Helix", "Depth"],
     shader_sonic_spikes: ["Scale", "Speed", "Spikes", "Bass"],
-    shader_hologram_grid: ["Scale", "Speed", "Grid", "Scan"]
+    shader_hologram_grid: ["Scale", "Speed", "Grid", "Scan"],
+    shader_polyrhythm_orbit: ["Scale", "Speed", "Voices", "Punch"],
+    shader_harmonic_spiral: ["Scale", "Speed", "Tension", "Glow"],
+    shader_fractal_chorus: ["Scale", "Speed", "Fold", "Depth"],
+    shader_breakbeat_prism: ["Scale", "Speed", "Slices", "Strobe"],
+    shader_liquid_chords: ["Scale", "Speed", "Chords", "Shine"],
+    shader_syncopated_cells: ["Scale", "Speed", "Steps", "Accent"],
+    shader_bass_choir: ["Scale", "Speed", "Voices", "Resonance"],
+    shader_melodic_smoke: ["Scale", "Speed", "Flow", "Density"],
+    shader_euclidean_stars: ["Scale", "Speed", "Orbits", "Sparkle"],
+    shader_echo_cathedral: ["Scale", "Speed", "Arches", "Light"]
+    ,shader_melodic_constellation: ["Scale", "Speed", "Drift", "Glow"]
+    ,shader_polyrhythm_ribbons: ["Scale", "Speed", "Voices", "Color"]
+    ,shader_chordal_bloom: ["Scale", "Speed", "Release", "Saturation"]
+    ,shader_golden_arpeggio: ["Scale", "Speed", "Swing", "Warmth"]
+    ,shader_synthwave_tides: ["Scale", "Speed", "Tide", "Neon"]
+    ,shader_echo_chimes: ["Scale", "Speed", "Echo", "Air"]
+    ,shader_broken_beat_orbits: ["Scale", "Speed", "Swing", "Punch"]
+    ,shader_harmonic_veil: ["Scale", "Speed", "Fold", "Light"]
+    ,shader_luminous_counterpoint: ["Scale", "Speed", "Cross", "Glow"]
+    ,shader_dream_sequence: ["Scale", "Speed", "Depth", "Color"]
+    ,shader_harmonic_radar: ["Scale", "Speed", "Sweep", "Echo"]
+    ,shader_kick_mandala: ["Scale", "Speed", "Spokes", "Punch"]
+    ,shader_resonant_mesh: ["Scale", "Speed", "Nodes", "Resonance"]
+    ,shader_offbeat_orbits: ["Scale", "Speed", "Swing", "Accent"]
+    ,shader_spectral_bloom: ["Scale", "Speed", "Bands", "Bloom"]
+    ,shader_subbass_waves: ["Scale", "Speed", "Depth", "Pressure"]
+    ,shader_polymeter_spiral: ["Scale", "Speed", "Voices", "Twist"]
+    ,shader_chord_rain: ["Scale", "Speed", "Notes", "Release"]
+    ,shader_glitch_sync: ["Scale", "Speed", "Cut", "Jitter"]
+    ,shader_melodic_prism: ["Scale", "Speed", "Prisms", "Glow"]
   }[slug(name)] || PARAMS;
 }
 
@@ -1067,6 +1214,242 @@ const GPU_ANIMS = {
   }
 };
 
+// STEP38W: ten original Shadertoy-style musical fields. Each shader uses
+// incommensurate phase speeds and layered interference so long performances
+// evolve instead of falling into a short repeating loop.
+Object.assign(GPU_ANIMS, {
+  shader_polyrhythm_orbit: { functionName: "gpuShaderPolyrhythmOrbit", code: `
+    float gpuShaderPolyrhythmOrbit(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - 0.5; float r = length(q); float a = atan(q.y, q.x);
+      float voices = 3.0 + floor(p.z * 7.0); float v = 0.0;
+      for (int i = 0; i < 10; i++) {
+        if (float(i) >= voices) break;
+        float fi = float(i) + 1.0;
+        float ph = t * (0.19 + p.y * 1.4) * (1.0 + fi * 0.137) + fi * 2.399;
+        vec2 c = vec2(cos(ph) * (0.12 + p.x * 0.3), sin(ph * 1.17) * (0.1 + p.x * 0.24));
+        v += exp(-length(q - c) * (24.0 - p.w * 12.0)) / fi;
+      }
+      float ring = 0.5 + 0.5 * sin(r * (18.0 + p.x * 50.0) - t * (0.8 + p.y * 3.0) + a * (3.0 + p.z * 8.0));
+      return clamp(v * (0.6 + p.w) + ring * 0.18, 0.0, 1.0);
+    }
+  `},
+  shader_harmonic_spiral: { functionName: "gpuShaderHarmonicSpiral", code: `
+    float gpuShaderHarmonicSpiral(vec2 uv, float t, vec4 p) {
+      vec2 q = (uv - 0.5) * (1.5 + p.x * 4.0); float r = length(q) + 0.002; float a = atan(q.y, q.x);
+      float f = sin(a * (3.0 + p.z * 9.0) + log(r) * (5.0 + p.x * 12.0) - t * (0.2 + p.y * 1.8));
+      float overtone = sin(a * 7.0 - log(r) * 9.0 + t * (0.13 + p.y * 1.1));
+      float shell = exp(-r * (1.0 + p.w * 3.0)) * (0.5 + 0.5 * f);
+      return clamp(shell + abs(overtone) * 0.18 + exp(-r * 14.0) * p.w * 0.45, 0.0, 1.0);
+    }
+  `},
+  shader_fractal_chorus: { functionName: "gpuShaderFractalChorus", code: `
+    float gpuShaderFractalChorus(vec2 uv, float t, vec4 p) {
+      vec2 q = (uv - 0.5) * (1.1 + p.x * 3.0); float value = 0.0; float amp = 0.55;
+      for (int i = 0; i < 5; i++) {
+        q = abs(q) - vec2(0.27 + p.z * 0.13, 0.19 + p.w * 0.11);
+        float c = cos(t * (0.12 + p.y * 0.7) + float(i) * 0.73); float s = sin(t * (0.09 + p.y * 0.53) + float(i) * 0.41);
+        q = mat2(c, -s, s, c) * q;
+        value += amp * exp(-abs(q.x + q.y * (0.7 + p.z)) * (7.0 + p.w * 18.0)); amp *= 0.55;
+      }
+      return clamp(value, 0.0, 1.0);
+    }
+  `},
+  shader_breakbeat_prism: { functionName: "gpuShaderBreakbeatPrism", code: `
+    float gpuShaderBreakbeatPrism(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - 0.5; float r = length(q) + 0.001; float a = atan(q.y, q.x);
+      float slices = 5.0 + floor(p.z * 17.0); float cell = floor((a / TAU + 0.5) * slices);
+      float gate = step(0.5, fract(cell * 0.618 + floor(t * (1.0 + p.y * 6.0)) * 0.37));
+      float beam = pow(max(0.0, cos(a * slices - t * (0.4 + p.y * 4.0))), 12.0 - p.w * 8.0);
+      float prism = 0.5 + 0.5 * sin(r * (15.0 + p.x * 60.0) + cell * 1.7 - t * 2.4);
+      return clamp((beam * (0.45 + gate * 0.9) + prism * 0.18) * (0.55 + p.w * 0.7), 0.0, 1.0);
+    }
+  `},
+  shader_liquid_chords: { functionName: "gpuShaderLiquidChords", code: `
+    float gpuShaderLiquidChords(vec2 uv, float t, vec4 p) {
+      vec2 q = (uv - 0.5) * (2.0 + p.x * 5.0); float v = 0.0;
+      for (int i = 0; i < 4; i++) {
+        float fi = float(i); float phase = t * (0.17 + p.y * 0.9) * (1.0 + fi * 0.071) + fi * 1.91;
+        v += sin(q.x * (2.0 + fi * 1.7 + p.z * 5.0) + sin(q.y * 2.3 + phase) * 2.0 + phase) / (fi + 1.0);
+        q = mat2(0.92, -0.38, 0.38, 0.92) * q;
+      }
+      return clamp(0.5 + v * (0.09 + p.w * 0.11) + exp(-dot(q, q) * 1.7) * 0.25, 0.0, 1.0);
+    }
+  `},
+  shader_syncopated_cells: { functionName: "gpuShaderSyncopatedCells", code: `
+    float gpuShaderSyncopatedCells(vec2 uv, float t, vec4 p) {
+      vec2 grid = floor(uv * vec2(5.0 + p.x * 18.0, 3.0 + p.z * 12.0)); vec2 f = fract(uv * vec2(5.0 + p.x * 18.0, 3.0 + p.z * 12.0)) - 0.5;
+      float seed = hash21(grid + 4.7); float pulse = 0.5 + 0.5 * sin(t * (1.1 + p.y * 7.0) * (1.0 + floor(seed * 5.0) * 0.173) + seed * 20.0);
+      float accent = step(0.62, fract(seed * 3.1 + floor(t * (1.3 + p.y * 4.0)) * 0.23));
+      float cell = smoothstep(0.5, 0.05 + p.w * 0.45, length(f));
+      return clamp(cell * (0.18 + pulse * (0.45 + accent * p.w)), 0.0, 1.0);
+    }
+  `},
+  shader_bass_choir: { functionName: "gpuShaderBassChoir", code: `
+    float gpuShaderBassChoir(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - 0.5; float r = length(q); float v = 0.0;
+      for (int i = 0; i < 7; i++) {
+        float fi = float(i); float harmonic = 1.0 + fi * (0.73 + p.z * 0.31);
+        float phase = t * (0.12 + p.y * 1.1) * harmonic + fi * 0.91;
+        float ring = sin(r * (8.0 + harmonic * (6.0 + p.x * 20.0)) - phase);
+        v += exp(-abs(ring) * (4.0 + p.w * 14.0)) / (1.0 + fi * 0.7);
+      }
+      float sub = pow(max(0.0, sin(t * (0.8 + p.y * 2.7))), 3.0 + p.w * 5.0);
+      return clamp(v * 0.11 + sub * exp(-r * (2.0 + p.w * 5.0)), 0.0, 1.0);
+    }
+  `},
+  shader_melodic_smoke: { functionName: "gpuShaderMelodicSmoke", code: `
+    float gpuShaderMelodicSmoke(vec2 uv, float t, vec4 p) {
+      vec2 q = (uv - 0.5) * (1.5 + p.x * 4.0); float spd = 0.08 + p.y * 0.8;
+      vec2 warp = vec2(fbm(q * 1.7 + vec2(t * spd, -t * spd * 0.61)), fbm(q * 2.1 - vec2(t * spd * 0.47, t * spd))) - 0.5;
+      q += warp * (0.5 + p.z * 1.8); float cloud = fbm(q * (2.2 + p.w * 2.0) + t * spd * 0.37);
+      float filament = 0.5 + 0.5 * sin(q.x * 7.0 + sin(q.y * 4.0 + t * spd) * 3.0 - t * spd * 2.3);
+      return clamp(pow(cloud, 0.8) * 0.8 + filament * exp(-length(q) * 1.8) * 0.35, 0.0, 1.0);
+    }
+  `},
+  shader_euclidean_stars: { functionName: "gpuShaderEuclideanStars", code: `
+    float gpuShaderEuclideanStars(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - 0.5; float r = length(q) + 0.001; float a = atan(q.y, q.x); float v = 0.0;
+      float count = 4.0 + floor(p.z * 9.0);
+      for (int i = 0; i < 12; i++) {
+        if (float(i) >= count) break;
+        float fi = float(i); float orbit = fract(fi * 0.618 + t * (0.025 + p.y * 0.21) * (1.0 + fi * 0.09));
+        float target = abs(fract(a / TAU + 0.5 + fi / count) - 0.5) * 2.0;
+        v += exp(-abs(target - orbit) * (20.0 + p.w * 80.0)) * exp(-abs(r - (0.13 + orbit * 0.36)) * 55.0);
+      }
+      return clamp(v * (0.32 + p.w * 0.9) + exp(-r * 18.0) * 0.12, 0.0, 1.0);
+    }
+  `},
+  shader_echo_cathedral: { functionName: "gpuShaderEchoCathedral", code: `
+    float gpuShaderEchoCathedral(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - 0.5; float spd = 0.15 + p.y * 1.1; float v = 0.0;
+      for (int i = 0; i < 6; i++) {
+        float fi = float(i); float arch = 0.5 + 0.5 * sin(q.x * (3.0 + fi * 1.7 + p.x * 12.0) + t * spd * (1.0 + fi * 0.113) + fi * 1.37);
+        float ceiling = abs(q.y + 0.25 * arch * sin(q.x * (2.0 + fi) + fi));
+        v += smoothstep(0.16, 0.0, ceiling) * (0.7 / (fi + 1.0));
+      }
+      float ray = pow(max(0.0, cos(atan(q.y, q.x) * (2.0 + p.z * 7.0) - t * spd)), 5.0 + p.w * 8.0);
+      return clamp(v + ray * (0.18 + p.w * 0.55) + exp(-length(q) * 5.0) * 0.12, 0.0, 1.0);
+    }
+  `}
+});
+
+// GPU counterparts for the original musical modules. Keeping these in the
+// same catalog makes selector thumbnails and Shader Big use one GPU source.
+Object.assign(GPU_ANIMS, {
+  shader_melodic_constellation: { functionName: "gpuShaderMelodicConstellation", code: `
+    float gpuShaderMelodicConstellation(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - 0.5; float v = 0.0; float count = 4.0 + floor(p.x * 7.0);
+      for (int i = 0; i < 12; i++) { if (float(i) >= count) break; float fi = float(i); float ph = t * (0.11 + p.y * 0.7) * (1.0 + fi * 0.071) + fi * 2.37; vec2 c = vec2(sin(ph * 1.03 + fi) * (.16 + p.z * .3), cos(ph * 1.11) * (.13 + p.z * .24)); v += exp(-length(q - c) * (22.0 + p.w * 18.0)) / (fi + 1.0); }
+      return clamp(v * (0.7 + p.w) + exp(-length(q) * 8.0) * .12, 0.0, 1.0);
+    }
+  `},
+  shader_polyrhythm_ribbons: { functionName: "gpuShaderPolyrhythmRibbons", code: `
+    float gpuShaderPolyrhythmRibbons(vec2 uv, float t, vec4 p) {
+      float v = 0.0; float voices = 2.0 + floor(p.x * 6.0); float spd = .17 + p.y * 1.2;
+      for (int i = 1; i < 9; i++) { if (float(i) > voices) break; float fi = float(i); float line = .5 + sin(uv.x * (2.0 + fi * 1.37) + t * spd * (1.0 + fi * .113) + sin(t * .31 + fi) * .7) * (.08 + p.z * .18); v += exp(-abs(uv.y - line) / (.018 + p.z * .11)) / fi; }
+      return clamp(v * (.28 + p.w * .55), 0.0, 1.0);
+    }
+  `},
+  shader_chordal_bloom: { functionName: "gpuShaderChordalBloom", code: `
+    float gpuShaderChordalBloom(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - .5; float v = 0.0;
+      for (int i = 0; i < 5; i++) { float fi = float(i); float ph = t * (.13 + p.y * .72) * (1.0 + fi * .19) + fi * 2.09; vec2 c = vec2(cos(ph) * (.12 + p.x * .25), sin(ph * 1.23) * (.12 + p.z * .23)); v += exp(-length(q - c) * (18.0 + p.w * 22.0)) / (fi + 1.0); }
+      return clamp(v * .7 + exp(-length(q) * 5.0) * .16, 0.0, 1.0);
+    }
+  `},
+  shader_golden_arpeggio: { functionName: "gpuShaderGoldenArpeggio", code: `
+    float gpuShaderGoldenArpeggio(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - .5; float spd = .16 + p.y * 1.15; float v = 0.0;
+      for (int i = 0; i < 7; i++) { float fi = float(i); float phase = t * spd * (1.0 + fi * .137) + fi * 1.618; float line = sin(q.x * (4.0 + p.x * 18.0) + phase) * (.12 + p.z * .2); v += exp(-abs(q.y - line - fi * .025 + .12) * (28.0 + p.w * 28.0)) / (fi + 1.0); }
+      return clamp(v * (.25 + p.w * .65), 0.0, 1.0);
+    }
+  `},
+  shader_synthwave_tides: { functionName: "gpuShaderSynthwaveTides", code: `
+    float gpuShaderSynthwaveTides(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - .5; float spd = .1 + p.y * .8; float tide = sin(q.x * (3.0 + p.x * 14.0) + t * spd) * (.08 + p.z * .26); float band = sin((q.y + tide) * (10.0 + p.x * 35.0) - t * spd * 2.7); float horizon = exp(-abs(q.y + .1 - tide) * (3.0 + p.w * 9.0)); return clamp(band * .22 + .38 + horizon * (.25 + p.w * .6), 0.0, 1.0);
+    }
+  `},
+  shader_echo_chimes: { functionName: "gpuShaderEchoChimes", code: `
+    float gpuShaderEchoChimes(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - .5; float v = 0.0;
+      for (int i = 0; i < 8; i++) { float fi = float(i); float ph = t * (.09 + p.y * .6) * (1.0 + fi * .17) + fi * 2.51; vec2 c = vec2(sin(ph) * (.18 + p.x * .26), cos(ph * 1.41) * (.18 + p.z * .2)); v += exp(-length(q - c) * (30.0 + p.w * 35.0)) / (fi + 1.0); }
+      return clamp(v * (.45 + p.w * .8), 0.0, 1.0);
+    }
+  `},
+  shader_broken_beat_orbits: { functionName: "gpuShaderBrokenBeatOrbits", code: `
+    float gpuShaderBrokenBeatOrbits(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - .5; float v = 0.0; float count = 3.0 + floor(p.x * 6.0);
+      for (int i = 0; i < 10; i++) { if (float(i) >= count) break; float fi = float(i); float ph = t * (.21 + p.y * 1.3) * (1.0 + fi * .083) + fi * 2.4 + sin(t * .37 + fi) * p.z; vec2 c = vec2(cos(ph) * (.15 + p.x * .3), sin(ph * 1.29) * (.12 + p.w * .24)); v += exp(-length(q - c) * (22.0 + p.w * 20.0)); }
+      return clamp(v * .18, 0.0, 1.0);
+    }
+  `},
+  shader_harmonic_veil: { functionName: "gpuShaderHarmonicVeil", code: `
+    float gpuShaderHarmonicVeil(vec2 uv, float t, vec4 p) {
+      float v = 0.0; for (int i = 1; i < 8; i++) { float fi = float(i); float phase = t * (.08 + p.y * .65) * (1.0 + fi * .117) + fi * 1.43; float line = .5 + sin(uv.x * (2.0 + fi * 1.4 + p.x * 8.0) + phase) * (.05 + p.z * .2); v += exp(-abs(uv.y - line) * (18.0 + p.w * 30.0)) / fi; } return clamp(v * .24, 0.0, 1.0);
+    }
+  `},
+  shader_luminous_counterpoint: { functionName: "gpuShaderLuminousCounterpoint", code: `
+    float gpuShaderLuminousCounterpoint(vec2 uv, float t, vec4 p) {
+      float a = .5 + sin(uv.x * (3.0 + p.x * 12.0) + t * (.14 + p.y)) * (.1 + p.z * .25); float b = .5 + cos(uv.x * (4.0 + p.x * 15.0) - t * (.11 + p.y * .8)) * (.08 + p.z * .2); float v = exp(-abs(uv.y - a) * (22.0 + p.w * 34.0)) + exp(-abs(uv.y - b) * (22.0 + p.w * 34.0)); return clamp(v * .55, 0.0, 1.0);
+    }
+  `},
+  shader_dream_sequence: { functionName: "gpuShaderDreamSequence", code: `
+    float gpuShaderDreamSequence(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - .5; float drift = t * (.06 + p.y * .45); float cloud = fbm(q * (2.0 + p.x * 3.0) + vec2(drift, -drift * .7)); float motif = .5 + .5 * sin(q.x * (4.0 + p.z * 13.0) + sin(q.y * 5.0 + drift) * 2.0 - drift * 2.0); return clamp(cloud * (.5 + p.w * .45) + motif * .18 + exp(-length(q) * 4.0) * .22, 0.0, 1.0);
+    }
+  `}
+});
+
+Object.assign(GPU_ANIMS, {
+  shader_harmonic_radar: { functionName: "gpuShaderHarmonicRadar", code: `
+    float gpuShaderHarmonicRadar(vec2 uv, float t, vec4 p) { vec2 q = uv - .5; float a = atan(q.y, q.x); float r = length(q); float sweep = sin(a * (3.0 + p.x * 8.0) - t * (.2 + p.y * 2.0)); float ring = sin(r * (18.0 + p.z * 50.0) - t * 2.0); return clamp(.35 + sweep * .25 + ring * .2 + exp(-abs(sweep - ring) * (3.0 + p.w * 9.0)) * .5, 0.0, 1.0); }
+  `},
+  shader_kick_mandala: { functionName: "gpuShaderKickMandala", code: `
+    float gpuShaderKickMandala(vec2 uv, float t, vec4 p) { vec2 q = uv - .5; float r = length(q); float a = atan(q.y, q.x); float kick = pow(max(0.0, sin(t * (1.0 + p.y * 5.0))), 5.0 + p.w * 8.0); float spokes = abs(sin(a * (4.0 + p.z * 18.0) + t * 1.2)); return clamp(exp(-r * (3.0 + kick * 12.0)) * (.35 + kick) + spokes * .2, 0.0, 1.0); }
+  `},
+  shader_resonant_mesh: { functionName: "gpuShaderResonantMesh", code: `
+    float gpuShaderResonantMesh(vec2 uv, float t, vec4 p) { vec2 q = uv * (4.0 + p.x * 12.0); float a = sin(q.x + sin(q.y * (2.0 + p.z * 5.0) + t * (0.2 + p.y))); float b = cos(q.y + cos(q.x * 1.7 - t * (0.25 + p.y * .8))); float resonance = .5 + .5 * sin((a + b) * (4.0 + p.w * 12.0) + t); return clamp(resonance * .55 + abs(a * b) * .45, 0.0, 1.0); }
+  `},
+  shader_offbeat_orbits: { functionName: "gpuShaderOffbeatOrbits", code: `
+    float gpuShaderOffbeatOrbits(vec2 uv, float t, vec4 p) { vec2 q = uv - .5; float v = 0.0; for (int i = 0; i < 7; i++) { float fi = float(i); float ph = t * (.17 + p.y * 1.4) * (1.0 + mod(fi, 3.0) * .13) + fi * 2.17 + sin(t * .31 + fi) * p.z; vec2 c = vec2(cos(ph) * (.12 + p.x * .3), sin(ph * 1.37) * (.1 + p.w * .25)); v += exp(-length(q - c) * (24.0 + p.w * 20.0)) / (fi + 1.0); } return clamp(v * 1.6, 0.0, 1.0); }
+  `},
+  shader_spectral_bloom: { functionName: "gpuShaderSpectralBloom", code: `
+    float gpuShaderSpectralBloom(vec2 uv, float t, vec4 p) { vec2 q = uv - .5; float v = 0.0; for (int i = 1; i < 6; i++) { float fi = float(i); float wave = sin(q.x * (3.0 + fi * (2.0 + p.x * 4.0)) + t * (.2 + p.y * fi)); v += exp(-abs(q.y - wave * (.08 + p.z * .18)) * (15.0 + p.w * 28.0)) / fi; } return clamp(v * (.35 + p.w * .55), 0.0, 1.0); }
+  `},
+  shader_subbass_waves: { functionName: "gpuShaderSubbassWaves", code: `
+    float gpuShaderSubbassWaves(vec2 uv, float t, vec4 p) { vec2 q = uv - .5; float spd = .08 + p.y * .8; float wave = sin(q.y * (8.0 + p.x * 35.0) + sin(q.x * 4.0 + t * spd) * (3.0 + p.z * 8.0) - t * spd * 5.0); float pressure = pow(max(0.0, sin(t * spd * 2.1)), 3.0 + p.w * 6.0); return clamp(wave * .25 + .42 + pressure * exp(-length(q) * 3.0) * .7, 0.0, 1.0); }
+  `},
+  shader_polymeter_spiral: { functionName: "gpuShaderPolymeterSpiral", code: `
+    float gpuShaderPolymeterSpiral(vec2 uv, float t, vec4 p) { vec2 q = uv - .5; float r = length(q); float a = atan(q.y, q.x); float s = sin(a * (3.0 + p.z * 9.0) + r * (18.0 + p.x * 45.0) - t * (.3 + p.y * 2.0)); float m = cos(a * (5.0 + p.w * 11.0) - r * 22.0 + t * (.17 + p.y)); return clamp(s * m * .35 + .5 + exp(-r * 4.0) * .25, 0.0, 1.0); }
+  `},
+  shader_chord_rain: { functionName: "gpuShaderChordRain", code: `
+    float gpuShaderChordRain(vec2 uv, float t, vec4 p) { float v = 0.0; for (int i = 0; i < 6; i++) { float fi = float(i); float x = fract(fi * .173 + t * (.04 + p.y * .35) * (1.0 + mod(fi, 3.0) * .17)); float y = fract(fi * .317 - t * (.06 + p.y * .42)); float d = length(uv - vec2(x, y)); v += exp(-d * (35.0 + p.w * 45.0)) * (.5 + .5 * sin(t * (1.0 + p.z * 3.0) + fi)); } return clamp(v * (.7 + p.x), 0.0, 1.0); }
+  `},
+  shader_glitch_sync: { functionName: "gpuShaderGlitchSync", code: `
+    float gpuShaderGlitchSync(vec2 uv, float t, vec4 p) { float slices = 5.0 + p.x * 24.0; float row = floor(uv.y * slices); float jitter = sin(row * 12.7 + floor(t * (2.0 + p.y * 8.0))) * p.w * .08; float scan = sin((uv.x + jitter) * (18.0 + p.z * 80.0) + t * 2.0); float gate = step(.35, sin(t * (3.0 + p.y * 9.0) + row * 1.7) * .5 + .5); return clamp((scan * .5 + .5) * (.25 + gate * .75), 0.0, 1.0); }
+  `},
+  shader_melodic_prism: { functionName: "gpuShaderMelodicPrism", code: `
+    float gpuShaderMelodicPrism(vec2 uv, float t, vec4 p) { vec2 q = uv - .5; float a = atan(q.y, q.x); float r = length(q); float prism = abs(sin(a * (3.0 + p.z * 8.0) + t * (.12 + p.y))); float notes = .5 + .5 * sin(r * (24.0 + p.x * 50.0) - t * (1.0 + p.y * 4.0)); float glow = exp(-abs(prism - notes) * (4.0 + p.w * 10.0)); return clamp(glow * .75 + notes * .18, 0.0, 1.0); }
+  `}
+});
+
+Object.assign(GPU_ANIMS, {
+  bass_pressure: { functionName: "gpuShaderBassPressure", code: `
+    float gpuShaderBassPressure(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - .5; float r = length(q); float kick = pow(max(0.0, sin(t * (.8 + p.y * 3.2))), 3.0 + p.z * 6.0); float wave = .5 + .5 * sin(r * (16.0 + p.x * 52.0) - t * (1.0 + p.y * 4.0)); return clamp(wave * (.25 + p.w * .45) + kick * exp(-r * (2.0 + p.w * 7.0)), 0.0, 1.0);
+    }
+  `},
+  kick_vortex: { functionName: "gpuShaderKickVortex", code: `
+    float gpuShaderKickVortex(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - .5; float r = length(q) + .001; float a = atan(q.y, q.x); float kick = pow(max(0.0, sin(t * (1.2 + p.y * 4.0))), 4.0 + p.w * 5.0); float swirl = .5 + .5 * sin(a * (4.0 + p.z * 12.0) + r * (9.0 + p.x * 30.0) - t * (1.0 + kick * 5.0)); return clamp(swirl * (.3 + kick * (.45 + p.w * .5)), 0.0, 1.0);
+    }
+  `},
+  spectrum_tunnel: { functionName: "gpuShaderSpectrumTunnel", code: `
+    float gpuShaderSpectrumTunnel(vec2 uv, float t, vec4 p) {
+      vec2 q = uv - .5; float r = length(q) + .002; float a = atan(q.y, q.x); float tunnel = .5 + .5 * sin((.7 + p.x * 3.5) / r + a * (2.0 + p.z * 9.0) + t * (1.0 + p.y * 4.0)); float bands = .5 + .5 * sin((q.x + q.y) * (14.0 + p.w * 55.0) - t * (1.0 + p.y * 3.0)); return clamp(tunnel * .68 + bands * .32, 0.0, 1.0);
+    }
+  `}
+});
 
 function shaderProcedural(name, x, y, t, scale, speed, shape, intensity) {
   const dx = (x - 0.5) * (1.2 + scale * 5.5);
@@ -1167,6 +1550,26 @@ function shaderProcedural(name, x, y, t, scale, speed, shape, intensity) {
     case "shader_helix_drive": return clamp01(Math.abs(Math.sin(Math.atan2(dy, dx) * (3 + shape * 10) + 1 / (r + 0.02) - t * spd)) * Math.exp(-r * 2));
     case "shader_sonic_spikes": return clamp01(Math.pow(Math.max(0, Math.sin(Math.atan2(dy, dx) * (8 + shape * 28) + t * spd)), 2 + intensity * 6) * (1 - r));
     case "shader_hologram_grid": return clamp01(Math.max(Math.abs(Math.sin(x * (10 + scale * 40))), Math.abs(Math.sin(y * (8 + shape * 30)))) * (0.35 + intensity * 0.65));
+    case "shader_polyrhythm_orbit": return clamp01(Math.sin(Math.atan2(dy, dx) * (4 + shape * 12) + t * spd) * 0.35 + 0.45 + Math.exp(-r * (5 + intensity * 8)) * 0.4);
+    case "shader_harmonic_spiral": return clamp01(Math.sin(a * (3 + shape * 9) + Math.log(r) * (4 + scale * 12) - t * spd) * 0.4 + 0.5);
+    case "shader_fractal_chorus": { let qx = dx, qy = dy, v = 0; for (let i = 0; i < 4; i++) { qx = Math.abs(qx) - (0.25 + shape * 0.1); qy = Math.abs(qy) - (0.2 + intensity * 0.1); const c = Math.cos(t * spd * 0.15 + i), s = Math.sin(t * spd * 0.15 + i); const nx = qx * c - qy * s; qy = qx * s + qy * c; qx = nx; v += Math.exp(-Math.abs(qx + qy) * 8) / (i + 1); } return clamp01(v * 0.45); }
+    case "shader_breakbeat_prism": return clamp01(Math.pow(Math.max(0, Math.cos(a * (5 + shape * 16) - t * spd)), 8) * (0.45 + intensity * 0.55) + Math.sin(r * 20 - t * spd * 2) * 0.12 + 0.12);
+    case "shader_liquid_chords": return clamp01(0.5 + (Math.sin(dx * (3 + scale * 12) + Math.sin(dy * 4 + t * spd) * 2) + Math.cos(dy * (5 + shape * 15) - t * spd * 0.7)) * (0.12 + intensity * 0.12));
+    case "shader_syncopated_cells": return clamp01((0.5 + 0.5 * Math.sin(Math.floor(x * (5 + scale * 18)) * 1.7 + Math.floor(y * (3 + shape * 12)) * 2.3 + Math.floor(t * (2 + speed * 8)))) * (0.3 + intensity * 0.7));
+    case "shader_bass_choir": return clamp01(Math.pow(Math.max(0, Math.sin(t * spd * 1.7)), 2 + intensity * 5) * Math.exp(-r * (2 + scale * 5)) + Math.abs(Math.sin(r * (14 + shape * 36) - t * spd * 2)) * 0.25);
+    case "shader_melodic_smoke": return clamp01(0.45 + 0.28 * Math.sin(dx * 4 + Math.sin(dy * 3 + t * spd) * 2 - t * spd) + 0.2 * Math.sin(dy * 9 - t * spd * 0.47));
+    case "shader_euclidean_stars": return clamp01(Math.pow(Math.max(0, Math.sin(a * (5 + shape * 14) + r * (18 + scale * 40) - t * spd)), 5 + intensity * 8) * (1 - r * 0.7));
+    case "shader_echo_cathedral": return clamp01(Math.max(0, Math.sin(x * (4 + scale * 14) + Math.sin(y * 5 + t * spd) * 2)) * 0.45 + Math.exp(-Math.abs(y - 0.5) * (3 + intensity * 10)) * 0.35);
+    case "shader_melodic_constellation": return clamp01(Math.exp(-r * (3 + intensity * 7)) * (0.4 + 0.6 * Math.sin(a * (4 + shape * 8) + t * spd) * 0.5 + 0.3));
+    case "shader_polyrhythm_ribbons": return clamp01(0.5 + 0.4 * Math.sin(y * (8 + scale * 25) + Math.sin(x * 5 + t * spd) * 2 - t * spd * 1.3));
+    case "shader_chordal_bloom": return clamp01(Math.exp(-r * (4 + intensity * 8)) * (0.5 + 0.5 * Math.sin(a * (3 + shape * 7) + t * spd)));
+    case "shader_golden_arpeggio": return clamp01(Math.pow(Math.max(0, Math.sin((x + y) * (8 + scale * 24) - t * spd * 2)), 2 + intensity * 4));
+    case "shader_synthwave_tides": return clamp01(0.45 + 0.28 * Math.sin((y + Math.sin(x * 4 + t * spd) * (0.08 + shape * 0.2)) * (12 + scale * 35) - t * spd * 1.7));
+    case "shader_echo_chimes": return clamp01(Math.exp(-Math.abs(Math.sin(a * (4 + shape * 8) + r * 12 - t * spd)) * (8 + intensity * 15)) * 0.8);
+    case "shader_broken_beat_orbits": return clamp01(Math.abs(Math.sin(a * (4 + shape * 8) + r * (12 + scale * 35) - t * spd * 1.7)) * 0.6);
+    case "shader_harmonic_veil": return clamp01(0.45 + 0.35 * Math.sin(y * (7 + scale * 22) + Math.sin(x * 3 + t * spd) * 2));
+    case "shader_luminous_counterpoint": return clamp01(Math.max(Math.exp(-Math.abs(y - (0.5 + Math.sin(x * 5 + t * spd) * 0.2)) * 18), Math.exp(-Math.abs(y - (0.5 + Math.cos(x * 4 - t * spd) * 0.18)) * 18)));
+    case "shader_dream_sequence": return clamp01(0.5 + 0.2 * Math.sin(dx * 4 + t * spd) + 0.2 * Math.cos(dy * 5 - t * spd * 0.7) + Math.exp(-r * 4) * 0.2);
     default: return shaderNebula(x, y, t, scale, speed, shape, intensity);
   }
 }

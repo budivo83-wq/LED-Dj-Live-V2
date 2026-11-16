@@ -348,6 +348,194 @@
     {
       "id": "builtin:shader_bloom_pulse", "name": "Bloom Pulse", "description": "Soft rhythmic radial bloom.",
       "file": "shader_bloom_pulse.js", "source": "l1_anims/shader_bloom_pulse.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "beat"], "order": 39, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_polyrhythm_orbit", "name": "Polyrhythm Orbit", "description": "Interlocking orbital voices with evolving polyrhythmic motion.",
+      "file": "shader_polyrhythm_orbit.js", "source": "l1_anims/shader_polyrhythm_orbit.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "beat"], "order": 40, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_harmonic_spiral", "name": "Harmonic Spiral", "description": "Nested harmonic spiral with shifting overtones.",
+      "file": "shader_harmonic_spiral.js", "source": "l1_anims/shader_harmonic_spiral.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "melodic"], "order": 41, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_fractal_chorus", "name": "Fractal Chorus", "description": "Layered folded geometry that drifts like a harmonic chorus.",
+      "file": "shader_fractal_chorus.js", "source": "l1_anims/shader_fractal_chorus.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "fractal"], "order": 42, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_breakbeat_prism", "name": "Breakbeat Prism", "description": "Angular prism slices with syncopated strobe accents.",
+      "file": "shader_breakbeat_prism.js", "source": "l1_anims/shader_breakbeat_prism.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "beat"], "order": 43, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_liquid_chords", "name": "Liquid Chords", "description": "Interfering fluid waves shaped like moving chords.",
+      "file": "shader_liquid_chords.js", "source": "l1_anims/shader_liquid_chords.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "melodic"], "order": 44, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_syncopated_cells", "name": "Syncopated Cells", "description": "Procedural cells with staggered accents and independent pulses.",
+      "file": "shader_syncopated_cells.js", "source": "l1_anims/shader_syncopated_cells.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "beat"], "order": 45, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_bass_choir", "name": "Bass Choir", "description": "Layered resonant rings driven by low-frequency pressure.",
+      "file": "shader_bass_choir.js", "source": "l1_anims/shader_bass_choir.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "bass"], "order": 46, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_melodic_smoke", "name": "Melodic Smoke", "description": "Flowing noise filaments with slow melodic drift.",
+      "file": "shader_melodic_smoke.js", "source": "l1_anims/shader_melodic_smoke.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "melodic"], "order": 47, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_euclidean_stars", "name": "Euclidean Stars", "description": "Orbital sparks distributed in evolving Euclidean rhythms.",
+      "file": "shader_euclidean_stars.js", "source": "l1_anims/shader_euclidean_stars.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "beat"], "order": 48, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_echo_cathedral", "name": "Echo Cathedral", "description": "Architectural arches and resonant light rays.",
+      "file": "shader_echo_cathedral.js", "source": "l1_anims/shader_echo_cathedral.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "ambient"], "order": 49, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_melodic_constellation", "name": "Melodic Constellation", "description": "Slow constellation phrases with drifting harmonic stars.",
+      "file": "shader_melodic_constellation.js", "source": "l1_anims/shader_melodic_constellation.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "musical", "melodic"], "order": 50, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_polyrhythm_ribbons", "name": "Polyrhythm Ribbons", "description": "Interlocking ribbons with nonrepeating polyrhythmic motion.",
+      "file": "shader_polyrhythm_ribbons.js", "source": "l1_anims/shader_polyrhythm_ribbons.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "musical", "beat"], "order": 51, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_chordal_bloom", "name": "Chordal Bloom", "description": "Three-note chord blooms that breathe in overlapping phrases.",
+      "file": "shader_chordal_bloom.js", "source": "l1_anims/shader_chordal_bloom.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "musical", "melodic"], "order": 52, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_golden_arpeggio", "name": "Golden Arpeggio", "description": "Golden diagonal arpeggios with evolving syncopation.",
+      "file": "shader_golden_arpeggio.js", "source": "l1_anims/shader_golden_arpeggio.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "musical", "beat"], "order": 53, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_synthwave_tides", "name": "Synthwave Tides", "description": "Layered synth tides with gentle phase drift.",
+      "file": "shader_synthwave_tides.js", "source": "l1_anims/shader_synthwave_tides.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "musical"], "order": 54, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_echo_chimes", "name": "Echo Chimes", "description": "Bell-like echoes crossing a slowly shifting room.",
+      "file": "shader_echo_chimes.js", "source": "l1_anims/shader_echo_chimes.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "musical", "ambient"], "order": 55, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_broken_beat_orbits", "name": "Broken Beat Orbits", "description": "Off-grid orbiting pulses with broken-beat accents.",
+      "file": "shader_broken_beat_orbits.js", "source": "l1_anims/shader_broken_beat_orbits.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "musical", "beat"], "order": 56, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_harmonic_veil", "name": "Harmonic Veil", "description": "Transparent harmonic veils with counter-moving overtone bands.",
+      "file": "shader_harmonic_veil.js", "source": "l1_anims/shader_harmonic_veil.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "musical", "ambient"], "order": 57, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_luminous_counterpoint", "name": "Luminous Counterpoint", "description": "Crossing melodic lines in luminous counterpoint.",
+      "file": "shader_luminous_counterpoint.js", "source": "l1_anims/shader_luminous_counterpoint.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "musical", "melodic"], "order": 58, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_dream_sequence", "name": "Dream Sequence", "description": "Slow dreamlike sequence of layered musical motifs.",
+      "file": "shader_dream_sequence.js", "source": "l1_anims/shader_dream_sequence.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "musical", "ambient"], "order": 59, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_acid_arps", "name": "Acid Arps", "description": "Sequenced acid arpeggio lanes.",
+      "file": "shader_acid_arps.js", "source": "l1_anims/shader_acid_arps.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "beat"], "order": 60, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_breakbeat_slicer", "name": "Breakbeat Slicer", "description": "Jumpy rhythmic slice shutter.",
+      "file": "shader_breakbeat_slicer.js", "source": "l1_anims/shader_breakbeat_slicer.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "beat"], "order": 61, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_drop_impact", "name": "Drop Impact", "description": "Hard drop shockwave.",
+      "file": "shader_drop_impact.js", "source": "l1_anims/shader_drop_impact.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "beat"], "order": 62, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_gate_stutter", "name": "Gate Stutter", "description": "Rhythmic stutter slices.",
+      "file": "shader_gate_stutter.js", "source": "l1_anims/shader_gate_stutter.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "beat"], "order": 63, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_hihat_sparks", "name": "Hihat Sparks", "description": "Fine high-frequency rhythmic sparks.",
+      "file": "shader_hihat_sparks.js", "source": "l1_anims/shader_hihat_sparks.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "beat"], "order": 64, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_melodic_waves", "name": "Melodic Waves", "description": "Layered melodic sine waves.",
+      "file": "shader_melodic_waves.js", "source": "l1_anims/shader_melodic_waves.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "melodic"], "order": 65, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_neuro_pulse", "name": "Neuro Pulse", "description": "Neuro-bass pulse field.",
+      "file": "shader_neuro_pulse.js", "source": "l1_anims/shader_neuro_pulse.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "beat"], "order": 66, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_orbital_bassline", "name": "Orbital Bassline", "description": "Orbiting bassline pulses.",
+      "file": "shader_orbital_bassline.js", "source": "l1_anims/shader_orbital_bassline.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "beat"], "order": 67, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_perc_matrix", "name": "Perc Matrix", "description": "Percussive matrix of rhythmic cells.",
+      "file": "shader_perc_matrix.js", "source": "l1_anims/shader_perc_matrix.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "beat"], "order": 68, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_psy_flux", "name": "Psy Flux", "description": "Psychedelic folded flux field.",
+      "file": "shader_psy_flux.js", "source": "l1_anims/shader_psy_flux.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical"], "order": 69, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_psy_kaleido_kick", "name": "Psy Kaleido Kick", "description": "Kaleidoscopic kick response.",
+      "file": "shader_psy_kaleido_kick.js", "source": "l1_anims/shader_psy_kaleido_kick.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "beat"], "order": 70, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_riser_spiral", "name": "Riser Spiral", "description": "Ascending spiral riser.",
+      "file": "shader_riser_spiral.js", "source": "l1_anims/shader_riser_spiral.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical"], "order": 71, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_rolling_bass_grid", "name": "Rolling Bass Grid", "description": "Rolling bass grid motion.",
+      "file": "shader_rolling_bass_grid.js", "source": "l1_anims/shader_rolling_bass_grid.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "beat"], "order": 72, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_snare_bloom", "name": "Snare Bloom", "description": "Sharp snare bloom accents.",
+      "file": "shader_snare_bloom.js", "source": "l1_anims/shader_snare_bloom.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "beat"], "order": 73, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_sub_ripple", "name": "Sub Ripple", "description": "Deep sub ripple field.",
+      "file": "shader_sub_ripple.js", "source": "l1_anims/shader_sub_ripple.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "beat"], "order": 74, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_trance_lattice", "name": "Trance Lattice", "description": "Trance lattice with evolving phase.",
+      "file": "shader_trance_lattice.js", "source": "l1_anims/shader_trance_lattice.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical"], "order": 75, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_triplet_comets", "name": "Triplet Comets", "description": "Triplet comet trails.",
+      "file": "shader_triplet_comets.js", "source": "l1_anims/shader_triplet_comets.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["cpu", "musical", "beat"], "order": 76, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_harmonic_radar", "name": "Harmonic Radar", "description": "Rotating harmonic radar with spectral echoes.",
+      "file": "shader_harmonic_radar.js", "source": "l1_anims/shader_harmonic_radar.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "musical"], "order": 77, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_kick_mandala", "name": "Kick Mandala", "description": "Kick-driven radial mandala with punch pulses.",
+      "file": "shader_kick_mandala.js", "source": "l1_anims/shader_kick_mandala.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "musical", "beat"], "order": 78, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_resonant_mesh", "name": "Resonant Mesh", "description": "Interference mesh shaped by resonant tones.",
+      "file": "shader_resonant_mesh.js", "source": "l1_anims/shader_resonant_mesh.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "musical"], "order": 79, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_offbeat_orbits", "name": "Offbeat Orbits", "description": "Off-grid orbiting pulses.",
+      "file": "shader_offbeat_orbits.js", "source": "l1_anims/shader_offbeat_orbits.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "musical", "beat"], "order": 80, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_spectral_bloom", "name": "Spectral Bloom", "description": "Layered spectral bloom bands.",
+      "file": "shader_spectral_bloom.js", "source": "l1_anims/shader_spectral_bloom.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "musical"], "order": 81, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_subbass_waves", "name": "Subbass Waves", "description": "Deep rolling subbass waves with pressure swells.",
+      "file": "shader_subbass_waves.js", "source": "l1_anims/shader_subbass_waves.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "musical", "beat"], "order": 82, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_polymeter_spiral", "name": "Polymeter Spiral", "description": "Spiral motion with interlocking meters.",
+      "file": "shader_polymeter_spiral.js", "source": "l1_anims/shader_polymeter_spiral.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "musical", "beat"], "order": 83, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_chord_rain", "name": "Chord Rain", "description": "Falling chord notes across the field.",
+      "file": "shader_chord_rain.js", "source": "l1_anims/shader_chord_rain.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "musical", "melodic"], "order": 84, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_glitch_sync", "name": "Glitch Sync", "description": "Synchronized scanline glitch field.",
+      "file": "shader_glitch_sync.js", "source": "l1_anims/shader_glitch_sync.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "musical"], "order": 85, "gallery": { "thumbnail": "runtime" }
+    },
+    {
+      "id": "builtin:shader_melodic_prism", "name": "Melodic Prism", "description": "Prismatic melodic rings and glow.",
+      "file": "shader_melodic_prism.js", "source": "l1_anims/shader_melodic_prism.js", "kind": "module", "origin": "builtin", "enabledFor": ["l1", "l2"], "tags": ["shader", "gpu", "musical", "melodic"], "order": 86, "gallery": { "thumbnail": "runtime" }
     }
   ]
 }

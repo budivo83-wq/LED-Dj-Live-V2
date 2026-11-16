@@ -1,4 +1,6 @@
+import { gpuFor } from '../shader_anim_engine.js';
 export const meta = { name: "Broken Beat Orbits", description: "off-grid orbiting pulses with broken-beat accents", params: ["Voices", "Tempo", "Swing", "Punch"] };
+export const gpu = gpuFor('shader_broken_beat_orbits');
 export const prewarm = { priority: 58, samplePoints: 96, warmOnSelect: true, warmNeighbors: true };
 const sat = (v) => Math.max(0, Math.min(1, v));
 const hsv = (h, s, v) => { h = ((h % 1) + 1) % 1; const i = Math.floor(h * 6), f = h * 6 - i, q = v * (1 - f * s), p = v * (1 - s), r = v * (1 - (1 - f) * s); return [[v, r, p], [q, v, p], [p, v, r], [p, q, v], [r, p, v], [v, p, q]][i % 6].map((c) => c * 255); };

@@ -38,6 +38,8 @@ psCode = psCode & "  $script:cleanedUp = $true" & vbCrLf
 psCode = psCode & "  if ($script:edgeProc) { Stop-ProcessTree $script:edgeProc.Id }" & vbCrLf
 psCode = psCode & "  if ($script:node) { Stop-ProcessTree $script:node.Id }" & vbCrLf
 psCode = psCode & "  Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'node.exe' -and $_.CommandLine -and $_.CommandLine -like ('*' + $project.Replace('\\','\\\\') + '*') } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }" & vbCrLf
+psCode = psCode & "  $edgeProfile = Join-Path $project '.edge-app-profile'" & vbCrLf
+psCode = psCode & "  Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'msedge.exe' -and $_.CommandLine -and $_.CommandLine -like ('*--user-data-dir=' + $edgeProfile + '*') } | ForEach-Object { Stop-ProcessTree $_.ProcessId }" & vbCrLf
 psCode = psCode & "}" & vbCrLf
 psCode = psCode & "" & vbCrLf
 psCode = psCode & "function Wait-ForHttpReady([string]$targetUrl, [int]$timeoutSec = 30) {" & vbCrLf

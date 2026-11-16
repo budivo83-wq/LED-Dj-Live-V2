@@ -163,6 +163,9 @@ export function createShaderSceneRenderer(canvas) {
 
   let lastWidth = 0;
   let lastHeight = 0;
+  let readbackRgba = null;
+  let readbackFrames = [null, null];
+  let readbackFrameIndex = 0;
 
   return {
     kind: "webgl",
@@ -184,7 +187,10 @@ export function createShaderSceneRenderer(canvas) {
         return true;
       }
 
-      const shader = shaderForScene(gl, programs, scene);
+      // The dedicated Shader preview must remain visibly GPU-backed even if a
+      // scene was not present in the startup cache. This renderer is isolated
+      // from the LED/output path; the output renderer below stays compile-free.
+      const shader = shaderForScene(gl, programs, scene, true);
       if (!shader) return false;
 
       gl.clearColor(0, 0, 0, 1);
@@ -231,6 +237,30 @@ export function createShaderSceneRenderer(canvas) {
       gl.vertexAttribPointer(frameLocations.uv, 2, gl.FLOAT, false, 0, 0);
       gl.uniform1i(frameLocations.frame, 0);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
+    },
+    readFrame() {
+      if (!lastWidth || !lastHeight) return null;
+      const rgbaSize = lastWidth * lastHeight * 4;
+      const frameSize = lastWidth * lastHeight * 3;
+      if (!readbackRgba || readbackRgba.length !== rgbaSize) readbackRgba = new Uint8Array(rgbaSize);
+      if (!readbackFrames[0] || readbackFrames[0].length !== frameSize) {
+        readbackFrames = [new Uint8Array(frameSize), new Uint8Array(frameSize)];
+        readbackFrameIndex = 0;
+      }
+      gl.readPixels(0, 0, lastWidth, lastHeight, gl.RGBA, gl.UNSIGNED_BYTE, readbackRgba);
+      const frame = readbackFrames[readbackFrameIndex];
+      readbackFrameIndex = 1 - readbackFrameIndex;
+      for (let y = 0; y < lastHeight; y += 1) {
+        const sourceRow = lastHeight - 1 - y;
+        for (let x = 0; x < lastWidth; x += 1) {
+          const source = (sourceRow * lastWidth + x) * 4;
+          const target = (y * lastWidth + x) * 3;
+          frame[target] = readbackRgba[source];
+          frame[target + 1] = readbackRgba[source + 1];
+          frame[target + 2] = readbackRgba[source + 2];
+        }
+      }
+      return frame;
     },
     canDrawShaderScene(scene) {
       if (!scene?.enabled) return false;
@@ -423,7 +453,10 @@ function createWebGlRenderer(canvas, cellSize, options = {}) {
         return true;
       }
 
-      const shader = shaderForScene(gl, shaderPrograms, scene);
+      // Do not compile synchronously from the live render tick. Startup
+      // prewarm owns compilation; a miss returns false and the caller keeps a
+      // valid fallback frame.
+      const shader = shaderForScene(gl, shaderPrograms, scene, false);
       if (!shader) return false;
 
       gl.clearColor(0, 0, 0, 1);
@@ -441,6 +474,23 @@ function createWebGlRenderer(canvas, cellSize, options = {}) {
       setUniforms(gl, shader.uniforms, scene);
       gl.drawArrays(gl.TRIANGLES, 0, vertexCount);
       return true;
+    },
+    readFrame() {
+      if (!lastWidth || !lastHeight) return null;
+      const rgba = new Uint8Array(lastWidth * lastHeight * 4);
+      gl.readPixels(0, 0, lastWidth, lastHeight, gl.RGBA, gl.UNSIGNED_BYTE, rgba);
+      const frame = new Uint8Array(lastWidth * lastHeight * 3);
+      for (let y = 0; y < lastHeight; y += 1) {
+        const sourceRow = lastHeight - 1 - y;
+        for (let x = 0; x < lastWidth; x += 1) {
+          const source = (sourceRow * lastWidth + x) * 4;
+          const target = (y * lastWidth + x) * 3;
+          frame[target] = rgba[source];
+          frame[target + 1] = rgba[source + 1];
+          frame[target + 2] = rgba[source + 2];
+        }
+      }
+      return frame;
     },
     canDrawShaderScene(scene) {
       if (!scene?.enabled || !vertexCount) return false;
@@ -473,6 +523,9 @@ function createCanvas2dRenderer(canvas, cellSize, options = {}) {
     resize() {},
     drawShaderScene() {
       return false;
+    },
+    readFrame() {
+      return null;
     },
     draw(frame, matrixWidth, matrixHeight, enabled) {
       context.clearRect(0, 0, canvas.width, canvas.height);
@@ -735,6 +788,16 @@ function buildSceneGpuLibrary(scene) {
   };
 }
 
+function buildGpuSelector(entries) {
+  const selectorLines = ["float evalGpuAnim(int animId, vec2 uv, float t, vec4 p) {"];
+  for (const entry of entries) {
+    selectorLines.push(`  if (animId == ${entry.id}) return ${entry.name}(uv, t, p);`);
+  }
+  selectorLines.push("  return 0.0;");
+  selectorLines.push("}");
+  return selectorLines.join("\n");
+}
+
 function buildSceneFragmentSource(scene) {
   const library = buildSceneGpuLibrary(scene);
   return `
@@ -991,6 +1054,19 @@ function shaderHelpers() {
         return mix(a - (1.0 - 2.0 * b) * a * (1.0 - a), a + (2.0 * b - 1.0) * (sqrt(max(a, 0.0)) - a), step(0.5, b));
       }
       if (mode == 14) return min(vec3(1.0), a / max(vec3(0.001), 1.0 - b));
+      if (mode == 15) return mix(
+        2.0 * a * b,
+        1.0 - 2.0 * (1.0 - a) * (1.0 - b),
+        step(vec3(0.5), b)
+      );
+      if (mode == 16) return a + b - 2.0 * a * b;
+      if (mode == 17) return clamp(1.0 - (1.0 - a) / max(vec3(0.001), b), 0.0, 1.0);
+      if (mode == 18) return clamp(a + 2.0 * b - 1.0, 0.0, 1.0);
+      if (mode == 19) return vec3(
+        a.r * 0.55 + b.g * 0.45,
+        a.g * 0.55 + b.b * 0.45,
+        a.b * 0.55 + b.r * 0.45
+      );
       return min(a + b, vec3(1.0));
     }
 
@@ -1161,7 +1237,12 @@ function blendModeId(mode) {
     beatCut: 11,
     glitchMix: 12,
     softlight: 13,
-    colorDodge: 14
+    colorDodge: 14,
+    hardLight: 15,
+    exclusion: 16,
+    colorBurn: 17,
+    linearLight: 18,
+    chromatic: 19
   }[mode] ?? 0;
 }
 

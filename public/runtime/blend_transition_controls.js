@@ -21,6 +21,7 @@ export function bindBlendTransitionControlsRuntime(deps = {}) {
     const previous = state.blendMode;
     state.blendMode = event.target.value;
     startBlendTransition?.(previous);
+    syncControls?.();
     commitState?.();
     invalidatePreview();
   });

@@ -1,8 +1,9 @@
 export const PREVIEW_MODE_RUNTIME_VERSION = "37AA-preview-tabs-diagnostics";
 
-const VALID_PREVIEW_MODES = ["stage", "pixel", "shader", "debug"];
+const VALID_PREVIEW_MODES = ["stage", "pixel", "shader", "dual", "debug"];
 const PIXEL_PREVIEW_CYCLE = ["big", "small"];
 const SHADER_PREVIEW_CYCLE = ["big", "small", "led"];
+const STAGE_PREVIEW_CYCLE = ["pure", "pixel", "shader"];
 const DEBUG_BASE_MODES = ["stage", "pixel-big", "pixel-small", "shader-big", "shader-small", "shader-led", "shader"];
 
 export function createPreviewModeRuntime({ state, controls, documentRef = document } = {}) {
@@ -25,9 +26,15 @@ export function createPreviewModeRuntime({ state, controls, documentRef = docume
     return SHADER_PREVIEW_CYCLE.includes(mode) ? mode : "big";
   }
 
+  function getStagePreviewVariant() {
+    const variant = String(state.stagePreviewVariant || "pure").toLowerCase();
+    return STAGE_PREVIEW_CYCLE.includes(variant) ? variant : "pure";
+  }
+
   function previewModeDatasetValue() {
     const mode = getPreviewMode();
     if (mode === "debug") return "debug";
+    if (mode === "dual") return "dual-small";
     if (mode === "shader") return "shader";
     if (mode !== "pixel") return mode;
     return `pixel-${getPixelPreviewMode()}`;
@@ -85,6 +92,7 @@ export function createPreviewModeRuntime({ state, controls, documentRef = docume
     const datasetValue = previewModeDatasetValue();
     const debugBaseMode = mode === "debug" ? getDebugOverlayBaseMode() : "";
     const shaderMode = getShaderPreviewMode();
+    const stageVariant = getStagePreviewVariant();
     const pixelLabel = pixelMode.toUpperCase();
     const shaderLabel = shaderMode.toUpperCase();
     if (documentRef?.body?.dataset) {
@@ -92,10 +100,13 @@ export function createPreviewModeRuntime({ state, controls, documentRef = docume
       documentRef.body.dataset.debugBaseMode = debugBaseMode;
       documentRef.body.dataset.shaderPreviewSize = shaderMode;
       documentRef.body.dataset.pixelPreviewSize = pixelMode;
+      documentRef.body.dataset.stagePreviewVariant = stageVariant;
     }
     const status = documentRef?.getElementById?.("previewModeStatus");
     if (status) {
-      const effective = mode === "debug" ? `DEBUG over ${debugBaseMode || "preview"}` : datasetValue;
+      const effective = mode === "debug"
+        ? `DEBUG over ${debugBaseMode || "preview"}`
+        : mode === "stage" ? `STAGE / ${stageVariant}` : datasetValue;
       status.textContent = `PREVIEW: ${String(effective).replace(/-/g, " ").toUpperCase()}`;
       status.dataset.previewModeStatus = datasetValue;
       status.dataset.debugBaseMode = debugBaseMode || "";
@@ -120,7 +131,8 @@ export function createPreviewModeRuntime({ state, controls, documentRef = docume
         const active = mode === "stage";
         entry.classList?.toggle("active", active);
         entry.setAttribute?.("aria-pressed", active ? "true" : "false");
-        entry.title = "Stage/offscreen preview mode.";
+        entry.textContent = active ? `STAGE ${STAGE_PREVIEW_CYCLE.indexOf(stageVariant) + 1}/3` : "STAGE";
+        entry.title = active ? `Stage variant ${STAGE_PREVIEW_CYCLE.indexOf(stageVariant) + 1}/3: ${stageVariant}. Click to cycle.` : "Stage preview: physical 2D layout.";
       }
       if (entry.id === "previewTabShader") {
         const active = mode === "shader";
@@ -129,6 +141,14 @@ export function createPreviewModeRuntime({ state, controls, documentRef = docume
         entry.dataset.previewSize = shaderMode;
         entry.textContent = `SHADER ${shaderLabel}`;
         entry.title = active ? `Shader preview: ${shaderLabel}. Click toggles BIG/SMALL/LED FRAME.` : "Switch to shader preview.";
+        return;
+      }
+      if (entry.id === "previewTabDual") {
+        const active = mode === "dual";
+        entry.classList?.toggle("active", active);
+        entry.setAttribute?.("aria-pressed", active ? "true" : "false");
+        entry.textContent = "DUAL SMALL";
+        entry.title = "Zobrazit současně Shader Small a Pixel Small.";
         return;
       }
       if (entry.id === "previewTabDebug") {
@@ -144,6 +164,7 @@ export function createPreviewModeRuntime({ state, controls, documentRef = docume
     getPreviewMode,
     getPixelPreviewMode,
     getShaderPreviewMode,
+    getStagePreviewVariant,
     previewModeDatasetValue,
     getDebugOverlayBaseMode,
     effectiveRenderPreviewMode,

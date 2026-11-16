@@ -11,6 +11,13 @@ export function createLayerSwitching(deps) {
   } = deps;
 
   function startLayerTransition(layer, previousModules, previousState) {
+    // A performance action can explicitly cancel a pending fade before its
+    // next module becomes active. This avoids carrying an old transition into
+    // a DROP switch.
+    if (!previousModules || !previousState) {
+      transitions[layer] = null;
+      return;
+    }
     if (!transitionSettings.enabled || transitionSettings.seconds <= 0) {
       transitions[layer] = null;
       return;

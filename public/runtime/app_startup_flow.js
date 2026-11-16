@@ -7,6 +7,7 @@ export function createAppStartupFlow({
   notifyShellRuntimeLoading,
   startupStepRuntime,
   shaderPreloadManagerRef,
+  prewarmAllCpuModules,
   loadHeadlessShaderModulesRef,
   prewarmAllGpuCombos,
   pathsForFolder,
@@ -50,7 +51,7 @@ export function createAppStartupFlow({
   }
 
   async function preloadEverythingForStartup() {
-    await shaderPreloadManagerRef()?.startupPreloadAll?.();
+    await shaderPreloadManagerRef()?.startupPreloadAll?.({ compile: true });
   }
 
   async function preloadHeadlessWebglStartup() {
@@ -60,7 +61,10 @@ export function createAppStartupFlow({
     await prewarmAllGpuCombos((done, total) => {
       const ratio = total ? done / total : 1;
       startupStep(88 + ratio * 4, `Compiling WebGL banks ${done}/${total}`);
-    }, { chunkSize: 4, yieldMs: 0 });
+    }, {
+      chunkSize: 1,
+      yieldMs: 0
+    });
   }
 
   async function loadHeadlessShaderModules() {
@@ -185,6 +189,7 @@ export function createStartupSequenceDeps({
   warmupStoredShaderScenes,
   warmupStoredShaderModules,
   preloadEverythingForStartup,
+  scheduleFullGpuPrewarm,
   runtimeProfile,
   startupFrameGuardRef,
   startupReadyAtRef,
@@ -246,6 +251,7 @@ export function createStartupSequenceDeps({
     warmupStoredShaderScenes,
     warmupStoredShaderModules,
     preloadEverythingForStartup,
+    scheduleFullGpuPrewarm,
     runtimeProfile,
     startupFrameGuardRef,
     startupReadyAtRef,

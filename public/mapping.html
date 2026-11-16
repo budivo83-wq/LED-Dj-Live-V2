@@ -143,9 +143,16 @@
           <div class="preview-header">
             <div>
               <h1>Output map</h1>
-              <p>Each row is one whole strip. Internal dividers show where that strip is split into patch parts or universes.</p>
+              <p id="previewModeHint">Each row is one whole strip. Internal dividers show where that strip is split into patch parts or universes.</p>
             </div>
-            <div class="preview-readout" id="summaryReadout">0 strips</div>
+            <div class="preview-tools">
+              <div class="preview-mode-toggle" role="group" aria-label="Preview mode">
+                <button type="button" id="previewModeRouting" class="active">ROUTING</button>
+                <button type="button" id="previewMode2d">2D LAYOUT</button>
+              </div>
+              <button type="button" id="reset2dLayout" class="preview-reset">RESET 2D</button>
+              <div class="preview-readout" id="summaryReadout">0 strips</div>
+            </div>
           </div>
           <div class="canvas-wrap strip-router-preview-wrap"><canvas id="previewCanvas" width="1200" height="340"></canvas></div>
         </section>

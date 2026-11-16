@@ -35,6 +35,9 @@ export function createRenderPipeline(deps) {
     resizeShaderPreviewCanvas,
     shaderPreviewRenderer,
     previewRenderer,
+    stagePreviewRenderer,
+    stagePixelPreviewRenderer,
+    stageShaderPreviewRenderer,
     headless = false,
     shellViewOnly = false,
     getDimensions,
@@ -689,6 +692,8 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
       let frame = latestComposedFrame;
       const previewMode = getPreviewMode();
       const pixelPreviewActive = String(previewMode || "").startsWith("pixel");
+      const shaderOnlyPreview = previewMode === "shader"
+        && documentRef?.body?.dataset?.shaderPreviewSize !== "led";
       const previewStartedAt = performance.now();
       // STEP38X: never suppress the first composed frame on the visible shell.
       // The old 4.2 s quiet window left Performance on a black canvas until a
@@ -725,10 +730,16 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
         }
       }
 
-      const needsFreshFrame = !quietShellMount
+      const needsFreshFrame = !shaderOnlyPreview
+        && !quietShellMount
         && (!liveOutputClockActive || (pixelPreviewActive && previewFrameInvalidated))
         && (!shellLiveMonitorOnly || shellMonitorRenderDue)
-        && (previewFrameInvalidated || !frame || shouldRefreshPreviewFrame?.() === true || (!shellViewOnly && physicalOutputActive));
+        && (previewFrameInvalidated || !frame || shouldRefreshPreviewFrame?.() === true || (!shellViewOnly && physicalOutputActive))
+        // Shader preview normally consumes the authoritative output frame, but
+        // that packet does not exist yet during boot or immediately after an
+        // output hand-off. Without this bootstrap the fallback canvas receives
+        // a newly allocated all-zero buffer and stays visibly black.
+        || (shaderOnlyPreview && !frame);
       if (needsFreshFrame) {
         setRenderTime(getBeatPosition());
         const rendered = renderFreshFrame();
@@ -752,6 +763,47 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
 
       if (quietShellMount) {
         setLastPreviewRenderer("shell-quiet");
+      } else if (previewMode === "dual") {
+        // DUAL SMALL is a single render pass with two consumers: the normal
+        // composed RGB frame stays in the pixel canvas and the same scene is
+        // sent to the dedicated Shader canvas. It must not start a second
+        // compositor or output clock.
+        const { width: W, height: H } = getDimensions();
+        previewRenderer?.draw?.(frame, W, H, isPreviewFrameEnabled());
+        resizeShaderPreviewCanvas();
+        // Paint a valid fallback first. A cold WebGL canvas can be resized or
+        // compiled one tick later; leaving it untouched makes the upper DUAL
+        // pane appear as an empty black rectangle while Pixel still updates.
+        drawShaderPreview(frame, null);
+        const gpuScene = now >= getForceCpuPreviewUntil() ? createGpuScene() : null;
+        if (gpuScene && shaderPreviewRenderer?.drawShaderScene) {
+          const drawn = shaderPreviewRenderer.drawShaderScene(gpuScene) !== false;
+          if (!drawn) onGpuDrawFailed?.("dual-shader-preview");
+        }
+        setLastPreviewRenderer(gpuScene ? "dual-small" : "dual-small-cpu");
+        lastShaderPreviewAt = now;
+      } else if (previewMode === "stage") {
+        const { width: W, height: H } = getDimensions();
+        const stageVariant = String(documentRef?.body?.dataset?.stagePreviewVariant || "pure").toLowerCase();
+        if (stageVariant === "pixel") {
+          stagePixelPreviewRenderer?.draw?.(frame, W, H, isPreviewFrameEnabled());
+        } else if (stageVariant === "shader") {
+          const shaderFps = Math.max(1, Math.min(60, Number(getShaderPreviewFps?.() || 20)));
+          if (now - lastShaderPreviewAt >= 1000 / shaderFps) {
+            const gpuScene = now >= getForceCpuPreviewUntil() ? createGpuScene() : null;
+            if (gpuScene && stageShaderPreviewRenderer?.drawShaderScene) {
+              stageShaderPreviewRenderer.drawShaderScene(gpuScene);
+            }
+            lastShaderPreviewAt = now;
+          }
+        }
+        if (stagePreviewRenderer?.draw) {
+          stagePreviewRenderer.draw(frame, W, H, isPreviewFrameEnabled());
+          setLastPreviewRenderer("2d:stage-mapping");
+        } else {
+          drawCenterPreviewCpu(frame);
+          setLastPreviewRenderer("2d:stage-fallback");
+        }
       } else if (previewMode === "shader") {
         const shaderLedFrame = documentRef?.body?.dataset?.shaderPreviewSize === "led";
         const shaderCap = shaderLedFrame ? (1000 / Math.max(1, previewFrameMs)) : 120;
@@ -794,11 +846,13 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
             drawShaderPreview(frame, null);
             setLastPreviewRenderer("gpu-shader-unavailable-live");
           } else {
-            // Keep the shader tab visible even while the GPU scene is warming
-            // up. The CPU frame is only a temporary fallback and is replaced
-            // by drawShaderScene() as soon as the scene becomes available.
+            // A GPU scene can be unavailable for CPU-only animations or while
+            // the first lazy shader compile is still pending. Do not leave the
+            // visible Shader canvas blank in either case: the already composed
+            // frame is a safe, deterministic fallback until the GPU scene is
+            // ready (and remains the correct path for CPU-only modules).
             drawShaderPreview(frame, null);
-            setLastPreviewRenderer("gpu-shader-unavailable");
+            setLastPreviewRenderer("2d:shader-fallback");
           }
           lastShaderPreviewAt = now;
         }
@@ -815,7 +869,9 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
           || (liveOutputClockActive && !pixelPreviewActive && mirrorActual > 0 && mirrorActual < 55)
           || !shellMonitorDue
           || (previewBudgetPressured && !pixelPreviewActive);
-        if (!skipMonitorBlit) {
+        // Pixel preview is the primary visible monitor. Always paint it when
+        // selected; output-priority throttling must never hide the canvas.
+        if (pixelPreviewActive || !skipMonitorBlit) {
           drawCenterPreviewCpu(frame);
           if (shellLiveMonitorOnly) lastShellMonitorBlitAt = now;
         }
@@ -904,9 +960,6 @@ function shouldEmitLiveDiagEvent37AX(force = false) {
       console.warn("GPU frame render failed, using CPU compatibility path", error);
     }
     const cpuRendered = renderCpuFrame();
-    // A transition must never replace a valid visible frame with an entirely
-    // empty CPU buffer. This can happen for one tick while Fade ON hands the
-    // authoritative frame back from the output loop to the preview loop.
     if (!hasVisibleFrame(cpuRendered.frame) && hasVisibleFrame(latestComposedFrame)) {
       return { ...cpuRendered, frame: latestComposedFrame };
     }

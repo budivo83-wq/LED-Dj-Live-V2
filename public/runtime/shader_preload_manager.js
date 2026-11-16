@@ -31,7 +31,7 @@ export function createShaderPreloadManager(deps) {
     Object.assign(startupTimingState, patch);
   }
 
-  async function startupPreloadAll() {
+  async function startupPreloadAll(options = {}) {
     const lists = listsRef();
     const modulePaths = [
       ...pathsForFolder("l1_anims", lists.l1Anims),
@@ -56,6 +56,14 @@ export function createShaderPreloadManager(deps) {
       }
     }
 
+    // Import every module and compile the complete GPU bank matrix before the
+    // loading screen closes. Runtime selection must never discover a legacy
+    // CPU animation or compile a missing bank on the first click.
+    if (options.compile === false) {
+      setStatus({ phase: "modules-ready" });
+      return;
+    }
+
     setStatus({ phase: "gpu-banks", compileDone: 0, compileTotal: 0 });
     startupStep?.(86, "Compiling realtime render banks");
     await prewarmAllGpuCombos?.((done, total) => {
@@ -63,6 +71,9 @@ export function createShaderPreloadManager(deps) {
       setStatus({ compileDone: done, compileTotal: total });
       setStartupTiming({ phase: "gpu-banks", progress: ratio, item: done, total, waitMs: 0 });
       startupStep?.(86 + ratio * 2, `Compiling render banks ${done}/${total}`);
+    }, {
+      chunkSize: 1,
+      yieldMs: 0
     });
 
     setStatus({ phase: "preview-shaders" });

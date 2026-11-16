@@ -45,6 +45,8 @@ const state = {
   mapping: normalizeMappingV2(loadMappingV2(localStorage)),
   selectedId: null,
   dirty: false,
+  previewMode: localStorage.getItem('led-engine-mapping-preview-mode') === '2d' ? '2d' : 'routing',
+  drag2d: null,
   canvasItems: [],
   selectedProbePartIndex: 0,
   livePatchTimer: null,
@@ -105,6 +107,10 @@ const els = {
   importMapping: $('importMapping'),
   jsonBox: $('jsonBox'),
   canvas: $('previewCanvas'),
+  previewModeRouting: $('previewModeRouting'),
+  previewMode2d: $('previewMode2d'),
+  reset2dLayout: $('reset2dLayout'),
+  previewModeHint: $('previewModeHint'),
   summaryReadout: $('summaryReadout'),
   segmentList: $('segmentList'),
   selectionReadout: $('selectionReadout'),
@@ -327,6 +333,9 @@ function init() {
   els.probeRgbApply?.addEventListener('click', () => applySelectedStripRgbOrder(els.probeRgbObserved?.value || 'rgb'));
   els.probeBlackout.addEventListener('click', blackoutProbeFrame);
   els.applyAutoRoute.addEventListener('click', autoRouteActiveSegments);
+  els.previewModeRouting?.addEventListener('click', () => setPreviewMode('routing'));
+  els.previewMode2d?.addEventListener('click', () => setPreviewMode('2d'));
+  els.reset2dLayout?.addEventListener('click', reset2dLayout);
   els.saveMapping.addEventListener('click', () => { saveAndApply(); });
   els.exportMapping.addEventListener('click', exportMapping);
   els.importMapping.addEventListener('click', importMapping);
@@ -351,6 +360,50 @@ function init() {
     window.scrollTo(x, y);
     if (interactiveControl?.focus) interactiveControl.focus({ preventScroll: true });
   });
+  // Reorder strips directly in the Routing list. This changes the logical
+  // strip order while keeping each strip's own output patch/address intact;
+  // no manual re-addressing is needed just to move strip 5 to the top.
+  let draggedSegmentId = '';
+  els.segmentList.addEventListener('dragstart', (event) => {
+    const card = event.target.closest('[data-segment-id]');
+    if (!card || isSegmentFormControl(event.target)) {
+      event.preventDefault();
+      return;
+    }
+    draggedSegmentId = String(card.dataset.segmentId || '');
+    card.classList.add('is-dragging');
+    event.dataTransfer?.setData('text/plain', draggedSegmentId);
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+  });
+  els.segmentList.addEventListener('dragend', (event) => {
+    event.target.closest('[data-segment-id]')?.classList.remove('is-dragging');
+    els.segmentList.querySelectorAll('[data-segment-id].is-drop-target').forEach((node) => node.classList.remove('is-drop-target'));
+    draggedSegmentId = '';
+  });
+  els.segmentList.addEventListener('dragover', (event) => {
+    const card = event.target.closest('[data-segment-id]');
+    if (!card || !draggedSegmentId || card.dataset.segmentId === draggedSegmentId) return;
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+    els.segmentList.querySelectorAll('[data-segment-id].is-drop-target').forEach((node) => node.classList.remove('is-drop-target'));
+    card.classList.add('is-drop-target');
+  });
+  els.segmentList.addEventListener('drop', (event) => {
+    const card = event.target.closest('[data-segment-id]');
+    if (!card || !draggedSegmentId) return;
+    event.preventDefault();
+    const from = state.mapping.segments.findIndex((segment) => segment.id === draggedSegmentId);
+    const to = Number(card.dataset.segmentIndex);
+    if (from < 0 || !Number.isInteger(to) || from === to) return;
+    const segments = state.mapping.segments.slice();
+    const [moved] = segments.splice(from, 1);
+    segments.splice(to, 0, moved);
+    state.mapping = normalizeMappingV2({ ...state.mapping, segments });
+    state.selectedId = moved.id;
+    markDirty();
+    scheduleMappingRender37BP({ summary: true, diagnostics: true, preview: true, list: true, editor: true, globals: true, reason: 'reorder-strip-list' });
+    draggedSegmentId = '';
+  });
   els.segmentList.addEventListener('keydown', (event) => {
     if (event.key !== 'Enter' && event.key !== ' ') return;
     if (isSegmentFormControl(event.target)) return;
@@ -363,6 +416,10 @@ function init() {
   els.segmentList.addEventListener('input', updateStripFromInlineControl);
   els.segmentList.addEventListener('change', updateStripFromInlineControl);
   els.canvas.addEventListener('click', selectSegmentFromCanvas);
+  els.canvas.addEventListener('pointerdown', begin2dDrag);
+  els.canvas.addEventListener('pointermove', move2dDrag);
+  els.canvas.addEventListener('pointerup', end2dDrag);
+  els.canvas.addEventListener('pointercancel', end2dDrag);
   // STEP37AZ: mapping preview resize governor. Mapping preview is not part of the
   // physical output path, so while live output is locked we merge resize storms
   // instead of redrawing the canvas on every browser resize event.
@@ -400,6 +457,7 @@ function init() {
   }, { passive: true });
 
   if (!state.selectedId && state.mapping.segments[0]) state.selectedId = state.mapping.segments[0].id;
+  setPreviewMode(state.previewMode);
   renderAll();
 }
 
@@ -529,7 +587,7 @@ function stripCardHtml(segment, index, selectedId) {
   const selected = selectedId === segment.id ? 'selected' : '';
   const disabled = segment.enabled ? '' : 'disabled';
   return `
-    <article class="segment-card strip-card inline-strip-card ${selected} ${disabled}" data-segment-id="${escapeHtml(segment.id)}" data-segment-index="${index}" role="button" tabindex="0">
+    <article class="segment-card strip-card inline-strip-card ${selected} ${disabled}" data-segment-id="${escapeHtml(segment.id)}" data-segment-index="${index}" role="button" tabindex="0" draggable="true" aria-label="Přesunout strip ${index + 1}">
       <div class="strip-card-head">
         <div>
           <strong>${index + 1}. ${escapeHtml(segment.label || segment.id)}</strong>
@@ -1326,8 +1384,14 @@ function buildServerPatchReportHtml(patch, report, message = '') {
   return rows.join('');
 }
 
-function drawPreview() {
+function drawRoutingPreview() {
   const canvas = els.canvas;
+  // Keep every routing row in the canvas. The preview card is intentionally
+  // viewport-sized, so larger strip counts use the scrollable wrapper instead
+  // of silently clipping rows after the fifth strip.
+  const routingRows = state.mapping.segments.length;
+  const routingCanvasHeight = Math.max(190, 22 + routingRows * 44 + Math.max(0, routingRows - 1) * 8);
+  canvas.style.height = `${routingCanvasHeight}px`;
   const rect = canvas.getBoundingClientRect();
   const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
   const width = Math.max(320, Math.floor(rect.width * dpr));
@@ -1401,6 +1465,151 @@ function drawPreview() {
 
     state.canvasItems.push({ id: segment.id, x, y, w: width - pad * 2, h: rowH });
   });
+}
+
+function setPreviewMode(mode) {
+  state.previewMode = mode === '2d' ? '2d' : 'routing';
+  localStorage.setItem('led-engine-mapping-preview-mode', state.previewMode);
+  if (els.previewModeRouting) els.previewModeRouting.classList.toggle('active', state.previewMode === 'routing');
+  if (els.previewMode2d) els.previewMode2d.classList.toggle('active', state.previewMode === '2d');
+  if (els.previewModeHint) {
+    els.previewModeHint.textContent = state.previewMode === '2d'
+      ? 'Drag strips in the canvas to place them in the virtual 2D layout. The position is saved with the mapping.'
+      : 'Each row is one whole strip. Internal dividers show where that strip is split into patch parts or universes.';
+  }
+  scheduleMappingRender37BP({ summary: false, preview: true, reason: `preview-mode-${state.previewMode}` });
+}
+
+function mappingCanvasMetrics() {
+  const rect = els.canvas.getBoundingClientRect();
+  const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  const width = Math.max(320, Math.floor(rect.width * dpr));
+  const height = Math.max(180, Math.floor(rect.height * dpr));
+  if (els.canvas.width !== width || els.canvas.height !== height) {
+    els.canvas.width = width;
+    els.canvas.height = height;
+  }
+  return { width, height, dpr };
+}
+
+function draw2dPreview() {
+  els.canvas.style.height = '';
+  const { width, height, dpr } = mappingCanvasMetrics();
+  const ctx = els.canvas.getContext('2d');
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = '#020406';
+  ctx.fillRect(0, 0, width, height);
+  state.canvasItems = [];
+
+  const segments = state.mapping.segments;
+  const virtualWidth = Math.max(1, state.mapping.virtual?.width || 1, ...segments.map((s) => Number(s.source?.x || 0) + Number(s.source?.width || s.physical?.pixelCount || 1)));
+  const virtualHeight = Math.max(1, state.mapping.virtual?.height || 1, ...segments.map((s) => Number(s.source?.y || 0) + Number(s.source?.height || 1)));
+  const pad = 22 * dpr;
+  const plotW = Math.max(1, width - pad * 2);
+  const plotH = Math.max(1, height - pad * 2);
+  const scale = Math.min(plotW / virtualWidth, plotH / virtualHeight);
+  const offsetX = (width - virtualWidth * scale) / 2;
+  const offsetY = (height - virtualHeight * scale) / 2;
+  const labelScale = Math.max(10 * dpr, Math.min(15 * dpr, scale * 0.22));
+
+  ctx.strokeStyle = 'rgba(255,255,255,.08)';
+  ctx.lineWidth = Math.max(1, dpr);
+  for (let x = 0; x <= virtualWidth; x += Math.max(1, Math.ceil(virtualWidth / 12))) {
+    const px = offsetX + x * scale;
+    ctx.beginPath(); ctx.moveTo(px, offsetY); ctx.lineTo(px, offsetY + virtualHeight * scale); ctx.stroke();
+  }
+  for (let y = 0; y <= virtualHeight; y += Math.max(1, Math.ceil(virtualHeight / 8))) {
+    const py = offsetY + y * scale;
+    ctx.beginPath(); ctx.moveTo(offsetX, py); ctx.lineTo(offsetX + virtualWidth * scale, py); ctx.stroke();
+  }
+
+  segments.forEach((segment, index) => {
+    const sx = Number(segment.source?.x || 0);
+    const sy = Number(segment.source?.y || 0);
+    const sw = Math.max(1, Number(segment.source?.width || segment.physical?.pixelCount || 1));
+    const sh = Math.max(1, Number(segment.source?.height || 1));
+    const x = offsetX + sx * scale;
+    const y = offsetY + sy * scale;
+    const w = Math.max(8 * dpr, sw * scale);
+    const h = Math.max(12 * dpr, sh * scale);
+    const selected = segment.id === state.selectedId;
+    const color = segment.enabled ? previewStripColor(segment, index) : 'rgba(120,120,120,.25)';
+    ctx.fillStyle = selected ? 'rgba(126,240,194,.20)' : 'rgba(255,255,255,.04)';
+    roundRect(ctx, x, y, w, h, Math.min(8 * dpr, h / 3)); ctx.fill();
+    ctx.fillStyle = color;
+    roundRect(ctx, x + Math.max(2, dpr), y + Math.max(2, dpr), Math.max(4, w - 2 * dpr), Math.max(6, h - 2 * dpr), Math.min(6 * dpr, h / 3)); ctx.fill();
+    ctx.strokeStyle = selected ? '#7ef0c2' : 'rgba(255,255,255,.18)';
+    ctx.lineWidth = selected ? 2 * dpr : dpr;
+    roundRect(ctx, x, y, w, h, Math.min(8 * dpr, h / 3)); ctx.stroke();
+    if (w > 42 * dpr) {
+      ctx.fillStyle = '#eff6ff';
+      ctx.font = `${labelScale}px ui-sans-serif`;
+      ctx.fillText(`${index + 1}. ${segment.label}`, x + 5 * dpr, y + Math.min(h - 5 * dpr, labelScale + 4 * dpr));
+    }
+    state.canvasItems.push({ id: segment.id, x, y, w, h, virtualX: sx, virtualY: sy, scale, offsetX, offsetY });
+  });
+  ctx.fillStyle = 'rgba(239,246,255,.55)';
+  ctx.font = `${Math.max(10, 11 * dpr)}px ui-sans-serif`;
+  ctx.fillText(`${virtualWidth} × ${virtualHeight} virtual px · drag to place`, pad, height - 7 * dpr);
+}
+
+function drawPreview() {
+  if (state.previewMode === '2d') draw2dPreview();
+  else drawRoutingPreview();
+}
+
+function canvasPointTo2d(event) {
+  const rect = els.canvas.getBoundingClientRect();
+  const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  return { x: (event.clientX - rect.left) * dpr, y: (event.clientY - rect.top) * dpr };
+}
+
+function begin2dDrag(event) {
+  if (state.previewMode !== '2d') return;
+  const point = canvasPointTo2d(event);
+  const hit = state.canvasItems.find((item) => point.x >= item.x && point.x <= item.x + item.w && point.y >= item.y && point.y <= item.y + item.h);
+  if (!hit) return;
+  selectSegment(hit.id);
+  state.drag2d = { pointerId: event.pointerId, id: hit.id, startX: point.x, startY: point.y, originX: hit.virtualX, originY: hit.virtualY, scale: hit.scale };
+  els.canvas.classList.add('dragging');
+  els.canvas.setPointerCapture?.(event.pointerId);
+  event.preventDefault();
+}
+
+function move2dDrag(event) {
+  const drag = state.drag2d;
+  if (!drag || drag.pointerId !== event.pointerId) return;
+  const point = canvasPointTo2d(event);
+  const dx = (point.x - drag.startX) / Math.max(0.0001, drag.scale);
+  const dy = (point.y - drag.startY) / Math.max(0.0001, drag.scale);
+  const nextX = Math.max(0, Math.round(drag.originX + dx));
+  const nextY = Math.max(0, Math.round(drag.originY + dy));
+  const segments = state.mapping.segments.map((segment) => segment.id === drag.id
+    ? { ...segment, source: { ...segment.source, x: nextX, y: nextY } }
+    : segment);
+  state.mapping = normalizeMappingV2({ ...state.mapping, segments, virtual: { ...state.mapping.virtual, width: Math.max(state.mapping.virtual.width, nextX + (selectedSegment()?.source?.width || 1)), height: Math.max(state.mapping.virtual.height, nextY + (selectedSegment()?.source?.height || 1)) } });
+  state.dirty = true;
+  scheduleMappingRender37BP({ summary: false, preview: true, reason: '2d-drag' });
+  event.preventDefault();
+}
+
+function end2dDrag(event) {
+  if (!state.drag2d || (event.pointerId != null && state.drag2d.pointerId !== event.pointerId)) return;
+  els.canvas.releasePointerCapture?.(state.drag2d.pointerId);
+  state.drag2d = null;
+  els.canvas.classList.remove('dragging');
+}
+
+function reset2dLayout() {
+  const rowGap = Math.max(0, Number(state.mapping.layout?.rowGap || 20));
+  const segments = state.mapping.segments.map((segment, index) => ({
+    ...segment,
+    source: { ...segment.source, x: 0, y: index * (Number(segment.source?.height || 1) + rowGap) }
+  }));
+  const height = Math.max(1, ...segments.map((s) => Number(s.source.y || 0) + Number(s.source.height || 1)));
+  state.mapping = normalizeMappingV2({ ...state.mapping, virtual: { ...state.mapping.virtual, height }, segments });
+  state.dirty = true;
+  scheduleMappingRender37BP({ summary: true, diagnostics: true, preview: true, list: true, editor: true, globals: true, reason: 'reset-2d-layout' });
 }
 
 function selectSegmentFromCanvas(event) {

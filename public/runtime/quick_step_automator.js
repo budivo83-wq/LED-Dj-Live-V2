@@ -1856,9 +1856,9 @@
   function performAnim(layer, mode) {
     const api = fastApi();
     if (api && typeof api.stepModule === "function" && typeof api.randomModule === "function") {
-      if (mode === "prev") return api.stepModule(layer, "anim", -1, { delayMs: 1, ui: false, commit: false, warmup: false, coalesce: true, debounceMs: 8 }) !== false;
-      if (mode === "next") return api.stepModule(layer, "anim", 1, { delayMs: 1, ui: false, commit: false, warmup: false, coalesce: true, debounceMs: 8 }) !== false;
-      if (mode === "random") return api.randomModule(layer, "anim", { delayMs: 1, ui: false, commit: false, warmup: false, coalesce: true, debounceMs: 12 }) !== false;
+      if (mode === "prev") return api.stepModule(layer, "anim", -1, { delayMs: 1, ui: false, commit: false, warmup: false, transition: false, coalesce: true, debounceMs: 8 }) !== false;
+      if (mode === "next") return api.stepModule(layer, "anim", 1, { delayMs: 1, ui: false, commit: false, warmup: false, transition: false, coalesce: true, debounceMs: 8 }) !== false;
+      if (mode === "random") return api.randomModule(layer, "anim", { delayMs: 1, ui: false, commit: false, warmup: false, transition: false, coalesce: true, debounceMs: 12 }) !== false;
     }
     if (mode === "prev") return clickControl(`l${layer}_anim_prev`);
     if (mode === "next") return clickControl(`l${layer}_anim_next`);
@@ -1869,9 +1869,9 @@
   function performPalette(layer, mode) {
     const api = fastApi();
     if (api && typeof api.stepModule === "function" && typeof api.randomModule === "function") {
-      if (mode === "prev") return api.stepModule(layer, "palette", -1, { delayMs: 1, ui: false, commit: false, warmup: false, coalesce: true, debounceMs: 8 }) !== false;
-      if (mode === "next") return api.stepModule(layer, "palette", 1, { delayMs: 1, ui: false, commit: false, warmup: false, coalesce: true, debounceMs: 8 }) !== false;
-      if (mode === "random") return api.randomModule(layer, "palette", { delayMs: 1, ui: false, commit: false, warmup: false, coalesce: true, debounceMs: 12 }) !== false;
+      if (mode === "prev") return api.stepModule(layer, "palette", -1, { delayMs: 1, ui: false, commit: false, warmup: false, transition: false, coalesce: true, debounceMs: 8 }) !== false;
+      if (mode === "next") return api.stepModule(layer, "palette", 1, { delayMs: 1, ui: false, commit: false, warmup: false, transition: false, coalesce: true, debounceMs: 12 }) !== false;
+      if (mode === "random") return api.randomModule(layer, "palette", { delayMs: 1, ui: false, commit: false, warmup: false, transition: false, coalesce: true, debounceMs: 12 }) !== false;
     }
     if (mode === "prev") return clickControl(`l${layer}_palette_prev`);
     if (mode === "next") return clickControl(`l${layer}_palette_next`);
@@ -1900,7 +1900,7 @@
       volatile: true,
       persist: false,
       commandKind: "stepseq-param-live",
-      transition: true,
+      transition: false,
       gentle: true,
       amount: 0.42,
       reason: "sequencer-param-live"

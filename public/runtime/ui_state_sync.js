@@ -312,6 +312,7 @@ export function createUiStateSync(deps) {
     runDirtySync("transport", [
       state.enabled, state.previewOpen, state.master, state.cross, state.bpm,
       state.previewMode, state.pixelPreviewMode, state.shaderPreviewMode,
+      state.stagePreviewVariant,
       documentRef?.fullscreenElement ? "fs" : "nofs", settings?.previewMode, settings?.masterDisplayMode
     ].join("|"), syncTransportRegion);
 

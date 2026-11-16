@@ -16,7 +16,7 @@ export const SHADER_PREWARM_KEY = "led-engine-shader-prewarm-v1";
 export const SHADER_MODULE_PREWARM_KEY = "led-engine-shader-module-prewarm-v1";
 
 export const FORCE_CPU_RENDER = false;
-export const FORCE_CPU_LAYER_PREVIEW = true;
+export const FORCE_CPU_LAYER_PREVIEW = false;
 export const DEFAULT_RUNTIME_FPS = 60;
 export const MIN_RUNTIME_FPS = 1;
 export const MAX_RUNTIME_FPS = 120;
@@ -40,14 +40,43 @@ export const BLEND_MODES = [
   "beatCut",
   "glitchMix",
   "subtract",
-  "darken"
+  "darken",
+  "hardLight",
+  "exclusion",
+  "colorBurn",
+  "linearLight",
+  "chromatic"
 ];
 
 export const BLEND_GROUPS = {
   basic: ["fade", "mix", "add", "screen", "multiply", "max", "difference", "subtract", "darken"],
-  cinematic: ["overlay", "softlight", "colorDodge"],
-  glitch: ["glitchMix"],
+  cinematic: ["overlay", "softlight", "colorDodge", "hardLight", "colorBurn"],
+  glitch: ["glitchMix", "chromatic"],
   reactive: ["strobeGate", "beatCut"],
-  shader: ["lumaMask"],
+  shader: ["lumaMask", "linearLight", "exclusion"],
   mask: ["lumaMask"]
 };
+
+export const BLEND_MODE_DESCRIPTIONS = Object.freeze({
+  fade: "Sčítá oba obrazy jako měkký světelný fade.",
+  mix: "Smíchá oba layer y napůl pro neutrální prolínání.",
+  add: "Přidá světlo z obou layerů; jasné části rychle září.",
+  screen: "Světlé barvy zesílí, černá zůstává průhledná.",
+  multiply: "Ztmaví obraz násobením; vhodné pro hluboké překryvy.",
+  max: "V každém kanálu ponechá světlejší hodnotu.",
+  difference: "Vytvoří neonový kontrast podle rozdílu barev.",
+  overlay: "Zvýrazní kontrast: tmavé ztmaví a světlé zesvětlí.",
+  softlight: "Jemně modeluje kontrast bez tvrdého vypálení.",
+  colorDodge: "Rozsvítí horní obraz jako intenzivní světelný odlesk.",
+  lumaMask: "Míchá podle jasu horního layeru jako světelné masky.",
+  strobeGate: "Na čtyřdobý rytmus přepíná mezi L1 a L2.",
+  beatCut: "Na každou dobu udělá ostrý rytmický střih mezi layery.",
+  glitchMix: "Rytmicky přehazuje kanály a přidává glitchový kontrast.",
+  subtract: "Odečte horní obraz a vytvoří temné barevné výřezy.",
+  darken: "V každém kanálu ponechá tmavší hodnotu.",
+  hardLight: "Tvrdý kontrastní svit podle jasu horního layeru.",
+  exclusion: "Měkčí negativní kontrast, často vytváří elektrické barvy.",
+  colorBurn: "Ztmaví základ a zvýrazní syté barevné hrany.",
+  linearLight: "Lineárně zesílí nebo ztmaví obraz velmi výrazným světlem.",
+  chromatic: "Prohodí barevné kanály a vytvoří chromatickou aberaci."
+});

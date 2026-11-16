@@ -60,20 +60,13 @@ export function createUiBindings(deps) {
     const randomizeLayerParamsLiveSafe = (layer) => {
       const layerState = state?.[layer];
       if (!layerState?.params) return;
-      let previousModules = null;
-      let previousState = null;
-      try { previousModules = captureLayerModules?.(layer); } catch {}
-      try { previousState = cloneLayerState?.(layerState); } catch {}
       for (let index = 0; index < layerState.params.length; index += 1) {
         // Same musical range as core randomParam without forcing syncControls/commitState.
         layerState.params[index] = Math.round((0.12 + Math.random() * 0.76) * 100) / 100;
       }
-      if (previousModules && previousState) {
-        try { startLayerTransition?.(layer, previousModules, previousState); } catch {}
-      }
     };
 
-    controls.perfPadDrop?.addEventListener("click", () => {
+    controls.perfPadDrop?.addEventListener("click", async () => {
       // STEP37DY: DROP is intentionally non-stackable. Repeated taps used to queue
       // several L1/L2 dynamic imports and deferred warmups; the UI then looked OK
       // for a moment and froze for many seconds. Extra presses during the guard
@@ -85,50 +78,47 @@ export function createUiBindings(deps) {
       controls.perfPadDrop.classList.add("active");
       window.setTimeout(() => controls.perfPadDrop?.classList.remove("active"), 160);
 
-      const fireSwitch = (layer, listKey, delayMs) => {
-        window.setTimeout(() => {
-          try {
-            randomizeSingleFile(layer, "animFile", listKey, `${layer}_anims`, "anim", {
-              warmup: false,
-              preferLoaded: true,
-              coalesce: true,
-              dropIfBusy: true,
-              debounceMs: 0,
-              ui: false,
-              commit: false,
-              commitDelayMs: 0
-            });
-          } catch (error) {
-            console.warn("DROP randomize failed", layer, error);
-          }
-        }, delayMs);
+      const switchOptions = {
+        warmup: false,
+        // DROP changes both layers in one gesture. Starting two fades here
+        // forces a cold previous+current GPU transition program and can block
+        // the render loop while WebGL compiles it. Keep the performance pad
+        // immediate; regular selector changes retain the configured fade.
+        transition: false,
+        preferLoaded: true,
+        coalesce: true,
+        dropIfBusy: true,
+        debounceMs: 0,
+        ui: false,
+        commit: false,
+        commitDelayMs: 0
       };
-
-      fireSwitch("l1", "l1Anims", 0);
-      fireSwitch("l2", "l2Anims", 24);
-
       try {
-        requestAnimationFrame(() => {
-          try { randomizeLayerParamsLiveSafe("l1"); } catch {}
-          try { randomizeLayerParamsLiveSafe("l2"); } catch {}
-          if (dropPadCommitTimer) {
-            window.clearTimeout(dropPadCommitTimer);
-            try { window.cancelIdleCallback?.(dropPadCommitTimer); } catch {}
-          }
-          const commitDropState = () => {
-            dropPadCommitTimer = 0;
-            try { commitState(); } catch {}
-          };
-          if (typeof window.requestIdleCallback === "function") {
-            dropPadCommitTimer = window.requestIdleCallback(commitDropState, { timeout: 1400 });
-          } else {
-            dropPadCommitTimer = window.setTimeout(commitDropState, 900);
-          }
-        });
-      } catch {
-        try { randomizeLayerParamsLiveSafe("l1"); randomizeLayerParamsLiveSafe("l2"); } catch {}
+        // Keep DROP deterministic at the runtime boundary: overlapping async
+        // imports caused L1/L2 transitions to capture half-updated state.
+        await randomizeSingleFile("l1", "animFile", "l1Anims", "l1_anims", "anim", switchOptions);
+        await randomizeSingleFile("l2", "animFile", "l2Anims", "l2_anims", "anim", switchOptions);
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        randomizeLayerParamsLiveSafe("l1");
+        randomizeLayerParamsLiveSafe("l2");
+        if (dropPadCommitTimer) {
+          window.clearTimeout(dropPadCommitTimer);
+          try { window.cancelIdleCallback?.(dropPadCommitTimer); } catch {}
+        }
+        const commitDropState = () => {
+          dropPadCommitTimer = 0;
+          try { commitState(); } catch {}
+        };
+        if (typeof window.requestIdleCallback === "function") {
+          dropPadCommitTimer = window.requestIdleCallback(commitDropState, { timeout: 1400 });
+        } else {
+          dropPadCommitTimer = window.setTimeout(commitDropState, 900);
+        }
+      } catch (error) {
+        console.warn("DROP randomize failed", error);
+      } finally {
+        dropPadInFlight = false;
       }
-      window.setTimeout(() => { dropPadInFlight = false; }, 1150);
     });
 
     function publishBlackFrame() {
@@ -215,9 +205,45 @@ export function createUiBindings(deps) {
   function bindPreviewTabs() {
     let lastNonDebugPreviewMode = "pixel";
     let shaderPreviewZoomed = false;
+    const PREVIEW_BRIGHTNESS_KEY = "led-engine-preview-brightness-v1";
+    const shaderFullscreenButton = controls.shaderFullscreenBtn;
+    const shaderPreviewCanvas = documentRef?.getElementById?.("shaderPreviewCanvas");
+    const applyPreviewBrightness = (rawValue) => {
+      const value = Math.max(1, Math.min(4, Number(rawValue) || 1));
+      const normalized = Math.round(value * 10) / 10;
+      documentRef?.documentElement?.style?.setProperty("--preview-brightness", String(normalized));
+      if (controls.previewBrightness) controls.previewBrightness.value = String(normalized);
+      if (controls.previewBrightnessValue) controls.previewBrightnessValue.textContent = `${normalized.toFixed(1)}×`;
+      try { window.localStorage.setItem(PREVIEW_BRIGHTNESS_KEY, String(normalized)); } catch {}
+    };
+    let storedPreviewBrightness = 1;
+    try { storedPreviewBrightness = Number(window.localStorage.getItem(PREVIEW_BRIGHTNESS_KEY) || 1); } catch {}
+    applyPreviewBrightness(storedPreviewBrightness);
+    controls.previewBrightness?.addEventListener("input", (event) => applyPreviewBrightness(event.target.value));
     const applyShaderPreviewZoomClass = () => {
       documentRef?.body?.classList?.toggle("shader-preview-zoom-1to1", shaderPreviewZoomed);
     };
+    const syncShaderFullscreenButton = () => {
+      const shaderBig = getPreviewMode?.() === "shader" && String(state.shaderPreviewMode || "big").toLowerCase() === "big";
+      const active = documentRef?.fullscreenElement === shaderPreviewCanvas;
+      if (!shaderFullscreenButton) return;
+      shaderFullscreenButton.disabled = !shaderBig;
+      shaderFullscreenButton.classList.toggle("active", active);
+      shaderFullscreenButton.textContent = active ? "EXIT SHADER FULLSCREEN" : "SHADER FULLSCREEN";
+      shaderFullscreenButton.title = shaderBig
+        ? (active ? "Ukončit fullscreen Shader Big (Esc)" : "Zobrazit Shader Big přes celou obrazovku")
+        : "Dostupné pouze v režimu Shader Big";
+      try { window.dispatchEvent(new CustomEvent("led-preview-layout-changed")); } catch {}
+    };
+    shaderFullscreenButton?.addEventListener("click", async () => {
+      if (documentRef?.fullscreenElement === shaderPreviewCanvas) {
+        try { await documentRef.exitFullscreen(); } catch {}
+        return;
+      }
+      if (getPreviewMode?.() !== "shader" || String(state.shaderPreviewMode || "big").toLowerCase() !== "big") return;
+      try { await shaderPreviewCanvas?.requestFullscreen?.(); } catch (error) { console.warn("Shader fullscreen failed", error); }
+    });
+    documentRef?.addEventListener?.("fullscreenchange", syncShaderFullscreenButton);
     const notifyPreviewModeChanged = (reason, previousMode) => {
       try {
         window.dispatchEvent(new CustomEvent("led-preview-mode-changed", {
@@ -257,6 +283,8 @@ export function createUiBindings(deps) {
       const run = () => {
         previewSyncPending = false;
         try { syncControls(); } catch {}
+        syncShaderFullscreenButton();
+        try { window.dispatchEvent(new CustomEvent("led-preview-layout-changed")); } catch {}
       };
       try { requestAnimationFrame(run); } catch { setTimeout(run, 0); }
     };
@@ -302,9 +330,17 @@ export function createUiBindings(deps) {
         if (button.id === "previewTabStage") {
           shaderPreviewZoomed = false;
           applyShaderPreviewZoomClass();
+          if (mode === "stage") {
+            const variants = ["pure", "pixel", "shader"];
+            const currentVariant = variants.includes(state.stagePreviewVariant) ? state.stagePreviewVariant : "pure";
+            state.stagePreviewVariant = variants[(variants.indexOf(currentVariant) + 1) % variants.length];
+            changedReason = `stage-${state.stagePreviewVariant}`;
+          } else {
+            state.stagePreviewVariant = "pure";
+            changedReason = "stage-select";
+          }
           setPreviewMode?.("stage");
           lastNonDebugPreviewMode = "stage";
-          changedReason = "stage-select";
         }
         if (button.id === "previewTabShader") {
           // STEP37Z: SHADER tab behaves like PIXEL. First click selects shader,
@@ -319,6 +355,13 @@ export function createUiBindings(deps) {
             changedReason = "shader-select";
           }
           lastNonDebugPreviewMode = "shader";
+        }
+        if (button.id === "previewTabDual") {
+          shaderPreviewZoomed = false;
+          applyShaderPreviewZoomClass();
+          setPreviewMode?.("dual");
+          lastNonDebugPreviewMode = "dual";
+          changedReason = "dual-small-select";
         }
         if (button.id === "previewTabDebug") {
           if (mode === "debug") {
@@ -339,6 +382,7 @@ export function createUiBindings(deps) {
         if (shouldCommit) maybeCommitPreviewMode();
       });
     });
+    syncShaderFullscreenButton();
   }
 
   function commitLiveParam(reason = "live-param", options = {}) {

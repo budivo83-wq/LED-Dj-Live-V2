@@ -237,13 +237,23 @@
               <button id="previewTabStage" type="button">STAGE</button>
               <button id="previewTabPixel" class="active" type="button">PIXEL</button>
               <button id="previewTabShader" type="button">SHADER</button>
+              <button id="previewTabDual" type="button">DUAL SMALL</button>
               <button id="previewTabDebug" type="button">DEBUG</button>
+              <button id="shaderFullscreenBtn" type="button" title="Zvětšit Shader Big na celou obrazovku">SHADER FULLSCREEN</button>
             </div>
             <small id="previewModeStatus" class="preview-mode-status" aria-live="polite">PREVIEW: PIXEL BIG</small>
+            <label class="preview-brightness-control" title="Zesílení pouze vizuálního preview">
+              <span>PREVIEW GAIN</span>
+              <input id="previewBrightness" type="range" min="1" max="4" step="0.1" value="1" aria-label="Preview brightness">
+              <output id="previewBrightnessValue">1.0×</output>
+            </label>
           </header>
           <div class="preview">
             <div class="preview-box" id="previewBox">
               <canvas id="ledCanvas" aria-label="LED preview"></canvas>
+              <canvas id="stagePreviewCanvas" aria-label="2D stage preview"></canvas>
+              <canvas id="stagePixelPreviewCanvas" aria-label="Stage pixel preview"></canvas>
+              <canvas id="stageShaderPreviewCanvas" aria-label="Stage shader preview"></canvas>
               <canvas id="shaderPreviewCanvas" aria-label="Shader preview"></canvas>
               <section id="debugPanel" class="debug-panel debug-panel-12m debug-output-health-37cd" aria-label="Output debug health">
                 <div class="debug-panel-head debug-panel-head-12m debug-output-health-head-37cd">
@@ -312,6 +322,7 @@
                 <button id="blend_next" type="button">+</button>
                 <button id="blend_random" type="button">R</button>
               </div>
+              <div id="blendModeDescription" class="blend-mode-description" aria-live="polite"></div>
             </label>
 
             <div class="transition-control">
@@ -680,7 +691,7 @@
 <script src="runtime/runtime_mode_authority.js?v=13bu-az"></script>
 <script src="runtime/telemetry_store.js?v=13bu-bn"></script>
   <script src="runtime/fps_state_rescue_13bu_cj.js?v=13bu-cj"></script>
-<script type="module" src="app.js?v=37ee-original-shader-preview"></script>
+<script type="module" src="app.js?v=38w-gpu-shader-runtime"></script>
 <script src="runtime/runtime_loop_registry_37ce.js?v=37dp"></script>
 <script src="runtime/runtime_snapshot_recovery_37do.js?v=37dp"></script>
 <script src="runtime/output_route_registry_37bb.js?v=37bb"></script>

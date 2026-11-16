@@ -40,7 +40,7 @@ export function initCenterMenuControlsRuntime(deps) {
     try { windowRef.navigator?.sendBeacon?.("/api/device/quit", body); } catch {}
     void fetchRef("/api/device/quit", { method: "POST", body: "{}", keepalive: true, headers: { "Content-Type": "application/json" } }).catch(() => {});
     try { windowRef.top?.postMessage?.({ type: "led-shell-quit" }, "*"); } catch {}
-    windowRef.setTimeout?.(() => { try { windowRef.top?.close?.(); } catch {} try { windowRef.close?.(); } catch {} }, 80);
+    windowRef.setTimeout?.(() => { try { windowRef.top?.close?.(); } catch {} try { windowRef.close?.(); } catch {} }, 120);
   });
   const syncFullscreenLabel = () => {
     syncFullscreenButtonLabel?.(controls.menuFullscreenBtn, documentRef);

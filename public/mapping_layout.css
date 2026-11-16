@@ -58,6 +58,20 @@ body.mapping-page {
   padding-right: 3px;
 }
 
+.segment-list .strip-card[draggable="true"] {
+  cursor: grab;
+}
+
+.segment-list .strip-card.is-dragging {
+  opacity: .48;
+  cursor: grabbing;
+}
+
+.segment-list .strip-card.is-drop-target {
+  outline: 2px solid var(--cyan, #00d9ff);
+  outline-offset: 2px;
+}
+
 .mapping-center {
   display: grid;
   grid-template-rows: minmax(260px, .86fr) minmax(220px, 1fr);
@@ -802,6 +816,40 @@ body.mapping-page {
   background: rgba(126, 240, 194, .08);
 }
 
+.preview-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.preview-mode-toggle {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 10px;
+  background: rgba(0,0,0,.18);
+}
+.preview-mode-toggle button,
+.preview-reset {
+  border: 0;
+  border-radius: 7px;
+  padding: 7px 9px;
+  color: rgba(239,246,255,.68);
+  background: transparent;
+  font-size: 10px;
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+.preview-mode-toggle button.active,
+.preview-reset:hover {
+  color: #071017;
+  background: #7ef0c2;
+}
+.preview-reset {
+  border: 1px solid rgba(255,255,255,.12);
+}
+
 .mapping-v2-workbench .strip-card-grid {
   grid-template-columns: repeat(auto-fit, minmax(235px, 1fr)) !important;
   gap: 12px !important;
@@ -1094,9 +1142,13 @@ body.mapping-page {
 }
 .strip-router-preview-wrap {
   min-height: 210px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain;
 }
 #previewCanvas {
   min-height: 190px !important;
+  height: auto;
 }
 .strip-card-grid {
   grid-template-columns: repeat(4, minmax(188px, 1fr)) !important;

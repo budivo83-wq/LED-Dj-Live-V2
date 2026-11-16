@@ -121,6 +121,32 @@ export function blendWithModeRuntime(deps, a, b, mode) {
         softlightChannel(a[1], b[1]),
         softlightChannel(a[2], b[2])
       ];
+    case "hardLight":
+      return [
+        hardlightChannel(a[0], b[0]),
+        hardlightChannel(a[1], b[1]),
+        hardlightChannel(a[2], b[2])
+      ];
+    case "exclusion":
+      return [
+        a[0] + b[0] - (2 * a[0] * b[0]) / 255,
+        a[1] + b[1] - (2 * a[1] * b[1]) / 255,
+        a[2] + b[2] - (2 * a[2] * b[2]) / 255
+      ];
+    case "colorBurn":
+      return [burnChannel(a[0], b[0]), burnChannel(a[1], b[1]), burnChannel(a[2], b[2])];
+    case "linearLight":
+      return [
+        Math.max(0, Math.min(255, a[0] + 2 * b[0] - 255)),
+        Math.max(0, Math.min(255, a[1] + 2 * b[1] - 255)),
+        Math.max(0, Math.min(255, a[2] + 2 * b[2] - 255))
+      ];
+    case "chromatic":
+      return [
+        a[0] * 0.55 + b[1] * 0.45,
+        a[1] * 0.55 + b[2] * 0.45,
+        a[2] * 0.55 + b[0] * 0.45
+      ];
     default:
       return [Math.min(a[0] + b[0], 255), Math.min(a[1] + b[1], 255), Math.min(a[2] + b[2], 255)];
   }
@@ -149,4 +175,17 @@ function softlightChannel(baseValue, topValue) {
     ? base - (1 - 2 * top) * base * (1 - base)
     : base + (2 * top - 1) * (Math.sqrt(base) - base);
   return mixed * 255;
+}
+
+function hardlightChannel(baseValue, topValue) {
+  const base = baseValue / 255;
+  const top = topValue / 255;
+  return (top < 0.5
+    ? 2 * base * top
+    : 1 - 2 * (1 - base) * (1 - top)) * 255;
+}
+
+function burnChannel(baseValue, topValue) {
+  if (topValue <= 0) return 0;
+  return Math.max(0, 255 - ((255 - baseValue) * 255) / topValue);
 }

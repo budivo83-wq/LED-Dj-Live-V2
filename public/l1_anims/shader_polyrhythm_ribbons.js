@@ -1,4 +1,6 @@
+import { gpuFor } from '../shader_anim_engine.js';
 export const meta = { name: "Polyrhythm Ribbons", description: "interlocking ribbons with nonrepeating polyrhythmic motion", params: ["Voices", "Tempo", "Width", "Color"] };
+export const gpu = gpuFor('shader_polyrhythm_ribbons');
 export const prewarm = { priority: 63, samplePoints: 96, warmOnSelect: true, warmNeighbors: true };
 const TAU = Math.PI * 2;
 const sat = (v) => Math.max(0, Math.min(1, v));

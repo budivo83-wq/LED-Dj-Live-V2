@@ -1,3 +1,5 @@
+import { BLEND_MODE_DESCRIPTIONS } from "./core/constants.js";
+
 export function createUiSync(deps) {
   const {
     controls,
@@ -59,9 +61,23 @@ export function createUiSync(deps) {
       optgroup.label = `/${group}`;
       modes
         .filter((mode, index) => modes.indexOf(mode) === index && blendModes.includes(mode))
-        .forEach((mode) => optgroup.appendChild(option(mode, blendModeLabel(mode))));
+        .forEach((mode) => {
+          const entry = option(mode, blendModeLabel(mode));
+          const description = BLEND_MODE_DESCRIPTIONS[mode] || "Speciální kombinace obou layerů.";
+          entry.title = description;
+          entry.dataset.description = description;
+          optgroup.appendChild(entry);
+        });
       controls.blend.appendChild(optgroup);
     }
+    syncBlendDescription();
+  }
+
+  function syncBlendDescription() {
+    const mode = String(state.blendMode || "");
+    const description = BLEND_MODE_DESCRIPTIONS[mode] || "Speciální kombinace obou layerů.";
+    if (controls.blendDescription) controls.blendDescription.textContent = description;
+    if (controls.blend) controls.blend.title = `${blendModeLabel(mode)} — ${description}`;
   }
 
   return {
@@ -70,7 +86,8 @@ export function createUiSync(deps) {
     updateParamLabels,
     syncSettingsControls,
     syncTransitionControls,
-    renderBlendOptions
+    renderBlendOptions,
+    syncBlendDescription
   };
 }
 

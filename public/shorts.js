@@ -266,7 +266,7 @@ menuQuitBtn?.addEventListener("click", async () => {
   try { navigator.sendBeacon?.("/api/device/quit", body); } catch {}
   void fetch("/api/device/quit", { method: "POST", body: "{}", keepalive: true, headers: { "Content-Type": "application/json" } }).catch(() => {});
   try { window.top?.postMessage?.({ type: "led-shell-quit" }, "*"); } catch {}
-  window.setTimeout(() => { try { window.top?.close?.(); } catch {} try { window.close(); } catch {} }, 80);
+  window.setTimeout(() => { try { window.top?.close?.(); } catch {} try { window.close(); } catch {} }, 120);
 });
 
 document.addEventListener("fullscreenchange", () => syncFullscreenButtonLabel(menuFullscreenBtn, document));

@@ -68,7 +68,12 @@ export async function runStartupWarmupFlow(deps) {
     windowRef
   } = deps;
 
-  const disableThumbWarmup = runtimeProfile.disableThumbWarmup === true || runtimeProfile.runtimeOnly === true || runtimeProfile.startupThumbPreload === false;
+  // Startup thumbnail rendering is opt-in. Selector thumbnails are rendered
+  // lazily by the idle queue; generating the complete library at boot blocks
+  // the first live frames when the animation library is large.
+  const disableThumbWarmup = runtimeProfile.disableThumbWarmup === true
+    || runtimeProfile.runtimeOnly === true
+    || runtimeProfile.startupThumbPreload !== true;
   const disableShaderPrewarm = runtimeProfile.disableShaderPrewarm === true || runtimeProfile.runtimeOnly === true || runtimeProfile.lowPower === true;
 
   if (runtimeProfile.runtimeOnly) {
@@ -99,7 +104,12 @@ export async function runStartupWarmupFlow(deps) {
     // a picker becomes the first expensive import/render burst.
     startupStep?.(88, "Preparing picker thumbnails");
     await safeAwait("shell thumbnail cache", safePreloadThumbnailCache);
-    startupStep?.(91, "Starting UI runtime");
+    // The visible Shell owns the Shader canvas and its WebGL context. It must
+    // run the same full GPU/CPU prewarm as the main runtime; otherwise every
+    // shader change compiles in the Shell for the first time.
+    startupStep?.(92, "Preparing GPU shader previews");
+    await safeAwait("shell GPU shader preload", safePreloadEverythingForStartup);
+    startupStep?.(95, "Starting UI runtime");
     return;
   }
 
@@ -125,6 +135,13 @@ export async function runStartupWarmupFlow(deps) {
     await safeAwait("thumbnail cache", safePreloadThumbnailCache);
   }
   if (!embeddedRuntime) {
+    // The full shader/module preload must finish before READY. Deferring this
+    // work made the first fade changes look smooth, then caused a later fade to
+    // synchronously compile a transition program on the render thread.
+    if (!disableShaderPrewarm) {
+      startupStep?.(92, "Preparing animation transitions");
+      await safeAwait("full startup preload", safePreloadEverythingForStartup);
+    }
     deferCommonWarmups({
       windowRef,
       preloadThumbnailCache: runtimeProfile.startupThumbPreload === true ? null : safePreloadThumbnailCache,
@@ -133,7 +150,7 @@ export async function runStartupWarmupFlow(deps) {
       state,
       warmupStoredShaderScenes: safeWarmupStoredShaderScenes,
       warmupStoredShaderModules: safeWarmupStoredShaderModules,
-      preloadEverythingForStartup: safePreloadEverythingForStartup,
+      preloadEverythingForStartup: null,
       includeEverything: false,
       delay: 1800
     });
