@@ -66,25 +66,32 @@ export function createLayerRuntime(deps) {
       t: renderT,
       params,
       layerT: layerTime(layerState),
-      normParams: normalizedParams(params)
+      normParams: normalizedParams(params),
+      invWidth: frameWidth > 1 ? 1 / (frameWidth - 1) : 0,
+      invHeight: frameHeight > 1 ? 1 / (frameHeight - 1) : 0,
+      mirrorX: Boolean(layerState.mirrorX),
+      mirrorY: Boolean(layerState.mirrorY),
+      reverse: Boolean(layerState.reverse)
     };
     renderHotCache.set(layerState, next);
     return next;
   }
 
-  function layerCoordX(layerState, x) {
+  function layerCoordX(layerState, x, hot = null) {
     const W = frameWidth || WRef();
-    let nx = W <= 1 ? 0 : x / (W - 1);
-    if (layerState.mirrorX) nx = 0.5 + Math.abs(nx - 0.5);
-    if (layerState.reverse) nx = 1 - nx;
+    const invWidth = hot?.invWidth ?? (W > 1 ? 1 / (W - 1) : 0);
+    let nx = x * invWidth;
+    if (hot?.mirrorX ?? layerState.mirrorX) nx = 0.5 + Math.abs(nx - 0.5);
+    if (hot?.reverse ?? layerState.reverse) nx = 1 - nx;
     return nx;
   }
 
-  function layerCoordY(layerState, y) {
+  function layerCoordY(layerState, y, hot = null) {
     const H = frameHeight || HRef();
-    let ny = H <= 1 ? 0 : y / (H - 1);
-    if (layerState.mirrorY) ny = 0.5 + Math.abs(ny - 0.5);
-    if (layerState.reverse) ny = 1 - ny;
+    const invHeight = hot?.invHeight ?? (H > 1 ? 1 / (H - 1) : 0);
+    let ny = y * invHeight;
+    if (hot?.mirrorY ?? layerState.mirrorY) ny = 0.5 + Math.abs(ny - 0.5);
+    if (hot?.reverse ?? layerState.reverse) ny = 1 - ny;
     return ny;
   }
 
@@ -171,7 +178,7 @@ export function createLayerRuntime(deps) {
     }
     try {
       const hot = getLayerHotState(layerState);
-      const rendered = layerModules.anim.render(layerCoordX(layerState, x), layerCoordY(layerState, y), hot.layerT, hot.normParams);
+      const rendered = layerModules.anim.render(layerCoordX(layerState, x, hot), layerCoordY(layerState, y, hot), hot.layerT, hot.normParams);
       // STEP37DY: newer musical shaders can return direct RGB arrays. The old
       // path always forced Number(rendered), so RGB shaders became NaN/black or
       // looked like broken scale in selectors/output. Keep scalar shaders on the

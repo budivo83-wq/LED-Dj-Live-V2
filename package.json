@@ -23,6 +23,7 @@
     "test:preview-budget-pressure-contract": "node scripts/test-preview-budget-pressure-contract.mjs",
     "test:cpu-animation-path-contract": "node scripts/test-cpu-animation-path-contract.mjs",
     "test:render-backend-policy": "node scripts/test-render-backend-policy.mjs",
+    "test:cpu-hot-cache-contract": "node scripts/test-cpu-hot-cache-contract.mjs",
     "test:live-output-driver-bridge-plan": "node scripts/test-live-output-driver-bridge-plan.mjs",
     "test:ui-staged-boundary": "node scripts/test-ui-staged-boundary.mjs",
     "test:migration-flags": "node scripts/test-migration-flags.mjs",
