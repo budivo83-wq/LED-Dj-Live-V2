@@ -9,6 +9,7 @@ export const GENERATOR_LIVE_LOCK_KEY = 'budilight.generator.live.lock.v1';
 const DEFAULT_LIVE_FPS = 60;
 const DEFAULT_WIDTH = 300;
 const DEFAULT_HEIGHT = 8;
+const SNAPSHOT_CACHE_MS = 200;
 
 function nowMs() {
   try { return performance.now(); } catch { return Date.now(); }
@@ -219,14 +220,23 @@ export function publishGeneratorPreviewHeartbeat(detail = {}) {
 export function createGeneratorLiveBridge(options = {}) {
   const state = createInitialState(options);
   let lastSendAt = 0;
+  let lastSnapshotAt = 0;
+  let cachedSnapshot = null;
 
-  function snapshot() {
+  function snapshot(force = true) {
+    const now = Date.now();
+    // Snapshot consumers are control-plane diagnostics. Reusing the most
+    // recent snapshot keeps the 60 FPS publish path from allocating a full
+    // state copy and recent-event slice on every frame.
+    if (!force && cachedSnapshot && now - lastSnapshotAt < SNAPSHOT_CACHE_MS) return cachedSnapshot;
     const out = {
       ...state,
       serverInFlight: Boolean(state.serverInFlight),
       pendingServer: Boolean(state.pendingServerPacket),
       recent: state.recent.slice(-12)
     };
+    cachedSnapshot = out;
+    lastSnapshotAt = now;
     publishBridgeSnapshot(out);
     return out;
   }
@@ -247,7 +257,7 @@ export function createGeneratorLiveBridge(options = {}) {
     state.lastPublishWallAt = Date.now();
     setLiveLock(true, { width: state.width, height: state.height, fps: state.fps, directServerMirror: state.directServerMirror, lastPublishWallAt: state.lastPublishWallAt });
     pushRecent(state, 'start', `Generator LIVE MASTER started ${state.width}x${state.height}@${state.fps}`);
-    return snapshot();
+    return snapshot(true);
   }
 
   function stop(reason = 'released') {
@@ -257,7 +267,7 @@ export function createGeneratorLiveBridge(options = {}) {
     state.pendingServerPacket = null;
     setLiveLock(false, { reason });
     pushRecent(state, 'stop', reason);
-    return snapshot();
+    return snapshot(true);
   }
 
   function publish(rendered, context = {}) {
@@ -327,8 +337,8 @@ export function createGeneratorLiveBridge(options = {}) {
 
     state.lastPublishMs = Math.max(0, nowMs() - publishStart);
     state.avgPublishMs = emaMetric(state.avgPublishMs, state.lastPublishMs, 0.16);
-    postServerMasterFrame(state, packet).then(() => snapshot()).catch(() => snapshot());
-    return { ok: true, skipped: false, packet, snapshot: snapshot(), publishMs: state.lastPublishMs };
+    postServerMasterFrame(state, packet).then(() => snapshot(false)).catch(() => snapshot(false));
+    return { ok: true, skipped: false, packet, snapshot: snapshot(false), publishMs: state.lastPublishMs };
   }
 
   function setOptions(next = {}) {
@@ -337,7 +347,7 @@ export function createGeneratorLiveBridge(options = {}) {
     if (next.height != null) state.height = clampInt(next.height, 1, 64, state.height || DEFAULT_HEIGHT);
     if (next.directServerMirror != null) state.directServerMirror = next.directServerMirror !== false;
     if (next.localFrameBus != null) state.localFrameBus = next.localFrameBus !== false;
-    return snapshot();
+    return snapshot(true);
   }
 
   return Object.freeze({ version: GENERATOR_BRIDGE_VERSION, start, stop, publish, setOptions, snapshot });

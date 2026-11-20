@@ -1,3 +1,5 @@
+import { createOutputTransportAdapter } from "./output_transport_adapter.js";
+
 export function createBootstrapServiceDeps({
   createRuntimeBoundaryBridge,
   createBpmEngine,
@@ -491,7 +493,10 @@ export function createBootstrapServices(deps) {
     getTargetFps: getUnifiedTargetFps,
     getPauseUntil: getSerialPauseUntil,
     setPauseUntil: setSerialPauseUntil,
-    sendFrame: (frame) => serialOutput?.sendSerialFrame(frame),
+    transport: createOutputTransportAdapter({
+      name: "serial",
+      sendFrame: (frame) => serialOutput?.sendSerialFrame(frame)
+    }),
     onMetrics: onOutputPipelineMetrics
   });
 

@@ -1,5 +1,6 @@
 import { getRuntimeFrameBus } from "./frame_bus.js";
 import { FRAME_AUTHORITY_POLICY_VERSION, FRAME_POLICY_DECISIONS, evaluateFramePublishPolicy } from "./frame_authority_policy.js";
+import { expectedFrameByteLength, isValidFrameBytes, normalizeFrameDimensions, normalizeFrameSource } from "./frame_contract.js";
 
 // Frame Authority — STEP 8M
 //
@@ -145,25 +146,6 @@ function cloneBytes(frame) {
   return new Uint8Array(frame);
 }
 
-function normalizeDimensions(dimensions) {
-  const width = Math.max(0, Math.round(Number(dimensions?.width || 0)));
-  const height = Math.max(0, Math.round(Number(dimensions?.height || 0)));
-  return { width, height };
-}
-
-function expectedByteLength(dimensions) {
-  return Math.max(0, dimensions.width * dimensions.height * 3);
-}
-
-function isValidFrameForDimensions(frame, dimensions) {
-  return frame instanceof Uint8Array && frame.byteLength === expectedByteLength(dimensions);
-}
-
-function normalizeSource(source) {
-  if (typeof source !== "string" || !source.trim()) return FRAME_PRODUCERS.UNKNOWN;
-  return source.trim();
-}
-
 function makeProducerStats() {
   return {
     publishCount: 0,
@@ -203,7 +185,7 @@ function makeMeta(options = {}, dimensions, frame, producerStats) {
     outputMode: typeof options.outputMode === "string" ? options.outputMode : "unknown",
     targetFps: Number.isFinite(options.targetFps) ? options.targetFps : null,
     byteLength: frame?.byteLength || 0,
-    expectedByteLength: expectedByteLength(dimensions)
+    expectedByteLength: expectedFrameByteLength(dimensions)
   };
 }
 
@@ -315,8 +297,8 @@ export function createFrameAuthority(options = {}) {
   }
 
   function publishFrame(input = {}) {
-    const source = normalizeSource(input.source);
-    const dimensions = normalizeDimensions(input.dimensions || { width: input.width, height: input.height });
+    const source = normalizeFrameSource(input.source, FRAME_PRODUCERS.UNKNOWN);
+    const dimensions = normalizeFrameDimensions(input.dimensions || { width: input.width, height: input.height });
     const sourceFrame = input.frame instanceof Uint8Array ? input.frame : null;
     const stats = getMutableProducerStats(source);
 
@@ -344,8 +326,8 @@ export function createFrameAuthority(options = {}) {
       return null;
     }
 
-    if (!isValidFrameForDimensions(sourceFrame, dimensions)) {
-      const reason = `invalid frame from ${source}: ${sourceFrame?.byteLength || 0}/${expectedByteLength(dimensions)} bytes`;
+    if (!isValidFrameBytes(sourceFrame, dimensions)) {
+      const reason = `invalid frame from ${source}: ${sourceFrame?.byteLength || 0}/${expectedFrameByteLength(dimensions)} bytes`;
       rejectedCount += 1;
       lastRejectReason = reason;
       lastProducer = source;
@@ -427,7 +409,7 @@ export function createFrameAuthority(options = {}) {
     // that broke STEP 8F's external commit-boundary experiment.
     return publishFrame({
       ...input,
-      source: normalizeSource(input.source || FRAME_PRODUCERS.RENDER_PIPELINE)
+      source: normalizeFrameSource(input.source || FRAME_PRODUCERS.RENDER_PIPELINE, FRAME_PRODUCERS.RENDER_PIPELINE)
     });
   }
 

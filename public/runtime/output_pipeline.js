@@ -1,3 +1,5 @@
+import { normalizeFrameInput } from "./frame_contract.js";
+
 export function createOutputPipeline(deps) {
   const {
     getNow,
@@ -6,8 +8,12 @@ export function createOutputPipeline(deps) {
     getPauseUntil,
     setPauseUntil,
     sendFrame,
+    transport,
     onMetrics
   } = deps;
+  const sendPacket = typeof transport?.send === "function"
+    ? (packet) => transport.send(packet)
+    : (packet) => sendFrame?.(packet.frame, packet);
 
   let queuedFrame = null;
   let queuedMeta = null;
@@ -222,10 +228,8 @@ export function createOutputPipeline(deps) {
   }
 
   function enqueue(frame) {
-    const packet = frame instanceof Uint8Array
-      ? { frame }
-      : (frame && frame.frame instanceof Uint8Array ? frame : null);
-    if (!packet?.frame?.length) return;
+    const packet = normalizeFrameInput(frame);
+    if (!packet) return;
     if (!isEnabled()) {
       metrics.dropped += 1;
       metrics.droppedDisabled += 1;
@@ -242,7 +246,7 @@ export function createOutputPipeline(deps) {
     }
     // Authoritative frame packets already own an immutable Uint8Array. Keep a
     // direct reference in that hot path and clone only bare byte arrays.
-    queuedFrame = frame instanceof Uint8Array ? new Uint8Array(packet.frame) : packet.frame;
+    queuedFrame = packet.legacyBytes ? new Uint8Array(packet.frame) : packet.frame;
     queuedMeta = {
       frameId: Number(packet.frameId || 0),
       source: String(packet.source || "--"),
@@ -338,7 +342,7 @@ export function createOutputPipeline(deps) {
 
     const startedAt = getNow();
     try {
-      sendFrame(frame);
+      sendPacket({ ...frameMeta, frame });
       const finishedAt = getNow();
       const sendMs = Math.max(0, finishedAt - startedAt);
       const latencyMs = Math.max(0, finishedAt - enqueuedAt);

@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-11-07T07:36:17.383Z",
+  "generatedAt": "2026-11-16T23:27:29.498Z",
   "summary": {
     "htmlRoots": 11,
-    "livePublicJs": 287,
-    "unreachedPublicJs": 8,
+    "livePublicJs": 312,
+    "unreachedPublicJs": 0,
     "stagedSrcJs": 182
   },
   "roots": [
@@ -432,6 +432,7 @@
       "status": "LIVE_IMPORT",
       "outputHits": [],
       "hotHits": [
+        "setTimeout",
         "addEventListener"
       ]
     },
@@ -749,6 +750,8 @@
       "status": "LIVE_IMPORT",
       "outputHits": [],
       "hotHits": [
+        "requestAnimationFrame",
+        "setTimeout",
         "commitState"
       ]
     },
@@ -1185,6 +1188,7 @@
         "Serial"
       ],
       "hotHits": [
+        "requestAnimationFrame",
         "setTimeout",
         "localStorage",
         "dispatchEvent",
@@ -1239,6 +1243,14 @@
         "setTimeout",
         "localStorage",
         "addEventListener"
+      ]
+    },
+    {
+      "rel": "public/runtime/stage_preview.js",
+      "status": "LIVE_IMPORT",
+      "outputHits": [],
+      "hotHits": [
+        "localStorage"
       ]
     },
     {
@@ -1441,7 +1453,8 @@
       "rel": "public/shell.js",
       "status": "LIVE_IMPORT",
       "outputHits": [
-        "serial"
+        "serial",
+        "fetch("
       ],
       "hotHits": [
         "setInterval",
@@ -1457,6 +1470,7 @@
         "fetch("
       ],
       "hotHits": [
+        "setTimeout",
         "localStorage",
         "addEventListener"
       ]
@@ -1508,6 +1522,7 @@
       "hotHits": [
         "requestAnimationFrame",
         "setTimeout",
+        "localStorage",
         "dispatchEvent",
         "addEventListener",
         "commitState"
@@ -2413,79 +2428,6 @@
         "setInterval",
         "setTimeout"
       ]
-    },
-    {
-      "rel": "public/runtime/animation_library_prewarm_plan.js",
-      "status": "UNREACHED_PUBLIC",
-      "outputHits": [
-        "fetch("
-      ],
-      "hotHits": []
-    },
-    {
-      "rel": "public/runtime/output_health_panel_37ca.js",
-      "status": "UNREACHED_PUBLIC",
-      "outputHits": [
-        "frameBus",
-        "FrameBus",
-        "ArtNet",
-        "artnet",
-        "serial",
-        "Serial",
-        "fetch(",
-        "/api/artnet"
-      ],
-      "hotHits": [
-        "setInterval",
-        "setTimeout",
-        "addEventListener"
-      ]
-    },
-    {
-      "rel": "public/runtime/output_health_panel_37cb.js",
-      "status": "UNREACHED_PUBLIC",
-      "outputHits": [
-        "frameBus",
-        "FrameBus",
-        "ArtNet",
-        "artnet",
-        "serial",
-        "Serial",
-        "fetch(",
-        "/api/artnet"
-      ],
-      "hotHits": [
-        "setInterval",
-        "setTimeout",
-        "addEventListener"
-      ]
-    },
-    {
-      "rel": "public/runtime/output_health_panel_37cc.js",
-      "status": "UNREACHED_PUBLIC",
-      "outputHits": [
-        "frameBus",
-        "FrameBus",
-        "ArtNet",
-        "artnet",
-        "serial",
-        "Serial",
-        "fetch(",
-        "/api/artnet"
-      ],
-      "hotHits": [
-        "setInterval",
-        "setTimeout",
-        "addEventListener"
-      ]
-    },
-    {
-      "rel": "public/runtime/telemetry_debug_panel.js",
-      "status": "UNREACHED_PUBLIC",
-      "outputHits": [
-        "serial"
-      ],
-      "hotHits": []
     }
   ]
 }

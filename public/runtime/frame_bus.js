@@ -11,6 +11,8 @@
 //   - adds consumer read/lag tracking
 //   - adds CustomEvent telemetry for future consumers
 
+import { normalizeFrameSource } from "./frame_contract.js";
+
 export const FRAME_BUS_VERSION = "13BT-N-live-stats-event-governor";
 export const FRAME_BUS_TRACE_VERSION = "13BT-N-live-stats-event-governor";
 
@@ -72,8 +74,8 @@ function makePacket(input = {}) {
     frame,
     byteLength: frame?.byteLength || 0,
     renderMs: Number.isFinite(input.renderMs) ? input.renderMs : 0,
-    source: typeof input.source === "string" ? input.source : "unknown",
-    producer: typeof input.producer === "string" ? input.producer : (typeof input.source === "string" ? input.source : "unknown"),
+    source: normalizeFrameSource(input.source),
+    producer: normalizeFrameSource(input.producer, normalizeFrameSource(input.source)),
     colorOrder: typeof input.colorOrder === "string" ? input.colorOrder : "rgb",
     format: typeof input.format === "string" ? input.format : "rgb8",
     meta: cloneMeta(input.meta)
